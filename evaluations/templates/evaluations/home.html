@@ -14,27 +14,44 @@
 
 
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/home/style.css' %}" />
-  <title>Login</title>
+  <title>Evaluaciones</title>
 
 </head>
 
 <body>
   {% include "evaluations/nav_bar.html" %}
 
-  <main>
-    <div>
-      <h1>Estos son todos los Alumnos que tenemos</h1>
-      <ul>
-        <li><b>Nombre</b></li>
-        <hr/>
-        {% for student in students_list %}
-        <li>
-          <a href="{% url 'evaluations:user_detail' student.matricula %}">{{ student.nombre }}</a>
-        </li>
-        {% endfor %}
+  <main class="content">
 
-      </ul>
+    <div class="row valign-wrapper">
+      <div class="col m10 s12 offset-m1 valign">
+        <div class="card z-depth-4 hoverable">
+          <div class="card-content">
+            <div class="row valign-wrapper">
+              <div class="col s8 m10">
+                <span class="card-title">
+                  <b>Sistema de Evaluación Docente</b>
+                  <br/><br/>
+                  Instrucciones
+                </span>
+                <hr/>
+              </div>
+              <div class="col s4 m2">
+                <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %}">
+              </div>
+            </div>
+            <p>
+              En este sistema realizaras la <b>evaluacion</b> de cada uno de los <b>docentes</b> que te imparten alguna materia.
+              <br> Selecciona la materia que vas a evaluar en el <b>menu lateral</b>. <i class="material-icons">menu</i> <br> <i>(En caso de cursar mas de una carrera, tendras primero que seleccionar la carrera a evaluar)</i>
+              <br> Contesta las preguntas que se encuentran en el formulario <b>seleccionando la casilla deseada</b> <i class="material-icons">check_box</i>. <br>Al final puedes dejar tu comentario de retroalimentacion dirijido al docente. <i>(estos comentarios seran revisados antes de ser entregados al docente, evita usar palabras antisonantes o un vocabulario inadecuado)</i>.
+              <br> No olvides <b>cerrar tu sesion</b> una vez que hayas terminado tus evaluaciones en el <b>menu lateral</b>.<i class="material-icons">exit_to_app</i>
+            </p>
+            <i><h4>Recuerda que las evaluaciones son anonimas para el docente.</h4></i>
+          </div>
+        </div>
+      </div>
     </div>
+
   </main>
 
   <!-- jQuery Library -->
