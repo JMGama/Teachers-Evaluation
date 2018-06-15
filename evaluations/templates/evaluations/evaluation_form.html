@@ -13,6 +13,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 
+  <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/nav_bar.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/evaluation_form/style.css' %}" />
   <title>Evaluaciones</title>
 
@@ -30,9 +31,9 @@
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  Docente: <b>{{ request.session.nombre }} {{ request.session.apellido_paterno }} {{ request.session.apellido_materno }}</b>
+                  Docente: <b>{{ teacher.nombre.capitalize }} {{ teacher.apellido_paterno.capitalize }} {{ teacher.apellido_materno.capitalize }}</b>
                   <br>
-                  Materia: <b>Inteligencia Artificial</b>
+                  Materia: <b>{{ signature.nombre_materia.capitalize }}</b>
                   <br>
                   Carrera: <b>Ingenieria en Sistemas Computacionales</b>
                 </span>
@@ -42,16 +43,36 @@
                 <img class="circle responsive-img" src="{% static 'evaluations/images/User.png' %}">
               </div>
             </div>
-            <p>
-              I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.I am a very simple card. I am good at containing small bits of information. I am convenient because I require
-              little markup to use effectively.I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.I am a very simple card. I am good at containing small bits of
-              information. I am convenient because I require little markup to use effectively.I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.I am a very simple
-              card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.I am a very simple card. I am good at containing small bits of information. I am convenient because I require little
-              markup to use effectively.I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.I am a very simple card. I am good at containing small bits of information.
-              I am convenient because I require little markup to use effectively.I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.I am a very simple card. I
-              am good at containing small bits of information. I am convenient because I require little markup to use effectively.I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup
-              to use effectively.
-            </p>
+            <br>
+            {% for question in questions %}
+            <div class="row">
+              <div class="col m8 s6">
+                <p>{{ question.pregunta }}</p>
+              </div>
+              {% if question.tipo_seleccion == 'radiobutton' %}
+              <div class="col m2 s2">
+                <label>
+                    <input class="with-gap" name="respuesta{{ question.id_pregunta.capitalize }}" type="radio" />
+                    <span>Si</span>
+                  </label>
+              </div>
+              <div class="col m2 s2">
+                <label>
+                    <input class="with-gap" name="respuesta{{ question.id_pregunta.capitalize }}" type="radio" />
+                    <span>No</span>
+                  </label>
+              </div>
+              {% elif question.tipo_seleccion == 'textarea' %}
+              <br><br>
+              <div class="input-field col m11 s11">
+                <i class="material-icons prefix">mode_edit</i>
+                <textarea id="textarea" class="materialize-textarea"></textarea>
+                <label for="textarea">Respuesta</label>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+            <h5 class="center"> Gracias por ayudarnos a evaluar a tu docente </h5>
           </div>
           <div class="card-action"><button type="submit" class="btn waves-effect waves-light red">Cancelar</button>
             <button type="submit" class="btn waves-effect waves-light light-green card-action-right">Evaluar<i class="material-icons right">send</i></button>
@@ -67,6 +88,7 @@
   <!--JavaScript at end of body for optimized loading-->
   <script type="text/javascript" src="{% static 'evaluations/js/materialize.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'evaluations/js/nav_bar.js' %}"></script>
+
 </body>
 
 </html>

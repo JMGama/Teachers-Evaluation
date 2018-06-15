@@ -14,14 +14,7 @@ class Alumno(models.Model):
     # carrera
 
     def __str__(self):
-        student_information = {
-            'id_matricula': self.id_matricula,
-            'nombre': self.nombre,
-            'apellido_paterno': self.apellido_paterno,
-            'apellido_materno': self.apellido_materno,
-            'correo': self.correo,
-        }
-        return student_information
+        return self.nombre + " " + self.apellido_paterno + " " + self.apellido_materno
 
 
 class Docente(models.Model):
@@ -35,14 +28,7 @@ class Docente(models.Model):
     # carrera
 
     def __str__(self):
-        teacher_information = {
-            'id_clave': self.id_clave,
-            'nombre': self.nombre,
-            'apellido_paterno': self.apellido_paterno,
-            'apellido_materno': self.apellido_materno,
-            'correo': self.correo,
-        }
-        return teacher_information
+        return self.nombre + " " + self.apellido_paterno + " " + self.apellido_materno
 
 
 class Carrera(models.Model):
@@ -52,11 +38,7 @@ class Carrera(models.Model):
     # coordinador
 
     def __str__(self):
-        career_information = {
-            'id_carrera': self.id_carrera,
-            'nombre_carrera': self.nombre_carrera,
-        }
-        return career_information
+        return self.nombre_carrera
 
 
 class Materia(models.Model):
@@ -66,21 +48,28 @@ class Materia(models.Model):
     # carrera
 
     def __str__(self):
-        signature_information = {
-            'id_materia': self.id_materia,
-            'nombre_carrera': self.nombre_materia,
-        }
-        return signature_information
+        return self.nombre_materia
+
 
 class Ciclo(models.Model):
     id_ciclo = models.CharField(max_length=200)
+    nombre_ciclo = models.CharField(max_length=200)
     fecha_inicio = models.DateField(auto_now=False, auto_now_add=False)
     fecha_final = models.DateField(auto_now=False, auto_now_add=False)
 
     def __str__(self):
-        signature_information = {
-            'id_ciclo': self.id_ciclo,
-            'fecha_inicio': self.fecha_inicio,
-            'fecha_final': self.fecha_final,
-        }
-        return signature_information
+        return self.id_ciclo
+
+
+class Pregunta(models.Model):
+    TIPO_SELECCION_OPTIONS = (
+        ('radiobutton', 'Seleeccion Si ó No'),
+        ('textarea', 'Abierta')
+    )
+
+    id_pregunta = models.CharField(max_length=200)
+    pregunta = models.CharField(max_length=200)
+    tipo_seleccion = models.CharField(max_length=200, choices=TIPO_SELECCION_OPTIONS, default='radiobutton')
+
+    def __str__(self):
+        return self.pregunta
