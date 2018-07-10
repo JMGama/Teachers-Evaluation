@@ -21,10 +21,10 @@
     </div>
   </li>
   {% for signature in signatures_list %}
-  <li class=" blue-grey lighten-5 disabled"><a class="waves-effect" href="{% url 'evaluations:evaluation' signature.id_materia %}"><i class="material-icons icon-green right">check</i>{{signature.nombre_materia}}</a></li>
+  <li class=" blue-grey lighten-5 disabled"><a class="waves-effect" href="{% url 'evaluations:evaluation' signature.id %}"><i class="material-icons icon-green right">check</i>{{signature.name}}</a></li>
   {% endfor %}
   {% for signature in signatures_list %}
-  <li><a class="waves-effect" href="{% url 'evaluations:evaluation' signature.id_materia %}"><i class="material-icons right">assignment</i>{{signature.nombre_materia}}</a></li>
+  <li><a class="waves-effect" href="{% url 'evaluations:evaluation' signature.id %}"><i class="material-icons right">assignment</i>{{signature.name}}</a></li>
   {% endfor %}
   <li>
     <div class="divider"></div>

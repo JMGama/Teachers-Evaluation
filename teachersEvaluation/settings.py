@@ -24,7 +24,7 @@ SECRET_KEY = 'n!-z!js27t!c38ejl-j3s08)^y#9@y=hw%0w#=63$0po#^q1aq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+CSRF_COOKIE_DOMAIN = None #Only in development env. delete it latter
 ALLOWED_HOSTS = []
 
 
@@ -62,7 +62,7 @@ TEMPLATES = [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+                'django.contrib.messages.context_processors.messages'
             ],
         },
     },

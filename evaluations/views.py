@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views import View
 
-from .models import Alumno, Carrera, Ciclo, Docente, Materia, Pregunta
+from .models import *
 # Create your views here.
 
 
@@ -19,16 +19,16 @@ class LoginView(View):
 
     def post(self, request):
         try:
-            student = Alumno.objects.get(
-                id_matricula=request.POST['id_matricula'])
-            if student.password == request.POST['password']:
+            student = InstitutionalStudents.objects.get(
+                enrollment=request.POST['id_matricula'])
+            if student.value == request.POST['password']:
                 request.session['session'] = True
-                request.session['id_matricula'] = student.id_matricula
-                request.session['nombre'] = student.nombre
-                request.session['apellido_paterno'] = student.apellido_paterno
-                request.session['apellido_materno'] = student.apellido_materno
-                request.session['correo'] = student.correo
-
+                request.session['id_matricula'] = student.enrollment
+                request.session['nombre'] = student.name
+                request.session['apellido_paterno'] = student.lastname
+                request.session['apellido_materno'] = student.lastname2
+                request.session['correo'] = student.instemail
+                request.session['carrera'] = ParkingCareer.objects.get(idcareergissa__exact=student.idcareer).idcareer
                 return redirect('home/')
         except Exception as e:
             pass
@@ -44,8 +44,7 @@ class HomeView(View):
     def get(self, request):
         if not request.session.get('session', False):
             return render(request, self.template_login)
-
-        signatures_list = Materia.objects.order_by('nombre_materia')[:3]
+        signatures_list = EvaluationsSignatures.objects.filter(idcareer__exact=request.session['carrera'], status="ACTIVO")
 
         context = {
             'signatures_list': signatures_list,
@@ -55,11 +54,15 @@ class HomeView(View):
     def post(self, request):
         if not request.session.get('session', False):
             return render(request, self.template_login)
+
         try:
-            signatures_list = Materia.objects.get(id_materia=request.POST['id_materia'])
+            signatures_list = Materia.objects.get(
+                id_materia=request.POST['id_materia'])
         except Exception as e:
             pass
+
         return render(request, self.template_login, {'second_time': True, 'validate': 'invalid'})
+
 
 class EvaluationView(View):
 
