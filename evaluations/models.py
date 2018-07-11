@@ -186,6 +186,12 @@ class EvaluationsDetailStudentGroup(models.Model):
     )
     status = models.CharField(max_length=8, choices=STATUS_CHOICES)
 
+    EVALUATED_CHOICES = (
+        ('YES', 'Si'),
+        ('NO', 'No'),
+    )
+    evaluated = models.CharField(max_length=8, choices=EVALUATED_CHOICES, default='NO')
+
     class Meta:
         managed = False
         db_table = 'evaluations_detail_student_group'
@@ -318,6 +324,7 @@ class InstitutionalPeriodDetail(models.Model):
 
     def __str__(self):
         return '%s' % (self.id)
+
     class Meta:
         managed = False
         db_table = 'institutional_period_detail'

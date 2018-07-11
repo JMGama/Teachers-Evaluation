@@ -23,12 +23,13 @@ class LoginView(View):
                 enrollment=request.POST['id_matricula'])
             if student.value == request.POST['password']:
                 request.session['session'] = True
-                request.session['id_matricula'] = student.enrollment
+                request.session['matricula'] = student.enrollment
                 request.session['nombre'] = student.name
                 request.session['apellido_paterno'] = student.lastname
                 request.session['apellido_materno'] = student.lastname2
                 request.session['correo'] = student.instemail
-                request.session['carrera'] = ParkingCareer.objects.get(idcareergissa__exact=student.idcareer).idcareer
+                request.session['carrera'] = ParkingCareer.objects.get(
+                    idcareergissa__exact=student.idcareer).idcareer
                 return redirect('home/')
         except Exception as e:
             pass
@@ -44,10 +45,15 @@ class HomeView(View):
     def get(self, request):
         if not request.session.get('session', False):
             return render(request, self.template_login)
-        signatures_list = EvaluationsSignatures.objects.filter(idcareer__exact=request.session['carrera'], status="ACTIVO")
 
+        user_groups = EvaluationsDetailStudentGroup.objects.filter(
+            idstudent__enrollment__exact=request.session['matricula'], status="ACTIVO")
+
+        #signatures_list = [group.idgroup.idsignature for group in user_groups]
+
+        # CONTINUAR CON EXTRAER MATERIAS DE LOS GRUPOS
         context = {
-            'signatures_list': signatures_list,
+            'user_groups': user_groups,
         }
         return render(request, self.template_home, context)
 

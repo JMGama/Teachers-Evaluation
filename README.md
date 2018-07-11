@@ -7,7 +7,7 @@ System for the students to make evaluations about the teachers and compare with 
 
 ### Django Documentation Page
 
-<https://docs.djangoproject.com/en/2.0/>
+ [DJango 2.0 Documentation](https://docs.djangoproject.com/en/2.0/)
 
 ### Requirements
 
@@ -18,6 +18,6 @@ System for the students to make evaluations about the teachers and compare with 
 -   setuptools  39.2.0
 -   wheel       0.31.1
 
-### Design
+### Visual Design Documentation Page (Materialized)
 
-Materializecss: <https://materializecss.com/getting-started.html>
+[Materializecss Documentation](https://materializecss.com/getting-started.html)
