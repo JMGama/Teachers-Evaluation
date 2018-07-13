@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'teachersEvaluation.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS':{'read_default_file': '/home/jmgamest/Documents/Programming/Teachers-Evaluation/teachersEvaluation/db.cnf'}
+        'OPTIONS':{'read_default_file': os.path.join(BASE_DIR,'teachersEvaluation/db.cnf')}
     }
 }
 

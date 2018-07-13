@@ -6,5 +6,7 @@ app_name = 'evaluations'
 urlpatterns = [
     path('', views.LoginView.as_view(), name='login'),
     path('home/', views.HomeView.as_view(), name='home'),
-    path('evaluation/<slug:id_materia>/', views.EvaluationView.as_view(), name='evaluation')
+    path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('evaluation/<slug:exam_id>/<slug:group_id>/',
+         views.EvaluationView.as_view(), name='evaluation')
 ]

@@ -1,10 +1,24 @@
 from django.contrib import admin
 
 from .models import *
-# Register your models here.
 
-admin.site.register(EvaluationsSignatures)
-admin.site.register(EvaluationsQuestions)
+# Formulary specifications for the Django admin page.
+
+
+class EvaluationsDetailExamQuestionAdmin(admin.ModelAdmin):
+    list_display = ['id', 'idquestion', 'idexam']
+    exclude = ['updatedon', 'createdon']
+
+class EvaluationsQuestionsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'description', 'type', 'status', ]
+    search_fields = ['id', 'description', 'type', 'status', ]
+    exclude = ['updatedon', 'createdon']
+
+
+class EvaluationsExamsAdmin(admin.ModelAdmin):
+    list_display = ['id', 'description', 'idcareer', 'status', ]
+    search_fields = ['id', 'description', 'status', ]
+    exclude = ['updatedon', 'createdon']
 
 
 class InstitutionalTeachersAdmin(admin.ModelAdmin):
@@ -58,8 +72,18 @@ class EvaluationsDetailStudentGroupAdmin(admin.ModelAdmin):
     exclude = ['updatedon', 'createdon', 'evaluated']
 
 
+# Register your models here.
 admin.site.register(InstitutionalStudents, InstitutionalStudentsAdmin)
 admin.site.register(EvaluationsGroups, EvaluationsGroupsAdmin)
 admin.site.register(EvaluationsDetailStudentGroup,
                     EvaluationsDetailStudentGroupAdmin)
 admin.site.register(InstitutionalTeachers, InstitutionalTeachersAdmin)
+admin.site.register(EvaluationsExams, EvaluationsExamsAdmin)
+admin.site.register(EvaluationsDetailExamQuestion,
+                    EvaluationsDetailExamQuestionAdmin)
+admin.site.register(EvaluationsQuestions, EvaluationsQuestionsAdmin)
+admin.site.register(EvaluationsSignatures)
+
+# Admin site changes
+admin.site.site_url = '/evaluations/'
+admin.site.site_header = 'Evaluations Administration'

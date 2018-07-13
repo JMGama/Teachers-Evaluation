@@ -20,16 +20,33 @@
       <a href="#email"><span class="white-text email">{{ request.session.correo }}</span></a>
     </div>
   </li>
-  {% for group in user_groups %} {% if group.evaluated == 'YES' %}
-    <li class=" blue-grey lighten-5 disabled"><a class="waves-effect" href="{% url 'evaluations:evaluation' group.id %}"><i class="material-icons icon-green right">check</i>{{group.idgroup.idsignature}}</a></li>
-  {% elif group.evaluated == 'NO' %}
-    <li><a class="waves-effect" href="{% url 'evaluations:evaluation' group.id %}"><i class="material-icons right">assignment</i>{{group.idgroup.idsignature}}</a></li>
-  {% endif %} {% endfor %}
+  {% for exam in user_exams %}
+  <li>
+    <ul class="collapsible collapsible-accordion">
+      <li>
+        <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ exam.description }}</b></a>
+        <div class="collapsible-body">
+          <ul>
+            {% for group in user_groups %} {% if group.idcareer == exam.idcareer %} {% if group.evaluated == 'YES' %}
+            <li>
+              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id group.id %}"><i class="material-icons right">check</i>{{ group.idgroup.idsignature }}</a>
+            </li>
+            {% elif group.evaluated == 'NO' %}
+            <li>
+              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id group.id %}"><i class="material-icons right">bookmark_border</i>{{ group.idgroup.idsignature }}</a>
+            </li>
+            {% endif %} {% endif %} {% endfor %}
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </li>
+  {% endfor %}
   <li>
     <div class="divider"></div>
   </li>
   <li>
     <div class="col s6 offset-s3 center">
-      <a type="" class="btn-small waves-effect center " href="{% url 'evaluations:login' %}">Cerrar Sesión</a>
+      <a type="" class="btn-small waves-effect center " href="{% url 'evaluations:logout' %}">Cerrar Sesión</a>
   </li>
 </ul>

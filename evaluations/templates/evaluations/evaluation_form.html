@@ -31,11 +31,11 @@
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  Docente: <b>{{ teacher.nombre.capitalize }} {{ teacher.apellido_paterno.capitalize }} {{ teacher.apellido_materno.capitalize }}</b>
+                  Docente: <b>{{ group.idgroup.idteacher.name.capitalize }} {{ group.idgroup.idteacher.lastname.capitalize }} {{ group.idgroup.idteacher.lastname2.capitalize }}</b>
                   <br>
-                  Materia: <b>{{ signature.nombre_materia.capitalize }}</b>
+                  Materia: <b>{{ group.idgroup.idsignature.name.capitalize }}</b>
                   <br>
-                  Carrera: <b>Ingenieria en Sistemas Computacionales</b>
+                  Carrera: <b>{{ career.description.capitalize }}</b>
                 </span>
                 <hr/>
               </div>
@@ -43,13 +43,12 @@
                 <img class="circle responsive-img" src="{% static 'evaluations/images/User.png' %}">
               </div>
             </div>
-            <br>
-            {% for question in questions %}
+            <br> {% for question in exam_questions %}
             <div class="row">
               <div class="col m8 s6">
-                <p>{{ question.pregunta }}</p>
+                <p>{{ question.idquestion.description }}</p>
               </div>
-              {% if question.tipo_seleccion == 'radiobutton' %}
+              {% if question.idquestion.type.lower == 'radio' %}
               <div class="col m2 s2">
                 <label>
                     <input class="with-gap" name="respuesta{{ question.id_pregunta.capitalize }}" type="radio" />
@@ -62,7 +61,7 @@
                     <span>No</span>
                   </label>
               </div>
-              {% elif question.tipo_seleccion == 'textarea' %}
+              {% elif question.idquestion.type.lower == 'text' %}
               <br><br>
               <div class="input-field col m11 s11">
                 <i class="material-icons prefix">mode_edit</i>
@@ -74,7 +73,8 @@
             {% endfor %}
             <h5 class="center"> Gracias por ayudarnos a evaluar a tu docente </h5>
           </div>
-          <div class="card-action"><button type="submit" class="btn waves-effect waves-light red">Cancelar</button>
+          <div class="card-action">
+            <button type="submit" class="btn waves-effect waves-light red">Cancelar</button>
             <button type="submit" class="btn waves-effect waves-light light-green card-action-right">Evaluar<i class="material-icons right">send</i></button>
           </div>
         </div>

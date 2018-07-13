@@ -1,15 +1,19 @@
 i.icon-blue {
-    color: blue !important;
+  color: blue !important;
 }
+
 i.icon-red {
-    color: red !important;
+  color: red !important;
 }
+
 i.icon-green {
-    color: green !important;
+  color: green !important;
 }
+
 .sidenav .user-view {
   margin-bottom: 0px !important;
 }
+
 .disabled {
-pointer-events: none !important;
+  pointer-events: none !important;
 }

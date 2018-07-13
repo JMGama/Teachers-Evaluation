@@ -61,6 +61,8 @@ class InstitutionalStudents(models.Model):
     class Meta:
         managed = False
         db_table = 'institutional_students'
+        verbose_name = 'Alumno'
+        verbose_name_plural = 'Alumnos'
 
 
 class InstitutionalTeachers(models.Model):
@@ -114,6 +116,8 @@ class InstitutionalTeachers(models.Model):
     class Meta:
         managed = False
         db_table = 'institutional_teachers'
+        verbose_name = 'Docente'
+        verbose_name_plural = 'Docentes'
 
 
 class EvaluationsAnswers(models.Model):
@@ -140,6 +144,8 @@ class EvaluationsAnswers(models.Model):
     class Meta:
         managed = False
         db_table = 'evaluations_answers'
+        verbose_name = 'Respuesta'
+        verbose_name_plural = 'Respuestas'
 
 
 class EvaluationsDetailExamQuestion(models.Model):
@@ -166,6 +172,8 @@ class EvaluationsDetailExamQuestion(models.Model):
     class Meta:
         managed = False
         db_table = 'evaluations_detail_exam_question'
+        verbose_name = 'Examen - Respuesta'
+        verbose_name_plural = 'Examenes - Respuestas'
 
 
 class EvaluationsDetailStudentGroup(models.Model):
@@ -190,18 +198,21 @@ class EvaluationsDetailStudentGroup(models.Model):
         ('YES', 'Si'),
         ('NO', 'No'),
     )
-    evaluated = models.CharField(max_length=8, choices=EVALUATED_CHOICES, default='NO')
+    evaluated = models.CharField(
+        max_length=8, choices=EVALUATED_CHOICES, default='NO')
 
     class Meta:
         managed = False
         db_table = 'evaluations_detail_student_group'
+        verbose_name = 'Alumno - Grupo'
+        verbose_name_plural = 'Alumnos - Grupos'
 
 
 class EvaluationsExams(models.Model):
-    decription = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
     # Field name made lowercase.
     idcareer = models.ForeignKey(
-        'ParkingCareer', on_delete=models.PROTECT, db_column='idCarrer')
+        'ParkingCareer', on_delete=models.PROTECT, db_column='idCareer', blank=True, null=True)
     # Field name made lowercase.
     updatedon = models.DateTimeField(db_column='updatedOn')
     # Field name made lowercase.
@@ -219,6 +230,8 @@ class EvaluationsExams(models.Model):
     class Meta:
         managed = False
         db_table = 'evaluations_exams'
+        verbose_name = 'Examen'
+        verbose_name_plural = 'Examenes'
 
 
 class EvaluationsGroups(models.Model):
@@ -248,11 +261,21 @@ class EvaluationsGroups(models.Model):
     class Meta:
         managed = False
         db_table = 'evaluations_groups'
+        verbose_name = 'Grupo'
+        verbose_name_plural = 'Grupos'
 
 
 class EvaluationsQuestions(models.Model):
-    type = models.CharField(max_length=10)
-    description = models.CharField(max_length=255)
+    TYPE_CHOICES = (
+        ('DATEPICKER', 'Seleccion de fecha'),
+        ('RADIO', 'Si y No'),
+        ('RANGE', 'Medicion'),
+        ('SELECT', 'Multiple'),
+        ('TEXT', 'Abierta'),
+    )
+
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    description = models.CharField('Question', max_length=255)
     # Field name made lowercase.
     updatedon = models.DateTimeField(db_column='updatedOn')
     # Field name made lowercase.
@@ -270,6 +293,8 @@ class EvaluationsQuestions(models.Model):
     class Meta:
         managed = False
         db_table = 'evaluations_questions'
+        verbose_name = 'Pregunta'
+        verbose_name_plural = 'Preguntas'
 
 
 class EvaluationsSignatures(models.Model):
@@ -298,6 +323,8 @@ class EvaluationsSignatures(models.Model):
     class Meta:
         managed = False
         db_table = 'evaluations_signatures'
+        verbose_name = 'Materia'
+        verbose_name_plural = 'Materias'
 
 
 class InstitutionalPeriod(models.Model):
@@ -315,6 +342,8 @@ class InstitutionalPeriod(models.Model):
     class Meta:
         managed = False
         db_table = 'institutional_period'
+        verbose_name = 'Periodo'
+        verbose_name_plural = 'Periodos'
 
 
 class InstitutionalPeriodDetail(models.Model):
@@ -328,6 +357,8 @@ class InstitutionalPeriodDetail(models.Model):
     class Meta:
         managed = False
         db_table = 'institutional_period_detail'
+        verbose_name = 'Detalle de Perodo'
+        verbose_name_plural = 'Detalles de Periodos'
 
 
 class ParkingCareer(models.Model):
@@ -349,3 +380,5 @@ class ParkingCareer(models.Model):
     class Meta:
         managed = False
         db_table = 'parking_career'
+        verbose_name = 'Carrera'
+        verbose_name_plural = 'Carreras'
