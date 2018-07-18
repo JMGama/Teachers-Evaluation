@@ -15,6 +15,8 @@
 
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/nav_bar.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/evaluation_form/style.css' %}" />
+
+
   <title>Evaluaciones</title>
 
 </head>
@@ -28,12 +30,31 @@
       <div class="col m10 s12 offset-m1 valign">
         <div class="card z-depth-4 hoverable">
           <div class="card-content">
+            <!-- Card to print message -->
+            {% if not message is defined %}
+            <div class="row" id="alert_box">
+              <div class="col s12 m12">
+                <div class="card {{ message.1 }} darken-1">
+                  <div class="row">
+                    <div class="col s12 m10">
+                      <div class="card-content white-text">
+                        <p>{{ message.0 }}</p>
+                      </div>
+                    </div>
+                    <div class="col s12 m2">
+                      <i class="fa fa-times icon_style" id="alert_close" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  Docente: <b>{{ group.idgroup.idteacher.name.capitalize }} {{ group.idgroup.idteacher.lastname.capitalize }} {{ group.idgroup.idteacher.lastname2.capitalize }}</b>
+                  Docente: <b>{{ detail_group.idgroup.idteacher.name.capitalize }} {{ detail_group.idgroup.idteacher.lastname.capitalize }} {{ detail_group.idgroup.idteacher.lastname2.capitalize }}</b>
                   <br>
-                  Materia: <b>{{ group.idgroup.idsignature.name.capitalize }}</b>
+                  Materia: <b>{{ detail_group.idgroup.idsignature.name.capitalize }}</b>
                   <br>
                   Carrera: <b>{{ career.description.capitalize }}</b>
                 </span>
@@ -43,40 +64,43 @@
                 <img class="circle responsive-img" src="{% static 'evaluations/images/User.png' %}">
               </div>
             </div>
-            <br> {% for question in exam_questions %}
-            <div class="row">
-              <div class="col m8 s6">
-                <p>{{ question.idquestion.description }}</p>
-              </div>
-              {% if question.idquestion.type.lower == 'radio' %}
-              <div class="col m2 s2">
-                <label>
-                    <input class="with-gap" name="respuesta{{ question.id_pregunta.capitalize }}" type="radio" />
+            <form id="questions_form" action="{% url 'evaluations:evaluation' exam_id detail_group_id %}" method="post" onsubmit="return validateForm()">
+              {% csrf_token %}
+              <br> {% for question in exam_questions %}
+              <div class="row">
+                <div class="col m8 s6">
+                  <p>{{ question.idquestion.description }}</p>
+                </div>
+                {% if question.idquestion.type.lower == 'radio' %}
+                <div class="col m2 s2">
+                  <label>
+                    <input class="with-gap" name="answer_{{ question.id }}" value="yes" type="radio" />
                     <span>Si</span>
                   </label>
-              </div>
-              <div class="col m2 s2">
-                <label>
-                    <input class="with-gap" name="respuesta{{ question.id_pregunta.capitalize }}" type="radio" />
+                </div>
+                <div class="col m2 s2">
+                  <label>
+                    <input class="with-gap" name="answer_{{ question.id }}" value="no" type="radio" />
                     <span>No</span>
                   </label>
+                </div>
+                {% elif question.idquestion.type.lower == 'text' %}
+                <br><br>
+                <div class="input-field col m11 s11">
+                  <i class="material-icons prefix">mode_edit</i>
+                  <textarea id="textarea" name="answer_{{ question.id }}" class="materialize-textarea" data-length="255" maxlength="255"></textarea>
+                  <label for="textarea">Respuesta</label>
+                </div>
+                {% endif %}
               </div>
-              {% elif question.idquestion.type.lower == 'text' %}
-              <br><br>
-              <div class="input-field col m11 s11">
-                <i class="material-icons prefix">mode_edit</i>
-                <textarea id="textarea" class="materialize-textarea"></textarea>
-                <label for="textarea">Respuesta</label>
-              </div>
-              {% endif %}
-            </div>
-            {% endfor %}
-            <h5 class="center"> Gracias por ayudarnos a evaluar a tu docente </h5>
+              {% endfor %}
+              <h5 class="center"> Gracias por ayudarnos a evaluar a tu docente </h5>
           </div>
           <div class="card-action">
             <button type="submit" class="btn waves-effect waves-light red">Cancelar</button>
             <button type="submit" class="btn waves-effect waves-light light-green card-action-right">Evaluar<i class="material-icons right">send</i></button>
           </div>
+          </form>
         </div>
       </div>
     </div>
@@ -88,7 +112,29 @@
   <!--JavaScript at end of body for optimized loading-->
   <script type="text/javascript" src="{% static 'evaluations/js/materialize.min.js' %}"></script>
   <script type="text/javascript" src="{% static 'evaluations/js/nav_bar.js' %}"></script>
-
 </body>
 
 </html>
+
+<script type="text/javascript">
+  // Remove message in 2 seconds.
+  setTimeout(function() {
+    $("#alert_box").fadeOut("slow", function() {});
+  }, 2000);
+
+  // Show length for the text area.
+  $(document).ready(function() {
+    $('input#input_text, textarea#textarea').characterCounter();
+  });
+
+  // Make the validation for the form before sending to the server.
+  function validateForm() {
+    for (var i=1; i <= {{ exam_questions|length }}; i++) {
+      if (document.forms["questions_form"]["answer_"+i].value == "") {
+        alert("Debes completar el formulario antes de enviarlo.");
+        return false;
+      }
+    }
+    return true;
+  }
+</script>

@@ -128,15 +128,15 @@ class EvaluationsAnswers(models.Model):
     idgroup = models.ForeignKey(
         'EvaluationsGroups', on_delete=models.PROTECT, db_column='idGroup')
     # Field name made lowercase.
-    idquestion = models.ForeignKey(
-        'EvaluationsQuestions', on_delete=models.PROTECT, db_column='idQuestion')
+    iddetailquestion = models.ForeignKey(
+        'EvaluationsDetailExamQuestion', on_delete=models.PROTECT, db_column='idQuestion')
     answer = models.CharField(max_length=255, blank=True, null=True)
 
     STATUS_CHOICES = (
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.answer)
@@ -164,7 +164,7 @@ class EvaluationsDetailExamQuestion(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.idexam)
@@ -192,7 +192,7 @@ class EvaluationsDetailStudentGroup(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     EVALUATED_CHOICES = (
         ('YES', 'Si'),
@@ -222,7 +222,7 @@ class EvaluationsExams(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.description)
@@ -256,7 +256,7 @@ class EvaluationsGroups(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     class Meta:
         managed = False
@@ -285,7 +285,7 @@ class EvaluationsQuestions(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.description)
@@ -315,7 +315,7 @@ class EvaluationsSignatures(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.name)

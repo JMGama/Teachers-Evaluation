@@ -24,6 +24,7 @@ class LoginView(View):
             student = InstitutionalStudents.objects.get(
                 enrollment=request.POST['id_matricula'])
             if student.value == request.POST['password']:
+                request.session['id_estudiante'] = student.idperson
                 request.session['session'] = True
                 request.session['matricula'] = student.enrollment
                 request.session['nombre'] = student.name
@@ -54,6 +55,8 @@ class HomeView(View):
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
             idstudent__enrollment__exact=request.session['matricula'], status="ACTIVO")
 
+        # Values for the view
+
         context = {
             'user_exams': user_exams,
             'user_groups': user_groups,
@@ -68,7 +71,7 @@ class EvaluationView(View):
     template_login = 'evaluations/login.html'
     test = 'evaluations/detail.html'
 
-    def get(self, request, exam_id, group_id):
+    def get(self, request, exam_id, detail_group_id):
         if not request.session.get('session', False):
             return render(request, self.template_login)
 
@@ -78,10 +81,12 @@ class EvaluationView(View):
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
             idstudent__enrollment__exact=request.session['matricula'], status="ACTIVO")
 
+        # Values for the view
         exam_questions = EvaluationsDetailExamQuestion.objects.filter(
             idexam__exact=exam_id)
 
-        group = EvaluationsDetailStudentGroup.objects.get(id__exact=group_id)
+        detail_group = EvaluationsDetailStudentGroup.objects.get(
+            id__exact=detail_group_id)
         career = ParkingCareer.objects.get(
             idcareer__exact=request.session['carrera'])
 
@@ -89,11 +94,82 @@ class EvaluationView(View):
             'user_exams': user_exams,
             'user_groups': user_groups,
             'exam_questions': exam_questions,
-            'group': group,
+            'detail_group': detail_group,
             'career': career,
+            'exam_id': exam_id,
+            'detail_group_id': detail_group_id,
         }
 
         return render(request, self.template_evaluation, context)
+
+    def post(self, request, exam_id, detail_group_id):
+        # Verify if the user is correctly logged in
+        if not request.session.get('session', False):
+            return render(request, self.template_login)
+
+        # Values for the navigation bar
+        user_exams = EvaluationsExams.objects.filter(
+            Q(idcareer__exact=request.session['carrera']) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
+        user_groups = EvaluationsDetailStudentGroup.objects.filter(
+            idstudent__enrollment__exact=request.session['matricula'], status="ACTIVO")
+
+        # Get exam answers
+        exam_questions = EvaluationsDetailExamQuestion.objects.filter(
+            idexam__exact=exam_id)
+
+        # Submit every exam answer
+        num_answers = 0
+        for question in exam_questions:
+            try:
+                submitted_answer = request.POST['answer_' + str(question.id)]
+                answer = EvaluationsAnswers(
+                    idstudent=InstitutionalStudents.objects.get(
+                        idperson__exact=request.session['id_estudiante']),
+                    idgroup=EvaluationsDetailStudentGroup.objects.get(
+                        id__exact=detail_group_id).idgroup,
+                    iddetailquestion=EvaluationsDetailExamQuestion.objects.get(
+                        id__exact=question.id),
+                    answer=submitted_answer.upper())
+
+                answer.save()
+                num_answers += 1
+            except Exception as e:
+                print(e)
+                pass
+
+        # Validate all answers well submitted to the DB.
+        if num_answers == len(exam_questions):
+
+            # Change status to evaluated on the evaluations_detail_student_group table.
+            student_grup_detail = EvaluationsDetailStudentGroup.objects.get(
+                id__exact=detail_group_id)
+            student_grup_detail.evaluated = 'YES'
+            student_grup_detail.save()
+
+            context = {
+                'user_exams': user_exams,
+                'user_groups': user_groups,
+                'exam_questions': exam_questions,
+                # [text, color]
+                'message': ['La evaluacion se realizo correctamente.', 'green'],
+            }
+            return render(request, self.template_home, context)
+        else:
+            detail_group = EvaluationsDetailStudentGroup.objects.get(
+                id__exact=detail_group_id)
+            career = ParkingCareer.objects.get(
+                idcareer__exact=request.session['carrera'])
+            context = {
+                'user_exams': user_exams,
+                'user_groups': user_groups,
+                'exam_questions': exam_questions,
+                'detail_group': detail_group,
+                'career': career,
+                'exam_id': exam_id,
+                'detail_group_id': detail_group_id,
+                'message': ['Ocurrio un error al enviar la evaluacion.', 'red'],
+            }
+            return render(request, self.template_evaluation, context)
 
 
 class LogoutView(View):

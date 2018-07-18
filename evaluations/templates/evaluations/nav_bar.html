@@ -27,13 +27,13 @@
         <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ exam.description }}</b></a>
         <div class="collapsible-body">
           <ul>
-            {% for group in user_groups %} {% if group.idcareer == exam.idcareer %} {% if group.evaluated == 'YES' %}
+            {% for detail_group_id in user_groups %} {% if detail_group_id.idcareer == exam.idcareer %} {% if detail_group_id.evaluated == 'YES' %}
             <li>
-              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id group.id %}"><i class="material-icons right">check</i>{{ group.idgroup.idsignature }}</a>
+              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' exam.id detail_group_id.id %}"><i class="material-icons right icon-green">check</i>{{ detail_group_id.idgroup.idsignature }}</a>
             </li>
-            {% elif group.evaluated == 'NO' %}
+            {% elif detail_group_id.evaluated == 'NO' %}
             <li>
-              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id group.id %}"><i class="material-icons right">bookmark_border</i>{{ group.idgroup.idsignature }}</a>
+              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id detail_group_id.id %}"><i class="material-icons right">bookmark_border</i>{{ detail_group_id.idgroup.idsignature }}</a>
             </li>
             {% endif %} {% endif %} {% endfor %}
           </ul>

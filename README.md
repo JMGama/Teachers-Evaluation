@@ -20,4 +20,4 @@ System for the students to make evaluations about the teachers and compare with 
 
 ### Visual Design Documentation Page (Materialized)
 
-[Materializecss Documentation](https://materializecss.com/getting-started.html)
+- [Materializecss Documentation](https://materializecss.com/getting-started.html)
