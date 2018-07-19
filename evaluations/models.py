@@ -8,13 +8,13 @@
 from django.db import models
 
 
-class InstitutionalStudents(models.Model):
+class EvaluationsStudents(models.Model):
     # Field name made lowercase.
     idperson = models.AutoField(db_column='idPerson', primary_key=True)
     enrollment = models.CharField(max_length=30)
     # Field name made lowercase.
-    idcareer = models.CharField(
-        db_column='idCareer', max_length=20, blank=True, null=True)
+    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
+                                 db_column='idCareer')
     type = models.CharField(max_length=14, blank=True, null=True)
     name = models.CharField(max_length=60)
     # Field name made lowercase.
@@ -60,18 +60,18 @@ class InstitutionalStudents(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'institutional_students'
+        db_table = 'evaluations_students'
         verbose_name = 'Alumno'
         verbose_name_plural = 'Alumnos'
 
 
-class InstitutionalTeachers(models.Model):
+class EvaluationsTeachers(models.Model):
     # Field name made lowercase.
     idperson = models.AutoField(db_column='idPerson', primary_key=True)
     enrollment = models.CharField(max_length=30)
     # Field name made lowercase.
-    idcareer = models.CharField(
-        db_column='idCareer', max_length=20, blank=True, null=True)
+    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
+                                 db_column='idCareer', max_length=20, blank=True, null=True)
     type = models.CharField(max_length=14, blank=True, null=True)
     name = models.CharField(max_length=60)
     # Field name made lowercase.
@@ -115,7 +115,7 @@ class InstitutionalTeachers(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'institutional_teachers'
+        db_table = 'evaluations_teachers'
         verbose_name = 'Docente'
         verbose_name_plural = 'Docentes'
 
@@ -123,10 +123,10 @@ class InstitutionalTeachers(models.Model):
 class EvaluationsAnswers(models.Model):
     # Field name made lowercase.
     idstudent = models.ForeignKey(
-        'InstitutionalStudents', on_delete=models.PROTECT, db_column='idStudent')
+        'EvaluationsStudents', on_delete=models.PROTECT, db_column='idStudent')
     # Field name made lowercase.
     idgroup = models.ForeignKey(
-        'EvaluationsGroups', on_delete=models.PROTECT, db_column='idGroup')
+        'EvaluationsDetailGroupPeriodSignature', on_delete=models.PROTECT, db_column='idGroup')
     # Field name made lowercase.
     iddetailquestion = models.ForeignKey(
         'EvaluationsDetailExamQuestion', on_delete=models.PROTECT, db_column='idQuestion')
@@ -136,7 +136,8 @@ class EvaluationsAnswers(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.answer)
@@ -164,7 +165,8 @@ class EvaluationsDetailExamQuestion(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.idexam)
@@ -179,10 +181,13 @@ class EvaluationsDetailExamQuestion(models.Model):
 class EvaluationsDetailStudentGroup(models.Model):
     # Field name made lowercase.
     idgroup = models.ForeignKey(
-        'EvaluationsGroups', on_delete=models.PROTECT, db_column='idGroup')
+        'EvaluationsDetailGroupPeriodSignature', on_delete=models.PROTECT, db_column='idGroup')
     # Field name made lowercase.
     idstudent = models.ForeignKey(
-        'InstitutionalStudents', on_delete=models.PROTECT, db_column='idStudent')
+        'EvaluationsStudents', on_delete=models.PROTECT, db_column='idStudent')
+    # Field name made lowercase.
+    idperiod = models.ForeignKey(
+        'EvaluationsPeriods', on_delete=models.PROTECT, db_column='idPeriod')
     # Field name made lowercase.
     updatedon = models.DateTimeField(db_column='updatedOn')
     # Field name made lowercase.
@@ -192,14 +197,17 @@ class EvaluationsDetailStudentGroup(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
-    EVALUATED_CHOICES = (
-        ('YES', 'Si'),
-        ('NO', 'No'),
-    )
-    evaluated = models.CharField(
-        max_length=8, choices=EVALUATED_CHOICES, default='NO')
+    # EVALUATED_CHOICES = (
+    #     ('YES', 'Si'),
+    #     ('NO', 'No'),
+    # )
+    # evaluated = models.CharField(
+    #     max_length=8, choices=EVALUATED_CHOICES, default='NO')
+    # idexam = models.ForeignKey(
+    #     'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
 
     class Meta:
         managed = False
@@ -208,42 +216,43 @@ class EvaluationsDetailStudentGroup(models.Model):
         verbose_name_plural = 'Alumnos - Grupos'
 
 
-class EvaluationsExams(models.Model):
-    description = models.CharField(max_length=255)
+class EvaluationsDetailTeacherCareer(models.Model):
     # Field name made lowercase.
-    idcareer = models.ForeignKey(
-        'ParkingCareer', on_delete=models.PROTECT, db_column='idCareer', blank=True, null=True)
+    iddocente = models.IntegerField(
+        db_column='idDocente', blank=True, null=True)
     # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
+    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
+                                 db_column='idCareer', max_length=255, blank=True, null=True)
 
     STATUS_CHOICES = (
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
-        return '%s' % (self.description)
+        return '%s' % (self.iddocente + " -> " + idcareer)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_exams'
-        verbose_name = 'Examen'
-        verbose_name_plural = 'Examenes'
+        db_table = 'evaluations_detail_teacher_career'
+        verbose_name = 'Docente - Carrera'
+        verbose_name_plural = 'Docentes - Carreras'
 
 
-class EvaluationsGroups(models.Model):
+class EvaluationsDetailGroupPeriodSignature(models.Model):
+    # Field name made lowercase.
+    idgroup = models.IntegerField(db_column='idGroup')
     # Field name made lowercase.
     idsignature = models.ForeignKey(
         'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
     # Field name made lowercase.
     idteacher = models.ForeignKey(
-        'InstitutionalTeachers', on_delete=models.PROTECT, db_column='idTeacher')
+        'EvaluationsTeachers', on_delete=models.PROTECT, db_column='idTeacher')
     # Field name made lowercase.
     idperiod = models.ForeignKey(
-        'InstitutionalPeriod', on_delete=models.PROTECT, db_column='idPeriod')
+        'EvaluationsPeriods', on_delete=models.PROTECT, db_column='idPeriod')
     # Field name made lowercase.
     updatedon = models.DateTimeField(db_column='updatedOn')
     # Field name made lowercase.
@@ -256,13 +265,41 @@ class EvaluationsGroups(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     class Meta:
         managed = False
-        db_table = 'evaluations_groups'
+        db_table = 'evaluations_detail_group_period_signature'
         verbose_name = 'Grupo'
         verbose_name_plural = 'Grupos'
+
+
+class EvaluationsExams(models.Model):
+    description = models.CharField(max_length=255)
+    # Field name made lowercase.
+    idcareer = models.ForeignKey(
+        'EvaluationsCareers', on_delete=models.PROTECT, db_column='idCareer', blank=True, null=True)
+    # Field name made lowercase.
+    updatedon = models.DateTimeField(db_column='updatedOn')
+    # Field name made lowercase.
+    createdon = models.DateTimeField(db_column='createdOn')
+
+    STATUS_CHOICES = (
+        ('ACTIVO', 'Activo'),
+        ('INACTIVO', 'Inactivo'),
+    )
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+
+    def __str__(self):
+        return '%s' % (self.description)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_exams'
+        verbose_name = 'Examen'
+        verbose_name_plural = 'Examenes'
 
 
 class EvaluationsQuestions(models.Model):
@@ -285,7 +322,8 @@ class EvaluationsQuestions(models.Model):
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.description)
@@ -309,13 +347,17 @@ class EvaluationsSignatures(models.Model):
 
     # Field name made lowercase.
     idcareer = models.ForeignKey(
-        'ParkingCareer', on_delete=models.PROTECT, db_column='idCareer')
+        'EvaluationsCareers', on_delete=models.PROTECT, db_column='idCareer')
+    # Field name made lowercase.
+    idsignature = models.ForeignKey(
+        'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
 
     STATUS_CHOICES = (
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.name)
@@ -327,41 +369,24 @@ class EvaluationsSignatures(models.Model):
         verbose_name_plural = 'Materias'
 
 
-class InstitutionalPeriod(models.Model):
+class EvaluationsPeriods(models.Model):
     # Field name made lowercase.
-    idperiodo = models.AutoField(db_column='IDPeriodo', primary_key=True)
+    idperiod = models.AutoField(db_column='idPeriod', primary_key=True)
     period = models.CharField(max_length=15, blank=True, null=True)
     start = models.DateField(blank=True, null=True)
     end = models.DateField(blank=True, null=True)
-    # Field name made lowercase.
-    idgroup = models.IntegerField(db_column='IDgroup', blank=True, null=True)
 
     def __str__(self):
         return '%s' % (self.period)
 
     class Meta:
         managed = False
-        db_table = 'institutional_period'
+        db_table = 'evaluations_periods'
         verbose_name = 'Periodo'
         verbose_name_plural = 'Periodos'
 
 
-class InstitutionalPeriodDetail(models.Model):
-    id = models.IntegerField(primary_key=True)
-    id_grupo = models.IntegerField(blank=True, null=True)
-    carrera = models.CharField(max_length=20, blank=True, null=True)
-
-    def __str__(self):
-        return '%s' % (self.id)
-
-    class Meta:
-        managed = False
-        db_table = 'institutional_period_detail'
-        verbose_name = 'Detalle de Perodo'
-        verbose_name_plural = 'Detalles de Periodos'
-
-
-class ParkingCareer(models.Model):
+class EvaluationsCareers(models.Model):
     # Field name made lowercase.
     idcareer = models.AutoField(db_column='idCareer', primary_key=True)
     # Field name made lowercase.
@@ -379,6 +404,6 @@ class ParkingCareer(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'parking_career'
+        db_table = 'evaluations_careers'
         verbose_name = 'Carrera'
         verbose_name_plural = 'Carreras'

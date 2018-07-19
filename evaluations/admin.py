@@ -9,6 +9,7 @@ class EvaluationsDetailExamQuestionAdmin(admin.ModelAdmin):
     list_display = ['id', 'idquestion', 'idexam']
     exclude = ['updatedon', 'createdon']
 
+
 class EvaluationsQuestionsAdmin(admin.ModelAdmin):
     list_display = ['id', 'description', 'type', 'status', ]
     search_fields = ['id', 'description', 'type', 'status', ]
@@ -21,7 +22,7 @@ class EvaluationsExamsAdmin(admin.ModelAdmin):
     exclude = ['updatedon', 'createdon']
 
 
-class InstitutionalTeachersAdmin(admin.ModelAdmin):
+class EvaluationsTeachersAdmin(admin.ModelAdmin):
     list_display = ['idperson', 'enrollment', 'name', 'lastname',
                     'lastname2', 'instemail', 'status', ]
     search_fields = ['idperson', 'enrollment', 'name', 'lastname',
@@ -29,7 +30,7 @@ class InstitutionalTeachersAdmin(admin.ModelAdmin):
     exclude = ['updatedon', 'createdon']
 
 
-class InstitutionalStudentsAdmin(admin.ModelAdmin):
+class EvaluationsStudentsAdmin(admin.ModelAdmin):
     def get_career_name(self, obj):
         description = ParkingCareer.objects.get(
             idcareergissa__exact=obj.idcareer).description
@@ -42,7 +43,7 @@ class InstitutionalStudentsAdmin(admin.ModelAdmin):
     exclude = ['updatedon', 'createdon']
 
 
-class EvaluationsGroupsAdmin(admin.ModelAdmin):
+class EvaluationsDetailGroupPeriodSignatureAdmin(admin.ModelAdmin):
     list_display = ['id', 'idsignature', 'idteacher', 'idperiod', 'status', ]
     search_fields = ['id', 'idsignature__name', 'idteacher__enrollment',
                      'idteacher__name', 'idperiod__period', 'status']
@@ -65,19 +66,20 @@ class EvaluationsDetailStudentGroupAdmin(admin.ModelAdmin):
     get_materia.short_description = 'Materia'
 
     list_display = ['id', 'idgroup_id', 'get_student_id',
-                    'get_student_name', 'get_materia', 'status', 'evaluated']
+                    'get_student_name', 'get_materia', 'status',]
     search_fields = ['idgroup__id', 'idstudent__enrollment', 'idstudent__name',
-                     'idstudent__lastname', 'idstudent__lastname2', 'idgroup__idsignature__name', 'status', 'evaluated']
+                     'idstudent__lastname', 'idstudent__lastname2', 'idgroup__idsignature__name', 'status',]
     raw_id_fields = ('idstudent',)
-    exclude = ['updatedon', 'createdon', 'evaluated']
+    exclude = ['updatedon', 'createdon',]
 
 
 # Register your models here.
-admin.site.register(InstitutionalStudents, InstitutionalStudentsAdmin)
-admin.site.register(EvaluationsGroups, EvaluationsGroupsAdmin)
+admin.site.register(EvaluationsStudents, EvaluationsStudentsAdmin)
+admin.site.register(EvaluationsDetailGroupPeriodSignature,
+                    EvaluationsDetailGroupPeriodSignatureAdmin)
 admin.site.register(EvaluationsDetailStudentGroup,
                     EvaluationsDetailStudentGroupAdmin)
-admin.site.register(InstitutionalTeachers, InstitutionalTeachersAdmin)
+admin.site.register(EvaluationsTeachers, EvaluationsTeachersAdmin)
 admin.site.register(EvaluationsExams, EvaluationsExamsAdmin)
 admin.site.register(EvaluationsDetailExamQuestion,
                     EvaluationsDetailExamQuestionAdmin)

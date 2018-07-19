@@ -21,18 +21,11 @@ class LoginView(View):
 
     def post(self, request):
         try:
-            student = InstitutionalStudents.objects.get(
-                enrollment=request.POST['id_matricula'])
+            student = EvaluationsStudents.objects.get(
+                enrollment__exact=request.POST['id_matricula'])
             if student.value == request.POST['password']:
-                request.session['id_estudiante'] = student.idperson
+                request.session['id_student'] = student.idperson
                 request.session['session'] = True
-                request.session['matricula'] = student.enrollment
-                request.session['nombre'] = student.name
-                request.session['apellido_paterno'] = student.lastname
-                request.session['apellido_materno'] = student.lastname2
-                request.session['correo'] = student.instemail
-                request.session['carrera'] = ParkingCareer.objects.get(
-                    idcareergissa__exact=student.idcareer).idcareer
                 return redirect('home/')
         except Exception as e:
             pass
@@ -48,16 +41,18 @@ class HomeView(View):
     def get(self, request):
         if not request.session.get('session', False):
             return render(request, self.template_login)
-
         # Values for the navigation bar
+        student = EvaluationsStudents.objects.get(idperson=request.session['id_student'])
         user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=request.session['carrera']) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
+            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__enrollment__exact=request.session['matricula'], status="ACTIVO")
+            idstudent__exact=student.idperson, status="ACTIVO")
+
+        print(user_groups)
 
         # Values for the view
-
         context = {
+            'student': student,
             'user_exams': user_exams,
             'user_groups': user_groups,
         }
@@ -123,7 +118,7 @@ class EvaluationView(View):
             try:
                 submitted_answer = request.POST['answer_' + str(question.id)]
                 answer = EvaluationsAnswers(
-                    idstudent=InstitutionalStudents.objects.get(
+                    idstudent=EvaluationsStudents.objects.get(
                         idperson__exact=request.session['id_estudiante']),
                     idgroup=EvaluationsDetailStudentGroup.objects.get(
                         id__exact=detail_group_id).idgroup,
