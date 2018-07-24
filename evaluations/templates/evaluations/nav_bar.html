@@ -3,7 +3,7 @@
 <div class="navbar-fixed">
   <nav style="background-color: #132d4e;">
     <div class="nav-wrapper">
-      <a href="#" class="brand-logo center">Evaluación Docente</a>
+      <a href="{% url 'evaluations:home' %}" class="brand-logo center">Evaluación Docente</a>
       <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     </div>
   </nav>
@@ -27,13 +27,15 @@
         <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ exam.description }}</b></a>
         <div class="collapsible-body">
           <ul>
-            {% for detail_group_id in user_groups %} {% if detail_group_id.idcareer == exam.idcareer %} {% if detail_group_id.evaluated == 'YES' %}
+            {% for detail_group in user_groups %}
+            {% if detail_group.idstudent.idcareer == exam.idcareer or exam.idcareer == None %}
+            {% if detail_group.id in evaluated_signatures %}
             <li>
-              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' exam.id detail_group_id.id %}"><i class="material-icons right icon-green">check</i>{{ detail_group_id.idgroup.idsignature }}</a>
+              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' exam.id detail_group.idsignature.id %}"><i class="material-icons right icon-green">check</i>{{ detail_group.idsignature.name }}</a>
             </li>
-            {% elif detail_group_id.evaluated == 'NO' %}
+            {% else %}
             <li>
-              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id detail_group_id.id %}"><i class="material-icons right">bookmark_border</i>{{ detail_group_id.idgroup.idsignature }}</a>
+              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id detail_group.idsignature.id %}"><i class="material-icons right">bookmark_border</i>{{ detail_group.idsignature.name }}</a>
             </li>
             {% endif %} {% endif %} {% endfor %}
           </ul>

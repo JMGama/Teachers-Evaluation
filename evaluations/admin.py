@@ -65,9 +65,9 @@ class EvaluationsDetailStudentGroupAdmin(admin.ModelAdmin):
     get_student_name.short_description = 'Alumno'
     get_materia.short_description = 'Materia'
 
-    list_display = ['id', 'idgroup_id', 'get_student_id',
+    list_display = ['id', 'idgroup', 'get_student_id',
                     'get_student_name', 'get_materia', 'status',]
-    search_fields = ['idgroup__id', 'idstudent__enrollment', 'idstudent__name',
+    search_fields = ['idgroup', 'idstudent__enrollment', 'idstudent__name',
                      'idstudent__lastname', 'idstudent__lastname2', 'idgroup__idsignature__name', 'status',]
     raw_id_fields = ('idstudent',)
     exclude = ['updatedon', 'createdon',]

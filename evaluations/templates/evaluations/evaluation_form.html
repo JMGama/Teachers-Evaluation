@@ -17,7 +17,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/evaluation_form/style.css' %}" />
 
 
-  <title>Evaluaciones</title>
+  <title>Evaluacion</title>
 
 </head>
 
@@ -52,11 +52,11 @@
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  Docente: <b>{{ detail_group.idgroup.idteacher.name.capitalize }} {{ detail_group.idgroup.idteacher.lastname.capitalize }} {{ detail_group.idgroup.idteacher.lastname2.capitalize }}</b>
+                  Docente: <b>{{ detail_group.idteacher.name.capitalize }} {{ detail_group.idteacher.lastname.capitalize }} {{ detail_group.idteacher.lastname2.capitalize }}</b>
                   <br>
-                  Materia: <b>{{ detail_group.idgroup.idsignature.name.capitalize }}</b>
+                  Materia: <b>{{ detail_group.idsignature.name.capitalize }}</b>
                   <br>
-                  Carrera: <b>{{ career.description.capitalize }}</b>
+                  Carrera: <b>{{ student.idcareer.description.capitalize }}</b>
                 </span>
                 <hr/>
               </div>
@@ -64,7 +64,7 @@
                 <img class="circle responsive-img" src="{% static 'evaluations/images/User.png' %}">
               </div>
             </div>
-            <form id="questions_form" action="{% url 'evaluations:evaluation' exam_id detail_group_id %}" method="post" onsubmit="return validateForm()">
+            <form id="questions_form" action="{% url 'evaluations:evaluation' exam_id signature %}" method="post" onsubmit="return validateForm()">
               {% csrf_token %}
               <br> {% for question in exam_questions %}
               <div class="row">
@@ -129,8 +129,8 @@
 
   // Make the validation for the form before sending to the server.
   function validateForm() {
-    for (var i=1; i <= {{ exam_questions|length }}; i++) {
-      if (document.forms["questions_form"]["answer_"+i].value == "") {
+    for (var i = 1; i <= {{ exam_questions|length }}; i++) {
+      if (document.forms["questions_form"]["answer_" + i].value == "") {
         alert("Debes completar el formulario antes de enviarlo.");
         return false;
       }
