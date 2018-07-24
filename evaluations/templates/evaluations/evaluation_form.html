@@ -12,7 +12,7 @@
   <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'evaluations/images/icono.ico' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/nav_bar.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/evaluation_form/style.css' %}" />
 
@@ -52,11 +52,11 @@
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  Docente: <b>{{ detail_group.idteacher.name.capitalize }} {{ detail_group.idteacher.lastname.capitalize }} {{ detail_group.idteacher.lastname2.capitalize }}</b>
+                  Docente: <b>{{ detail_group.idteacher.name.upper }} {{ detail_group.idteacher.lastname.upper }} {{ detail_group.idteacher.lastname2.upper }}</b>
                   <br>
-                  Materia: <b>{{ detail_group.idsignature.name.capitalize }}</b>
+                  Materia: <b>{{ detail_group.idsignature.name.upper }}</b>
                   <br>
-                  Carrera: <b>{{ student.idcareer.description.capitalize }}</b>
+                  Carrera: <b>{{ student.idcareer.description.upper }}</b>
                 </span>
                 <hr/>
               </div>

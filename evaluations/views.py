@@ -222,11 +222,11 @@ class LogoutView(View, GeneralFunctions):
 
 
 class MonitoringView(View, GeneralFunctions):
-    
+
     template_monitoring = 'evaluations/monitoring.html'
     template_login = 'evaluations/login.html'
 
-    def get(self, request, exam_id, signature):
+    def get(self, request):
         if not request.session.get('session', False):
             return render(request, self.template_login)
 

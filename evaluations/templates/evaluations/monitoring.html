@@ -12,15 +12,19 @@
   <!--Let browser know website is optimized for mobile-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'evaluations/images/icono.ico' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/nav_bar.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/home/style.css' %}" />
+
+  <!-- Import Chart.js for graphics -->
+  <script type="text/javascript" src='{% static 'chart.js/dist/Chart.js' %}'></script>
+
   <title>Menu Principal</title>
 
 </head>
 
 <body>
-  {% include "evaluations/nav_bar.html" %}
+  {% include "evaluations/nav_bar_monitoring.html" %}
 
   <main class="content">
 
@@ -47,12 +51,11 @@
               </div>
             </div>
             {% endif %}
+
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  <b>Sistema de Evaluación Docente</b>
-                  <br/><br/>
-                  Instrucciones
+                  <b>Resultados Generales de las Evaluaciónes</b>
                 </span>
                 <hr/>
               </div>
@@ -60,21 +63,11 @@
                 <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %}">
               </div>
             </div>
-            En este sistema realizaras la <b>evaluacion</b> de cada uno de los <b>docentes</b> que te imparten alguna materia.
-            <ul class="collection">
-              <br>
-              <li class="collection-item">
-                Selecciona la materia que vas a evaluar en el <b>menu lateral</b>. <i class="material-icons">menu</i> <br> <i>(En caso de cursar mas de una carrera, tendras primero que seleccionar la carrera a evaluar)</i>
-              </li>
-              <br>
-              <li class="collection-item">
-                Contesta las preguntas que se encuentran en el formulario <b>seleccionando la casilla deseada</b> <i class="material-icons">check_box</i>. <br>Al final puedes dejar tu comentario de retroalimentacion dirijido al docente. <i>(estos comentarios seran revisados antes de ser entregados al docente, evita usar palabras antisonantes o un vocabulario inadecuado)</i>.
-              </li>
-              <li class="collection-item">
-                No olvides <b>cerrar tu sesion</b> una vez que hayas terminado tus evaluaciones en el <b>menu lateral</b>.<i class="material-icons">exit_to_app</i>
-              </li>
-            </ul>
-            <i><h5>Recuerda que las evaluaciones son anonimas ante los docentes y unicamente tienen la finalidad de hacer retroalimentacion.</h5></i>
+
+            <div>
+              <canvas id="myChart" width="400" height="400"></canvas>
+            </div>
+
           </div>
         </div>
       </div>
@@ -93,8 +86,8 @@
 </html>
 <script type="text/javascript">
   /*  Remove message in 2 seconds
-  setTimeout(function() {
-    $("#alert_box").fadeOut("slow", function() {});
-  }, 2000);
-  */
+        setTimeout(function() {
+          $("#alert_box").fadeOut("slow", function() {});
+        }, 2000);
+        */
 </script>
