@@ -85,6 +85,7 @@ class EvaluationView(View, GeneralFunctions):
 
     template_evaluation = 'evaluations/evaluation_form.html'
     template_home = 'evaluations/home.html'
+    template_login = 'evaluations/login.html'
 
     def get(self, request, exam_id, signature):
         if not request.session.get('session', False):
@@ -221,10 +222,12 @@ class LogoutView(View, GeneralFunctions):
 
 
 class MonitoringView(View, GeneralFunctions):
+    
     template_monitoring = 'evaluations/monitoring.html'
+    template_login = 'evaluations/login.html'
 
     def get(self, request, exam_id, signature):
         if not request.session.get('session', False):
             return render(request, self.template_login)
 
-        return render(request, self.template_login)
+        return render(request, self.template_monitoring)
