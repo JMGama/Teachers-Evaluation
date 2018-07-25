@@ -37,15 +37,27 @@ class LoginView(View):
         return render(request, self.template_login)
 
     def post(self, request):
+        # Try to load student
         try:
             student = EvaluationsStudents.objects.get(
                 enrollment__exact=request.POST['id_matricula'])
             if student.value == request.POST['password']:
                 request.session['id_student'] = student.idperson
                 request.session['session'] = True
+                request.session['type'] = 'student'
                 return redirect('home/')
         except Exception as e:
-            pass
+        # Try to load coordinator
+            try:
+                coordinator = EvaluationsCoordinators.objects.get(
+                    enrollment__exact=request.POST['id_matricula'])
+                if coordinator.value == request.POST['password']:
+                    request.session['id_coordinator'] = coordinator.idperson
+                    request.session['session'] = True
+                    request.session['type'] = 'coordinator'
+                    return redirect('monitoring/')
+            except Exception as e:
+                pass
 
         return render(request, self.template_login, {'second_time': True, 'validate': 'invalid'})
 
@@ -227,7 +239,15 @@ class MonitoringView(View, GeneralFunctions):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
-        if not request.session.get('session', False):
+        if not request.session.get('session', False) or not request.session['type'] == 'coordinator':
             return render(request, self.template_login)
 
-        return render(request, self.template_monitoring)
+        # Values for the view
+        coordinator = EvaluationsCoordinators.objects.get(
+            idperson__exact=request.session['id_coordinator'])
+
+        context = {
+            'coordinator': coordinator,
+        }
+
+        return render(request, self.template_monitoring, context)

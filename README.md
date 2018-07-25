@@ -11,13 +11,22 @@ System for the students to make evaluations about the teachers and compare with 
 
 ### Requirements
 
--   Django      2.0.5
--   mysqlclient 1.3.12
--   pip         10.0.1
--   pytz        2018.4
--   setuptools  39.2.0
--   wheel       0.31.1
+-   Django        2.0.5
+-   mysqlclient   1.3.12
+-   pip           10.0.1
+-   pytz          2018.4
+-   setuptools    39.2.0
+-   wheel         0.31.1
+-   django-bower  5.2.0
 
 ### Visual Design Documentation Page (Materialized)
 
 - [Materializecss Documentation](https://materializecss.com/getting-started.html)
+- [Chart.js Documentation](http://www.chartjs.org/docs/latest/)
+
+
+### Notes
+
+#### Make sure you call 'bower install' before 'collectatic'
+
+FIRTS -> `$ python manage.py bower install` THEN -> ``$ python manage.py collectstatic`

@@ -65,6 +65,60 @@ class EvaluationsStudents(models.Model):
         verbose_name_plural = 'Alumnos'
 
 
+class EvaluationsCoordinators(models.Model):
+    # Field name made lowercase.
+    idperson = models.AutoField(db_column='idPerson', primary_key=True)
+    enrollment = models.CharField(max_length=30)
+    type = models.CharField(max_length=14, blank=True, null=True)
+    name = models.CharField(max_length=60)
+    # Field name made lowercase.
+    lastname = models.CharField(db_column='lastName', max_length=60)
+    # Field name made lowercase.
+    lastname2 = models.CharField(
+        db_column='lastName2', max_length=60, blank=True, null=True)
+    grade = models.IntegerField(blank=True, null=True)
+    email = models.CharField(max_length=100, blank=True, null=True)
+    # Field name made lowercase.
+    instemail = models.CharField(
+        db_column='instEmail', max_length=100, blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    celphone = models.CharField(max_length=20, blank=True, null=True)
+    cycle = models.CharField(max_length=15, blank=True, null=True)
+    state = models.CharField(max_length=50, blank=True, null=True)
+    municipality = models.CharField(max_length=50, blank=True, null=True)
+    colony = models.CharField(max_length=60, blank=True, null=True)
+    street = models.CharField(max_length=100, blank=True, null=True)
+    # Field name made lowercase.
+    numberext = models.CharField(
+        db_column='numberExt', max_length=10, blank=True, null=True)
+    # Field name made lowercase.
+    numberint = models.CharField(
+        db_column='numberInt', max_length=10, blank=True, null=True)
+    status = models.CharField(max_length=50, blank=True, null=True)
+    lat = models.FloatField(blank=True, null=True)
+    lng = models.FloatField(blank=True, null=True)
+    turn = models.CharField(max_length=10, blank=True, null=True)
+    # Field name made lowercase.
+    userid = models.IntegerField(db_column='userId', blank=True, null=True)
+    attribute = models.CharField(max_length=64)
+    op = models.CharField(max_length=2)
+    value = models.CharField(max_length=253)
+    wifi_status = models.CharField(max_length=8)
+    # Field name made lowercase.
+    createdon = models.DateTimeField(db_column='createdOn')
+    # Field name made lowercase.
+    updateon = models.DateTimeField(db_column='updateOn')
+
+    def __str__(self):
+        return '%s' % (self.enrollment)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_coordinators'
+        verbose_name = 'Coordinador'
+        verbose_name_plural = 'Coordinadores'
+
+
 class EvaluationsTeachers(models.Model):
     # Field name made lowercase.
     idperson = models.AutoField(db_column='idPerson', primary_key=True)

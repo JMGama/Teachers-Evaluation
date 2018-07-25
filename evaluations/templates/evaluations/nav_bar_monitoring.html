@@ -16,8 +16,8 @@
         <img src="{% static 'evaluations/images/Banner.jpg' %}">
       </div>
       <a href="#user"><img class="circle" src="{% static 'evaluations/images/User.png' %}"></a>
-      <a href="#name"><span class="white-text name">{{ student.name }} {{ student.lastname }} {{ student.lastname2 }}</span></a>
-      <a href="#email"><span class="white-text email">{{ student.instemail }}</span></a>
+      <a href="#name"><span class="white-text name">{{ coordinator.name }} {{ coordinator.lastname }} {{ coordinator.lastname2 }}</span></a>
+      <a href="#email"><span class="white-text email">{{ coordinator.instemail }}</span></a>
     </div>
   </li>
   {% for exam in user_exams %}
