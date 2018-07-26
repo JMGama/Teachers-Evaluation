@@ -153,8 +153,16 @@ class EvaluationView(View, GeneralFunctions):
         # Values for the view
         exam_questions = EvaluationsDetailExamQuestion.objects.filter(
             idexam__exact=exam_id)
+
+        signature_group = None
+        for evaluation in evaluations:
+            if str(evaluation['exam'].id) == exam_id:
+                for group in evaluation['groups']:
+                    if str(group.idsignature.id) == signature:
+                        signature_group = group.idgroup
+
         detail_group = EvaluationsDetailGroupPeriodSignature.objects.get(
-            idsignature__exact=signature)
+            idsignature__exact=signature, idgroup__exact=signature_group)
 
         context = {
             'student': student,
@@ -187,9 +195,11 @@ class EvaluationView(View, GeneralFunctions):
             try:
                 # verify if the question is optional or not
                 try:
-                    submitted_answer = request.POST['answer_' + str(question.id)]
+                    submitted_answer = request.POST['answer_' +
+                                                    str(question.id)]
                 except Exception as e:
-                    submitted_answer = request.POST['answer_' + str(question.id) + "_optional"]
+                    submitted_answer = request.POST['answer_' +
+                                                    str(question.id) + "_optional"]
 
                 answer = EvaluationsAnswers(
                     idstudent=student,
