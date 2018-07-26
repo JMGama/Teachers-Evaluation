@@ -52,8 +52,9 @@
               <div class="col s8 m10">
                 <span class="card-title">
                   <b>Sistema de Evaluación Docente</b>
-                  <br/><br/>
-                  Instrucciones
+                  <br/>
+                  <br/>
+                  Instrucciones:
                 </span>
                 <hr/>
               </div>
@@ -61,21 +62,21 @@
                 <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %}">
               </div>
             </div>
-            En este sistema realizaras la <b>evaluacion</b> de cada uno de los <b>docentes</b> que te imparten alguna materia.
-            <ul class="collection">
-              <br>
-              <li class="collection-item">
-                Selecciona la materia que vas a evaluar en el <b>menu lateral</b>. <i class="material-icons">menu</i> <br> <i>(En caso de cursar mas de una carrera, tendras primero que seleccionar la carrera a evaluar)</i>
-              </li>
-              <br>
-              <li class="collection-item">
-                Contesta las preguntas que se encuentran en el formulario <b>seleccionando la casilla deseada</b> <i class="material-icons">check_box</i>. <br>Al final puedes dejar tu comentario de retroalimentacion dirijido al docente. <i>(estos comentarios seran revisados antes de ser entregados al docente, evita usar palabras antisonantes o un vocabulario inadecuado)</i>.
-              </li>
-              <li class="collection-item">
-                No olvides <b>cerrar tu sesion</b> una vez que hayas terminado tus evaluaciones en el <b>menu lateral</b>.<i class="material-icons">exit_to_app</i>
-              </li>
-            </ul>
-            <i><h5>Recuerda que las evaluaciones son anonimas ante los docentes y unicamente tienen la finalidad de hacer retroalimentacion.</h5></i>
+
+            <div class="center-align">
+              En este sistema realizaras la <b>evaluacion</b> de cada uno de los <b>docentes</b> que te imparten alguna materia.
+              <ul class="collection">
+                <br>
+                <li class="collection-item">
+                  Contesta las preguntas que se encuentran en el formulario <b>seleccionando la casilla deseada</b> <i class="material-icons">check_box</i>. <br>Al final puedes dejar tu comentario de retroalimentacion dirijido al docente. <i>(evita usar palabras antisonantes o un vocabulario inadecuado)</i>.
+                </li>
+              </ul>
+              <i><h5>Recuerda que las evaluaciones son anonimas ante los docentes y unicamente tienen la finalidad de hacer retroalimentacion.</h5></i>
+              <br/>
+
+              <a class="waves-effect waves-light btn-large green" href="{% url 'evaluations:evaluation' next_evaluation.exam.id next_evaluation.group.idsignature.id %}">Comenzar</a>
+            </div>
+
           </div>
         </div>
       </div>

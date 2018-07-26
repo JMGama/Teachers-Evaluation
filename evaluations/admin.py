@@ -11,8 +11,8 @@ class EvaluationsDetailExamQuestionAdmin(admin.ModelAdmin):
 
 
 class EvaluationsQuestionsAdmin(admin.ModelAdmin):
-    list_display = ['id', 'description', 'type', 'status', ]
-    search_fields = ['id', 'description', 'type', 'status', ]
+    list_display = ['id', 'description', 'type', 'status', 'optional',]
+    search_fields = ['id', 'description', 'type', 'status', 'optional',]
     exclude = ['updatedon', 'createdon']
 
 

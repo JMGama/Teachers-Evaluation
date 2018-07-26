@@ -74,13 +74,13 @@
                 {% if question.idquestion.type.lower == 'radio' %}
                 <div class="col m2 s2">
                   <label>
-                    <input class="with-gap" name="answer_{{ question.id }}" value="yes" type="radio" />
+                    <input class="with-gap" name="answer_{{ question.id }}{% if question.idquestion.optional == 'YES' %}_optional{% endif %}" value="yes" type="radio" />
                     <span>Si</span>
                   </label>
                 </div>
                 <div class="col m2 s2">
                   <label>
-                    <input class="with-gap" name="answer_{{ question.id }}" value="no" type="radio" />
+                    <input class="with-gap" name="answer_{{ question.id }}{% if question.idquestion.optional == 'YES' %}_optional{% endif %}" value="no" type="radio" />
                     <span>No</span>
                   </label>
                 </div>
@@ -88,16 +88,16 @@
                 <br><br>
                 <div class="input-field col m11 s11">
                   <i class="material-icons prefix">mode_edit</i>
-                  <textarea id="textarea" name="answer_{{ question.id }}" class="materialize-textarea" data-length="255" maxlength="255"></textarea>
+                  <textarea id="textarea" name="answer_{{ question.id }}{% if question.idquestion.optional == 'YES' %}_optional{% endif %}" class="materialize-textarea" data-length="255" maxlength="255"></textarea>
                   <label for="textarea">Respuesta</label>
                 </div>
                 {% endif %}
               </div>
               {% endfor %}
-              <h5 class="center"> Gracias por ayudarnos a evaluar a tu docente </h5>
+              <h5 class="center"> Gracias, tu evaluacion es importante. </h5>
           </div>
           <div class="card-action">
-            <button type="submit" class="btn waves-effect waves-light red">Cancelar</button>
+            <button type="reset" class="btn waves-effect waves-light red">Limpiar</button>
             <button type="submit" class="btn waves-effect waves-light light-green card-action-right">Evaluar<i class="material-icons right">send</i></button>
           </div>
           </form>
@@ -127,12 +127,16 @@
     $('input#input_text, textarea#textarea').characterCounter();
   });
 
+
+  // TAKE PRECAUDIONS IF YOU AUTO INDENT BECAUSE THIS SCRIPT MIGHT BE EDITED AN CAUSE ERRORS
   // Make the validation for the form before sending to the server.
   function validateForm() {
-    for (var i = 1; i <= {{ exam_questions|length }}; i++) {
-      if (document.forms["questions_form"]["answer_" + i].value == "") {
-        alert("Debes completar el formulario antes de enviarlo.");
-        return false;
+    for (var i = 1; i <= {{ exam_questions | length }}; i++) {
+      if (typeof document.forms["questions_form"]["answer_" + i + "_optional"] == 'undefined') {
+        if (document.forms["questions_form"]["answer_" + i].value == "") {
+          alert("Debes completar el formulario antes de enviarlo.");
+          return false;
+        }
       }
     }
     return true;

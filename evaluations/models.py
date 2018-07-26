@@ -417,6 +417,13 @@ class EvaluationsQuestions(models.Model):
     status = models.CharField(
         max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
+    OPTIONAL_CHOICES = (
+        ('YES', 'Si'),
+        ('NO', 'No'),
+    )
+    optional = models.CharField(
+        max_length=8, choices=OPTIONAL_CHOICES, default='NO')
+
     def __str__(self):
         return '%s' % (self.description)
 

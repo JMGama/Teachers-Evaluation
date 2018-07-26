@@ -20,30 +20,32 @@
       <a href="#email"><span class="white-text email">{{ student.instemail }}</span></a>
     </div>
   </li>
-  {% for exam in user_exams %}
+
+  {% for evaluation in evaluations %}
   <li>
     <ul class="collapsible collapsible-accordion">
-      <li>
-        <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ exam.description }}</b></a>
+      <li class="active">
+        <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ evaluation.exam.description }}</b></a>
         <div class="collapsible-body">
           <ul>
-            {% for detail_group in user_groups %}
-            {% if detail_group.idstudent.idcareer == exam.idcareer or exam.idcareer == None %}
-            {% if detail_group.id in evaluated_signatures %}
+            {% for group in evaluation.groups%} {% if group.id in evaluated_signatures %}
             <li>
-              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' exam.id detail_group.idsignature.id %}"><i class="material-icons right icon-green">check</i>{{ detail_group.idsignature.name }}</a>
+              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' evaluation.exam.id group.idsignature.id %}"><i class="material-icons right icon-green">check</i>{{ group.idsignature.name }}</a>
             </li>
             {% else %}
             <li>
-              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id detail_group.idsignature.id %}"><i class="material-icons right">bookmark_border</i>{{ detail_group.idsignature.name }}</a>
+              <a class="waves-effect" href="{% url 'evaluations:evaluation' evaluation.exam.id group.idsignature.id %}"><i class="material-icons right">bookmark_border</i>{{ group.idsignature.name }}</a>
             </li>
-            {% endif %} {% endif %} {% endfor %}
+            {% endif %}{% endfor %}
           </ul>
         </div>
       </li>
     </ul>
   </li>
   {% endfor %}
+
+
+  <!--
   <li>
     <div class="divider"></div>
   </li>
@@ -51,4 +53,5 @@
     <div class="col s6 offset-s3 center">
       <a type="" class="btn-small waves-effect center " href="{% url 'evaluations:logout' %}">Cerrar Sesión</a>
   </li>
+  -->
 </ul>

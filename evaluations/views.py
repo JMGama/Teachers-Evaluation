@@ -4,13 +4,18 @@ from django.views import View
 from django.db.models import Q
 
 from .models import *
+
 # Create your views here.
 
 
 class GeneralFunctions(object):
 
     @classmethod
-    def get_evaluated_signatures(self, student, user_exams, user_groups):
+    def get_evaluated_signatures(self, student):
+        user_exams = EvaluationsExams.objects.filter(
+            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
+        user_groups = EvaluationsDetailStudentGroup.objects.filter(
+            idstudent__exact=student.idperson, status="ACTIVO")
         evaluated_signatures = EvaluationsDetailStudentSignatureExam.objects.filter(
             idstudent__exact=student)
 
@@ -22,6 +27,35 @@ class GeneralFunctions(object):
                         if evaluated_signature.idgroup == group.id and evaluated_signature.idperiod == group.idperiod and evaluated_signature.idexam.id == exam.id:
                             exam_group_evaluated.append(group.id)
         return exam_group_evaluated
+
+    @classmethod
+    def get_evaluations(self, student):
+        user_exams = EvaluationsExams.objects.filter(
+            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
+        user_groups = EvaluationsDetailStudentGroup.objects.filter(
+            idstudent__exact=student.idperson, status="ACTIVO")
+
+        evaluations = []
+        for exam in user_exams:
+            evaluations_exam = {'exam': exam}
+            groups = []
+            for detail_group in user_groups:
+                if detail_group.idstudent.idcareer == exam.idcareer or exam.idcareer == None:
+                    groups.append(detail_group)
+            evaluations_exam['groups'] = groups
+            evaluations.append(evaluations_exam)
+        return evaluations
+
+    @classmethod
+    def get_next_evaluation(self, student, evaluations, evaluated_signatures):
+        next_evaluation = {}
+        for evaluation in evaluations:
+            for group in evaluation['groups']:
+                if not group.id in evaluated_signatures:
+                    next_evaluation['exam'] = evaluation['exam']
+                    next_evaluation['group'] = group
+                    break
+        return next_evaluation
 
 
 class LoginView(View):
@@ -47,7 +81,7 @@ class LoginView(View):
                 request.session['type'] = 'student'
                 return redirect('home/')
         except Exception as e:
-        # Try to load coordinator
+            # Try to load coordinator
             try:
                 coordinator = EvaluationsCoordinators.objects.get(
                     enrollment__exact=request.POST['id_matricula'])
@@ -74,20 +108,26 @@ class HomeView(View, GeneralFunctions):
         # Values for the navigation bar
         student = EvaluationsStudents.objects.get(
             idperson=request.session['id_student'])
-        user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
-        user_groups = EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__exact=student.idperson, status="ACTIVO")
-        evaluated_signatures = self.get_evaluated_signatures(
-            student, user_exams, user_groups)
+        evaluations = self.get_evaluations(student)
+        evaluated_signatures = self.get_evaluated_signatures(student)
+        next_evaluation = self.get_next_evaluation(
+            student, evaluations, evaluated_signatures)
 
-        # See if the exam have groups already evaluated by the student
+        if not next_evaluation:
+            try:
+                request.session.flush()
+            except KeyError:
+                pass
+            context = {
+                'student': student,
+                'complete': 'YES',
+            }
+            return render(request, self.template_login, context)
 
-        # Values for the view
         context = {
             'student': student,
-            'user_exams': user_exams,
-            'user_groups': user_groups,
+            'next_evaluation': next_evaluation,
+            'evaluations': evaluations,
             'evaluated_signatures': evaluated_signatures,
         }
         return render(request, self.template_home, context)
@@ -106,12 +146,9 @@ class EvaluationView(View, GeneralFunctions):
         # Values for the navigation bar
         student = EvaluationsStudents.objects.get(
             idperson=request.session['id_student'])
-        user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
-        user_groups = EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__exact=student.idperson, status="ACTIVO")
+        evaluations = self.get_evaluations(student)
         evaluated_signatures = self.get_evaluated_signatures(
-            student, user_exams, user_groups)
+            student)
 
         # Values for the view
         exam_questions = EvaluationsDetailExamQuestion.objects.filter(
@@ -120,9 +157,8 @@ class EvaluationView(View, GeneralFunctions):
             idsignature__exact=signature)
 
         context = {
-            'user_exams': user_exams,
-            'user_groups': user_groups,
             'student': student,
+            'evaluations': evaluations,
             'evaluated_signatures': evaluated_signatures,
             'exam_questions': exam_questions,
             'detail_group': detail_group,
@@ -140,10 +176,6 @@ class EvaluationView(View, GeneralFunctions):
         # Values for the navigation bar
         student = EvaluationsStudents.objects.get(
             idperson=request.session['id_student'])
-        user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
-        user_groups = EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__exact=student.idperson, status="ACTIVO")
 
         # Get exam questions
         exam_questions = EvaluationsDetailExamQuestion.objects.filter(
@@ -153,22 +185,25 @@ class EvaluationView(View, GeneralFunctions):
         num_answers = 0
         for question in exam_questions:
             try:
-                submitted_answer = request.POST['answer_' + str(question.id)]
+                # verify if the question is optional or not
+                try:
+                    submitted_answer = request.POST['answer_' + str(question.id)]
+                except Exception as e:
+                    submitted_answer = request.POST['answer_' + str(question.id) + "_optional"]
+
                 answer = EvaluationsAnswers(
                     idstudent=student,
                     idgroup=EvaluationsDetailStudentGroup.objects.get(
                         idstudent__exact=student.idperson, idsignature__exact=signature),
                     iddetailquestion=EvaluationsDetailExamQuestion.objects.get(
                         id__exact=question.id),
-                    answer=submitted_answer.upper(),
+                    answer=submitted_answer.upper() if submitted_answer != "" else None,
                     idexam=EvaluationsExams.objects.get(id__exact=exam_id),
                 )
-
                 answer.save()
                 num_answers += 1
             except Exception as e:
                 print(e)
-                pass
 
         # Validate all answers well submitted to the DB.
         if num_answers == len(exam_questions):
@@ -191,18 +226,25 @@ class EvaluationView(View, GeneralFunctions):
             evaluated_signature.save()
 
             # Value for navigation bar
+            evaluations = self.get_evaluations(student)
             evaluated_signatures = self.get_evaluated_signatures(
-                student, user_exams, user_groups)
+                student)
+            next_evaluation = self.get_next_evaluation(
+                student, evaluations, evaluated_signatures)
 
-            context = {
-                'user_exams': user_exams,
-                'user_groups': user_groups,
-                'student': student,
-                'evaluated_signatures': evaluated_signatures,
-                # [text, color]
-                'message': ['La evaluacion se realizo correctamente.', 'green'],
-            }
-            return render(request, self.template_home, context)
+            if not next_evaluation:
+                try:
+                    request.session.flush()
+                except KeyError:
+                    pass
+                context = {
+                    'student': student,
+                    'complete': 'YES',
+                }
+                return render(request, self.template_login, context)
+
+            return self.get(request, next_evaluation['exam'].id, next_evaluation['group'].idsignature.id)
+
         else:
             # Values for the view
             exam_questions = EvaluationsDetailExamQuestion.objects.filter(
@@ -210,10 +252,14 @@ class EvaluationView(View, GeneralFunctions):
             detail_group = EvaluationsDetailGroupPeriodSignature.objects.get(
                 idsignature__exact=signature)
 
+            # Value for navigation bar
+            evaluations = self.get_evaluations(student)
+            evaluated_signatures = self.get_evaluated_signatures(
+                student)
+
             context = {
-                'user_exams': user_exams,
-                'user_groups': user_groups,
                 'student': student,
+                'evaluations': evaluations,
                 'evaluated_signatures': evaluated_signatures,
                 'exam_questions': exam_questions,
                 'detail_group': detail_group,
