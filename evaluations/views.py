@@ -281,12 +281,14 @@ class EvaluationView(View, GeneralFunctions):
 
 
 class LogoutView(View, GeneralFunctions):
+    template_login = 'evaluations/login.html'
+
     def get(self, request):
         try:
             request.session.flush()
         except KeyError:
             pass
-        return redirect('/evaluations')
+        return render(request, self.template_login)
 
 
 class MonitoringView(View, GeneralFunctions):
