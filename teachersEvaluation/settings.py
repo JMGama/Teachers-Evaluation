@@ -72,7 +72,7 @@ TEMPLATES = [
     },
 ]
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 
 
 WSGI_APPLICATION = 'teachersEvaluation.wsgi.application'
