@@ -156,9 +156,9 @@ class EvaluationView(View, GeneralFunctions):
 
         signature_group = None
         for evaluation in evaluations:
-            if str(evaluation['exam'].id) == exam_id:
+            if str(evaluation['exam'].id) == str(exam_id):
                 for group in evaluation['groups']:
-                    if str(group.idsignature.id) == signature:
+                    if str(group.idsignature.id) == str(signature):
                         signature_group = group.idgroup
 
         detail_group = EvaluationsDetailGroupPeriodSignature.objects.get(
@@ -252,7 +252,6 @@ class EvaluationView(View, GeneralFunctions):
                     'complete': 'YES',
                 }
                 return render(request, self.template_login, context)
-
             return self.get(request, next_evaluation['exam'].id, next_evaluation['group'].idsignature.id)
 
         else:
