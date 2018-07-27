@@ -218,8 +218,16 @@ class EvaluationView(View, GeneralFunctions):
         # Validate all answers well submitted to the DB.
         if num_answers == len(exam_questions):
             # Change status to evaluated on the evaluations_detail_student_group table.
+            evaluations = self.get_evaluations(student)
+            signature_group = None
+            for evaluation in evaluations:
+                if str(evaluation['exam'].id) == str(exam_id):
+                    for group in evaluation['groups']:
+                        if str(group.idsignature.id) == str(signature):
+                            signature_group = group.idgroup
+
             group_detail = EvaluationsDetailGroupPeriodSignature.objects.get(
-                idsignature__exact=signature)
+                idsignature__exact=signature, idgroup__exact=signature_group)
 
             evaluated_signature = EvaluationsDetailStudentSignatureExam(
                 idsignature=EvaluationsSignatures.objects.get(
@@ -255,16 +263,23 @@ class EvaluationView(View, GeneralFunctions):
             return self.get(request, next_evaluation['exam'].id, next_evaluation['group'].idsignature.id)
 
         else:
-            # Values for the view
-            exam_questions = EvaluationsDetailExamQuestion.objects.filter(
-                idexam__exact=exam_id)
-            detail_group = EvaluationsDetailGroupPeriodSignature.objects.get(
-                idsignature__exact=signature)
-
             # Value for navigation bar
             evaluations = self.get_evaluations(student)
             evaluated_signatures = self.get_evaluated_signatures(
                 student)
+
+            signature_group = None
+            for evaluation in evaluations:
+                if str(evaluation['exam'].id) == str(exam_id):
+                    for group in evaluation['groups']:
+                        if str(group.idsignature.id) == str(signature):
+                            signature_group = group.idgroup
+
+            # Values for the view
+            exam_questions = EvaluationsDetailExamQuestion.objects.filter(
+                idexam__exact=exam_id)
+            detail_group = EvaluationsDetailGroupPeriodSignature.objects.get(
+                idsignature__exact=signature, idgroup__exact=signature_group)
 
             context = {
                 'student': student,
