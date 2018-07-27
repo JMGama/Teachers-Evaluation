@@ -69,10 +69,10 @@
               <br> {% for question in exam_questions %}
               <div class="row">
                 <div class="col m8 s6">
-                  <p>{{ question.idquestion.description }}</p>
+                  <p>{{ question.idquestion.description }}{% if question.idquestion.optional == 'YES' %} <b><i>(opcional)</i></b>{% else %} <b><i>*</b></i>{% endif %}</p>
                 </div>
                 {% if question.idquestion.type.lower == 'radio' %}
-                <div class="col m2 s2">
+                <div class="col m2 s2">{% if question.idquestion.optional == 'YES' %}(opcional){% endif %}
                   <label>
                     <input class="with-gap" name="answer_{{ question.id }}{% if question.idquestion.optional == 'YES' %}_optional{% endif %}" value="yes" type="radio" />
                     <span>Si</span>
@@ -98,7 +98,7 @@
           </div>
           <div class="card-action">
             <button type="reset" class="btn waves-effect waves-light red">Limpiar</button>
-            <button type="submit" class="btn waves-effect waves-light light-green card-action-right">Evaluar<i class="material-icons right">send</i></button>
+            <button type="submit" class="btn waves-effect waves-light light-green card-action-right">Siguiente<i class="material-icons right">send</i></button>
           </div>
           </form>
         </div>
