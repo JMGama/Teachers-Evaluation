@@ -206,6 +206,25 @@ class EvaluationsAnswers(models.Model):
         verbose_name_plural = 'Respuestas'
 
 
+class EvaluationsDetailCoordinatorCareer(models.Model):
+    # Field name made lowercase.
+    idcoordinator = models.ForeignKey('EvaluationsCoordinators', on_delete=models.PROTECT,
+        db_column='idCoordinator', blank=True, null=True)
+    # Field name made lowercase.
+    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
+        db_column='idCareer', max_length=255, blank=True, null=True)
+    STATUS_CHOICES = (
+        ('ACTIVO', 'Activo'),
+        ('INACTIVO', 'Inactivo'),
+    )
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_detail_coordinator_career'
+
+
 class EvaluationsDetailExamQuestion(models.Model):
     # Field name made lowercase.
     idexam = models.ForeignKey(
