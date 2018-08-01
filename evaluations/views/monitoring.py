@@ -39,7 +39,7 @@ class MonitoringView(View, GeneralFunctions):
 
             careers[coord_career.idcareer] = self.get_evaluated_students(
                 career_students)
-            careers[coord_career.idcareer]['average'] = self. get_career_average(
+            careers[coord_career.idcareer]['average_data'] = self. get_career_average(
                 careers[coord_career.idcareer]['evaluated'])
         return careers
 
@@ -72,6 +72,7 @@ class MonitoringView(View, GeneralFunctions):
     def get_career_average(self, evaluated_students):
         answers_yes = 0
         answers_no = 0
+        data = {}
         for student in evaluated_students:
             # Only consider non optional questions for the average
             questions = EvaluationsDetailExamQuestion.objects.filter()
@@ -84,5 +85,7 @@ class MonitoringView(View, GeneralFunctions):
                             answers_yes = answers_yes + 1
                         else:
                             answers_no = answers_no + 1
-        average = answers_yes / (answers_yes + answers_no)
-        return average
+        data['average'] = answers_yes / (answers_yes + answers_no) * 100
+        data['yes'] = answers_yes
+        data['no'] = answers_no
+        return data

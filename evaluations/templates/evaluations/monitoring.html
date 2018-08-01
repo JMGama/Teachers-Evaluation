@@ -196,9 +196,9 @@
   {% for career, value in careers.items %}
     var ctx = document.getElementById("myChart{{career.idcareer}}Average").getContext('2d');
     var data = {
-      labels: ["Realizadas ", "Faltantes "],
+      labels: ["Si ", "No "],
       datasets: [{
-        data: [],
+        data: [{{value.average_data.yes}}, {{value.average_data.no}}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -216,7 +216,7 @@
       },
       elements: {
         center: {
-          text: {{value.average}} + "%", // Porcentaje de alumnos
+          text: {{value.average_data.average}}.toFixed(0) + "%", // Porcentaje de alumnos
           color: 'black', // Default is #000000
           fontStyle: 'Arial', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
