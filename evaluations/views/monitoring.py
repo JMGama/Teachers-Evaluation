@@ -2,9 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.views import View
 from django.db.models import Q
+from django.utils.encoding import smart_str
 
 from evaluations.models import *
 from .general_functions import *
+
+import csv
+import xlsxwriter
+
 
 class MonitoringView(View, GeneralFunctions):
 
@@ -27,6 +32,39 @@ class MonitoringView(View, GeneralFunctions):
         }
 
         return render(request, self.template_monitoring, context)
+
+    def post(self, request):
+        if request.POST['action'] == 'excel':
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=mymodel.csv'
+            writer = csv.writer(response, csv.excel)
+            response.write(u'\ufeff'.encode('utf8'))
+
+            career = EvaluationsCareers.objects.get(
+                idcareer__exact=request.POST['career'])
+            coordinator = EvaluationsCoordinators.objects.get(
+                idperson__exact=request.session['id_coordinator'])
+            careers = self.get_careers_data(coordinator)
+            students = careers[career]['not_evaluated']
+
+            self.write_to_excel(students, career, writer)
+
+            return response
+
+    def write_to_excel(self, students, career, writer):
+        writer.writerow([
+            smart_str(u"Matricula"),
+            smart_str(u"Nombre"),
+            smart_str(u"Correo"),
+        ])
+
+        for student in students:
+            writer.writerow([
+                smart_str(student.enrollment),
+                smart_str(str(student.name) + " " +
+                          str(student.lastname) + " " + str(student.lastname2)),
+                smart_str(student.instemail),
+            ])
 
     def get_careers_data(self, coordinator):
         """Return a dictionary of all the coordinator careers with their evaluations results"""

@@ -5,3 +5,4 @@ pytz==2018.4
 setuptools==39.2.0
 wheel==0.31.1
 django-bower==5.2.0
+xlsxwriter==0.7.2
