@@ -340,10 +340,10 @@ class MonitoringView(View, GeneralFunctions):
             career_students = EvaluationsStudents.objects.filter(
                 idcareer=coord_career.idcareer.idcareer)
 
-            students = self.get_evaluated_students(career_students)
-
-            careers[coord_career.idcareer] = students
-
+            careers[coord_career.idcareer] = self.get_evaluated_students(
+                career_students)
+            careers[coord_career.idcareer]['average'] = self. get_career_average(
+                careers[coord_career.idcareer]['evaluated'])
         return careers
 
     def get_evaluated_students(self, career_students):
@@ -371,3 +371,25 @@ class MonitoringView(View, GeneralFunctions):
         students['evaluated'] = eval_students
         students['not_evaluated'] = not_eval_students
         return students
+
+    def get_career_average(self, evaluated_students):
+        answers_yes = 0
+        answers_no = 0
+        for student in evaluated_students:
+            # Only consider non optional questions for the average
+            questions = EvaluationsDetailExamQuestion.objects.filter()
+            for question in questions:
+                if question.idquestion.optional == 'NO':
+                    answers = EvaluationsAnswers.objects.filter(
+                        idstudent__exact=student.idperson, iddetailquestion__exact=question.id)
+                    for answer in answers:
+                        if answer.answer == 'YES':
+                            answers_yes = answers_yes + 1
+                        else:
+                            answers_no = answers_no + 1
+        average = answers_yes / (answers_yes + answers_no)
+        return average
+
+
+class CarreerResultsView(View, GeneralFunctions):
+    pass

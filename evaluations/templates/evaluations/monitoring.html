@@ -2,8 +2,7 @@
 <html>
 
 <head>
-  {% load static %}
-  {% load json_tags %}
+  {% load static %} {% load json_tags %}
   <!--Materialize things-->
 
   <!--Import Google Icon Font-->
@@ -68,30 +67,29 @@
 
             {% for career, students in careers.items %}
 
-              <h5 class="header">{{career.description.capitalize}}</h5>
-              <div class="row">
-                <div class="col s12 m4 l3">
-                  <p>Lorem ipsum dolor sit amet consectetur adipiscing elit vivamus, pharetra placerat tellus litora aptent senectus aliquet condimentum, purus sociis ultrices integer luctus arcu maecenas.</p>
-                </div>
-                <div class="col s12 m8 l9">
-                  <div class="row">
-                    <div class="col s12 m6 l6">
-
-                      <div class="sample-chart-wrapper">
-                        <canvas id="myChart{{career.idcareer}}" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
-                      </div>
-                      <p class="header center">Evaluaciones Realizadas</p>
+            <h6 class="header center">{{career.description.capitalize}}</h6>
+            <hr style="width:60%;">
+            <div class="row">
+              <div class="col s12 m12 l12">
+                <div class="row">
+                  <div class="col s12 m6 l6">
+                    <div class="sample-chart-wrapper">
+                      <canvas id="myChart{{career.idcareer}}" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                     </div>
-                    <div class="col s12 m6 l6">
-                      <div class="sample-chart-wrapper">
-                        <canvas id="doughnut-chart-sample" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
-                      </div>
-                      <p class="header center">Promedio General</p>
+                    <p class="header center">Evaluaciones Realizadas</p>
+                  </div>
+                  <div class="col s12 m6 l6">
+                    <div class="sample-chart-wrapper">
+                      <canvas id="myChart{{career.idcareer}}Average" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                     </div>
+                    <p class="header center">Promedio General</p>
                   </div>
                 </div>
               </div>
-
+            </div>
+            <div class="row center-align">
+              <a type="" class="btn-small waves-effect center red lighten-1 " href="{% url 'evaluations:career_results' career.idcareer%}">Ver más</a>
+            </div>
             {% endfor %}
 
           </div>
@@ -110,7 +108,6 @@
 </body>
 
 </html>
-
 <script type="text/javascript ">
   Chart.pluginService.register({
   		beforeDraw: function (chart) {
@@ -154,15 +151,15 @@
   		}
   	});
 
-  {% for career, students in careers.items %}
+  {% for career, value in careers.items %}
     var ctx = document.getElementById("myChart{{career.idcareer}}").getContext('2d');
-    var evaluated = {{students.evaluated|length}};
-    var not_evaluated = {{students.not_evaluated|length}};
+    var evaluated = {{value.evaluated|length}};
+    var not_evaluated = {{value.not_evaluated|length}};
     var percentage = (evaluated / (not_evaluated + evaluated) * 100).toFixed(0) + "%";
     var data = {
       labels: ["Realizadas ", "Faltantes "],
       datasets: [{
-        data: [{{students.evaluated|length}},{{students.not_evaluated|length}}],
+        data: [{{value.evaluated|length}},{{value.not_evaluated|length}}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -186,6 +183,45 @@
           sidePadding: 20 // Defualt is 20 (as a percentage)
 				}
 			}
+    }
+    var myDoughnutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: data,
+      options: options
+    });
+  {% endfor %}
+</script>
+
+<script type="text/javascript ">
+  {% for career, value in careers.items %}
+    var ctx = document.getElementById("myChart{{career.idcareer}}Average").getContext('2d');
+    var data = {
+      labels: ["Realizadas ", "Faltantes "],
+      datasets: [{
+        data: [],
+        backgroundColor: [
+          '#21da7d',
+          '#f7464a',
+        ],
+        borderColor: [
+          'rgb(255, 255, 255)',
+          'rgb(255, 255, 255)',
+        ],
+        borderWidth: 3
+      }]
+    }
+    var options = {
+      legend: {
+        display: false
+      },
+      elements: {
+        center: {
+          text: {{value.average}} + "%", // Porcentaje de alumnos
+          color: 'black', // Default is #000000
+          fontStyle: 'Arial', // Default is Arial
+          sidePadding: 20 // Defualt is 20 (as a percentage)
+        }
+      }
     }
     var myDoughnutChart = new Chart(ctx, {
       type: 'doughnut',
