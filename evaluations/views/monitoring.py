@@ -36,7 +36,7 @@ class MonitoringView(View, GeneralFunctions):
     def post(self, request):
         if request.POST['action'] == 'excel':
             response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=mymodel.csv'
+            response['Content-Disposition'] = 'attachment; filename=Alumnos_No_Evaluados.csv'
             writer = csv.writer(response, csv.excel)
             response.write(u'\ufeff'.encode('utf8'))
 
@@ -48,7 +48,6 @@ class MonitoringView(View, GeneralFunctions):
             students = careers[career]['not_evaluated']
 
             self.write_to_excel(students, career, writer)
-
             return response
 
     def write_to_excel(self, students, career, writer):

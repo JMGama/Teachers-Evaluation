@@ -15,6 +15,7 @@
   <link rel="shortcut icon" type="image/x-icon" href="{% static 'evaluations/images/icono.ico' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/nav_bar.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/home/style.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/monitoring/style.css' %}" />
 
   <!-- Import Chart.js for graphics -->
   <script type="text/javascript" src="{% static 'chart.js/dist/Chart.js' %}"></script>
@@ -27,6 +28,30 @@
   {% include "evaluations/nav_bar_monitoring.html" %}
 
   <main class="content ">
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content center-align">
+        <div class="row ">
+          <div class="preloader-wrapper big active">
+            <div class="spinner-layer spinner-blue-only">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer ">
+          <h5>Cargando</h5>
+        </div>
+      </div>
+    </div>
+
 
     <div class="row valign-wrapper ">
       <div class="col m10 s12 offset-m1 valign ">
@@ -88,9 +113,9 @@
               </div>
             </div>
             <div class="row center-align">
-              <form action="{% url 'evaluations:monitoring' %}" method="post">
+              <form id="download" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn-small waves-effect center red lighten-1 " ><i class="material-icons right">get_app</i>Alumnos faltantes</button>
+                <button id="download" type="submit" class="btn-small waves-effect center red lighten-1 " ><i class="material-icons right">get_app</i>Alumnos faltantes</button>
                 <input type="hidden" name="action" value="excel"/>
                 <input type="hidden" name="career" value="{{career.idcareer}}"/>
               </form>
@@ -113,6 +138,40 @@
 </body>
 
 </html>
+
+<script type="text/javascript ">
+
+  $(document).ready(function(){
+    $('.modal').modal({dismissible:false});
+  });
+
+  $(document).ready(function() {
+    $("#download").submit(function(event){
+      $('#modal1').modal('open');
+      var csrftoken = $('#download').find('input[name="csrfmiddlewaretoken"]').val();
+      var action = $('#download').find('input[name="action"]').val();
+      var career = $('#download').find('input[name="career"]').val();
+      $.ajax({
+        type:"POST",
+        url:"{% url 'evaluations:monitoring' %}",
+        data: {
+              'action': action,
+              'career': career,
+              'csrfmiddlewaretoken': csrftoken,
+              },
+        success: function(){
+          $('#modal1').modal('close');
+        },
+        complete: function(){
+          $('#modal1').modal('close');
+        },
+        error: function(){
+          $('#modal1').modal('close');
+        }
+      });
+    });
+  });
+</script>
 
 <script type="text/javascript ">
   Chart.pluginService.register({
