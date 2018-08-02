@@ -301,7 +301,7 @@ class EvaluationsDetailTeacherCareer(models.Model):
         max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
 
     def __str__(self):
-        return '%s' % (self.iddocente + " -> " + idcareer)
+        return '%s' % (str(self.iddocente) + " -> " + str(self.idcareer))
 
     class Meta:
         managed = False

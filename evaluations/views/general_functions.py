@@ -53,3 +53,9 @@ class GeneralFunctions(object):
                     next_evaluation['group'] = group
                     break
         return next_evaluation
+
+    @classmethod
+    def dumps(self, obj):
+        for attr in dir(obj):
+            if hasattr( obj, attr ):
+                print( "obj.%s = %s" % (attr, getattr(obj, attr)))
