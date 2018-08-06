@@ -3,7 +3,7 @@
 <div class="navbar-fixed">
   <nav style="background-color: #132d4e;">
     <div class="nav-wrapper">
-      <a href="{% url 'evaluations:home' %}" class="brand-logo center">Monitoreo Evaluación</a>
+      <a href="{% url 'evaluations:monitoring' %}" class="brand-logo center">Monitoreo Evaluación</a>
       <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     </div>
   </nav>
@@ -20,30 +20,11 @@
       <a href="#email"><span class="white-text email">{{ coordinator.instemail }}</span></a>
     </div>
   </li>
-  {% for exam in user_exams %}
-  <li>
-    <ul class="collapsible collapsible-accordion">
+    {% for career in careers %}
       <li>
-        <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ exam.description }}</b></a>
-        <div class="collapsible-body">
-          <ul>
-            {% for detail_group in user_groups %}
-            {% if detail_group.idstudent.idcareer == exam.idcareer or exam.idcareer == None %}
-            {% if detail_group.id in evaluated_signatures %}
-            <li>
-              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' exam.id detail_group.idsignature.id %}"><i class="material-icons right icon-green">check</i>{{ detail_group.idsignature.name }}</a>
-            </li>
-            {% else %}
-            <li>
-              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id detail_group.idsignature.id %}"><i class="material-icons right">bookmark_border</i>{{ detail_group.idsignature.name }}</a>
-            </li>
-            {% endif %} {% endif %} {% endfor %}
-          </ul>
-        </div>
+        <a class="waves-effect" href="{% url 'evaluations:career_results' career.idcareer %}"><i class="material-icons right">reorder</i>{{ career.description }}</a>
       </li>
-    </ul>
-  </li>
-  {% endfor %}
+    {% endfor %}
   <li>
     <div class="divider"></div>
   </li>
