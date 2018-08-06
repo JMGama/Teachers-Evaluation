@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   {% load static %}
   <!--Materialize things-->
@@ -25,29 +26,28 @@
 
 <body>
   <!-- Complete evaluations - Modal Structure -->
-<div id="complete_modal" class="modal">
-  <a href="#!" class="modal-close waves-effect waves-green btn-flat right"><i class="material-icons">close</i></a>
-  <div class="modal-content center-align">
-    <h4>¡Has finalizado tus evaluaciones!</h4>
-    <p>
-      Muchas gracias por completar tus evaluaciones. Recuerda que tus respuestas se mantendrán anónimas.
-      <br/><br/> <b>*Tu sesión se ha cerrado automáticamente*</b>
-    </p>
+  <div id="complete_modal" class="modal">
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat right"><i class="material-icons">close</i></a>
+    <div class="modal-content center-align">
+      <h4>¡Has finalizado tus evaluaciones!</h4>
+      <p>
+        Muchas gracias por completar tus evaluaciones. Recuerda que tus respuestas se mantendrán anónimas.
+        <br/><br/> <b>*Tu sesión se ha cerrado automáticamente*</b>
+      </p>
+    </div>
   </div>
-</div>
 
-<!-- Forgot password Modal - Structure -->
-<div id="modal1" class="modal">
-  <a href="#!" class="modal-close waves-effect waves-green btn-flat right"><i class="material-icons">close</i></a>
-  <div class="modal-content">
-    <h4>Recuperación de contraseña</h4>
-    <hr>
-    <p>Si no recuerdas tu contraseña (la misma que utilizas para el WiFi), consulta tu correo institucional, ahí encontrarás un correo indicando tu usuario y contraseña. También puedes acudir al área de sistemas para que se te proporcione.</p>
+  <!-- Forgot password Modal - Structure -->
+  <div id="modal1" class="modal">
+    <a href="#!" class="modal-close waves-effect waves-green btn-flat right"><i class="material-icons">close</i></a>
+    <div class="modal-content">
+      <h4>Recuperación de contraseña</h4>
+      <hr>
+      <p>Si no recuerdas tu contraseña (la misma que utilizas para el WiFi), consulta tu correo institucional, ahí encontrarás un correo indicando tu usuario y contraseña. También puedes acudir al área de sistemas para que se te proporcione.</p>
+    </div>
   </div>
-</div>
 
-  {% if not second_time %}
-  {% if complete != 'YES' %}
+  {% if not second_time %} {% if complete != 'YES' %}
   <!-- Start Page Loading -->
   <div id="loader-wrapper">
     <div id="loader"></div>
@@ -55,8 +55,7 @@
     <div class="loader-section section-right"></div>
   </div>
   <!-- End Page Loading -->
-  {% endif %}
-  {% endif %}
+  {% endif %} {% endif %}
   <div id="login-page" class="row">
     <div class="col s12 z-depth-4 card-panel">
       <form class="login-form" action="{% url 'evaluations:login' %}" method="post">
@@ -117,7 +116,6 @@
     {% if complete == 'YES'%}
       $('#complete_modal').modal('open');
     {% endif %}
-
   </script>
 </body>
 

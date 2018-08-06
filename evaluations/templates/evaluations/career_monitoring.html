@@ -20,7 +20,7 @@
   <!-- Import Chart.js for graphics -->
   <script type="text/javascript" src="{% static 'chart.js/dist/Chart.js' %}"></script>
 
-  <title>Menu Principal</title>
+  <title>{{career.description}}</title>
 
 </head>
 
@@ -80,7 +80,7 @@
             <div class="row valign-wrapper ">
               <div class="col s8 m10 ">
                 <span class="card-title ">
-                  <b>Resultados Generales de las Evaluaciones</b>
+                  <b>Resultados de {{career.description.capitalize}}</b>
                 </span>
                 <hr/>
               </div>
@@ -88,24 +88,20 @@
                 <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %} ">
               </div>
             </div>
-            
 
-            {% for career, values in careers_data.items %}
 
-            <h6 class="header center">{{career.description.capitalize}}</h6>
-            <hr style="width:60%;">
             <div class="row">
               <div class="col s12 m12 l12">
                 <div class="row">
                   <div class="col s12 m6 l6">
                     <div class="sample-chart-wrapper">
-                      <canvas id="myChart{{career.idcareer}}" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      <canvas id="myChart" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                     </div>
                     <p class="header center">Evaluaciones Realizadas</p>
                   </div>
                   <div class="col s12 m6 l6">
                     <div class="sample-chart-wrapper">
-                      <canvas id="myChart{{career.idcareer}}Average" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                     </div>
                     <p class="header center">Promedio General</p>
                   </div>
@@ -113,14 +109,12 @@
               </div>
             </div>
             <div class="row center-align">
-              <form id="download{{career.idcareer}}" method="post">
+              <form id="download" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading({{career.idcareer}})"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
+                <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading()"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
                 <input type="hidden" name="action" value="excel"/>
-                <input type="hidden" name="career" value="{{career.idcareer}}"/>
               </form>
             </div>
-            {% endfor %}
 
           </div>
         </div>
@@ -143,17 +137,15 @@
     $('.modal').modal({dismissible:false});
   });
 
-  function loading(idCareer){
+  function loading(){
     $('#modal1').modal('open');
-    var csrftoken = $('#download'+idCareer).find('input[name="csrfmiddlewaretoken"]').val();
-    var action = $('#download'+idCareer).find('input[name="action"]').val();
-    var career = $('#download'+idCareer).find('input[name="career"]').val();
+    var csrftoken = $('#download').find('input[name="csrfmiddlewaretoken"]').val();
+    var action = $('#download').find('input[name="action"]').val();
     $.ajax({
       type:"POST",
-      url:"{% url 'evaluations:monitoring' %}",
+      url:"{% url 'evaluations:career_results' career.idcareer%}",
       data: {
             'action': action,
-            'career': career,
             'csrfmiddlewaretoken': csrftoken,
             },
       success: function(){
@@ -214,15 +206,14 @@
 </script>
 
 <script type="text/javascript ">
-  {% for career, values in careers_data.items %}
-    var ctx = document.getElementById("myChart{{career.idcareer}}").getContext('2d');
-    var evaluated = {{values.evaluated|length}};
-    var not_evaluated = {{values.not_evaluated|length}};
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var evaluated = {{career_data.students.evaluated|length}};
+    var not_evaluated = {{career_data.students.not_evaluated|length}};
     var percentage = (evaluated / (not_evaluated + evaluated) * 100).toFixed(0) + "%";
     var data = {
       labels: ["Realizadas ", "Faltantes "],
       datasets: [{
-        data: [{{values.evaluated|length}},{{values.not_evaluated|length}}],
+        data: [{{career_data.students.evaluated|length}},{{career_data.students.not_evaluated|length}}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -252,16 +243,14 @@
       data: data,
       options: options
     });
-  {% endfor %}
 </script>
 
 <script type="text/javascript ">
-  {% for career, values in careers_data.items %}
-    var ctx = document.getElementById("myChart{{career.idcareer}}Average").getContext('2d');
+    var ctx = document.getElementById("myChartAverage").getContext('2d');
     var data = {
       labels: ["Si ", "No "],
       datasets: [{
-        data: [{{values.average_data.yes}}, {{values.average_data.no}}],
+        data: [{{career_data.average_data.yes}}, {{career_data.average_data.no}}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -279,7 +268,7 @@
       },
       elements: {
         center: {
-          text: {{values.average_data.average}}.toFixed(0) + "%", // Porcentaje de alumnos
+          text: {{career_data.average_data.average}}.toFixed(0) + "%", // Porcentaje de alumnos
           color: 'black', // Default is #000000
           fontStyle: 'Arial', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
@@ -291,7 +280,6 @@
       data: data,
       options: options
     });
-  {% endfor %}
 </script>
 
 </html>

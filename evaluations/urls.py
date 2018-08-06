@@ -10,6 +10,6 @@ urlpatterns = [
     path('monitoring/', views.MonitoringView.as_view(), name='monitoring'),
     path('evaluation/<slug:exam_id>/<slug:signature>/',
          views.EvaluationView.as_view(), name='evaluation'),
-    path('career_results/<slug:career_id>/', views.CareerResultsView.as_view(), name='career_results'),
     path('monitoring/tech_report', views.tech_report.as_view(), name='tech_report')
+    path('career_results/<slug:career_id>/', views.CareerResultsView.as_view(), name='career_results'),
 ]
