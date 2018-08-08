@@ -12,7 +12,7 @@ class HomeView(View, GeneralFunctions):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
-        if not request.session.get('session', False):
+        if not request.session.get('session', False) or not request.session['type'] == 'student':
             return render(request, self.template_login)
 
         # Values for the navigation bar
