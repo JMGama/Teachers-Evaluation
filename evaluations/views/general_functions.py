@@ -147,3 +147,18 @@ class GeneralFunctions(object):
             data['students']['evaluated'])
 
         return data
+
+    @classmethod
+    def get_teacher_signature_results(self, teacher, signature):
+        pass
+
+    @classmethod
+    def get_career_signatures(self, career):
+        signatures = []
+        students_id = EvaluationsStudents.objects.filter(
+            idcareer=career.idcareer).values('idperson')
+        signatures_id = EvaluationsDetailStudentGroup.objects.filter(
+            idstudent__in=students_id).values('idsignature').distinct()
+        signatures = EvaluationsSignatures.objects.filter(id__in=signatures_id)
+
+        return signatures
