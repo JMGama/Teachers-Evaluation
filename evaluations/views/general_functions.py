@@ -10,6 +10,7 @@ class GeneralFunctions(object):
 
     @classmethod
     def get_evaluated_signatures(self, student):
+        """return a list of all the evaluations (groupid) already made by the student"""
         user_exams = EvaluationsExams.objects.filter(
             Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
@@ -28,6 +29,7 @@ class GeneralFunctions(object):
 
     @classmethod
     def get_evaluations(self, student):
+        """returns a dictionary with the exams and groups(student-signature) that the student have"""
         user_exams = EvaluationsExams.objects.filter(
             Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
@@ -46,6 +48,7 @@ class GeneralFunctions(object):
 
     @classmethod
     def get_next_evaluation(self, student, evaluations, evaluated_signatures):
+        """return the exam and group that is the next to evaluate (havent evaluated) for the student"""
         next_evaluation = {}
         for evaluation in evaluations:
             for group in evaluation['groups']:
@@ -57,6 +60,7 @@ class GeneralFunctions(object):
 
     @classmethod
     def write_to_excel(self, students, career, writer):
+        """creates the CSV with the student data that were past"""
         writer.writerow([
             smart_str(u"Matricula"),
             smart_str(u"Nombre"),
@@ -116,6 +120,7 @@ class GeneralFunctions(object):
 
     @classmethod
     def get_career_average(self, evaluated_students):
+        """return a dictionary with the average of the students evaluated and the total of 'yes' and 'no' in the results"""
         answers_yes = 0
         answers_no = 0
         data = {}
@@ -138,6 +143,7 @@ class GeneralFunctions(object):
 
     @classmethod
     def get_career_data(self, career):
+        """return a dictionary with the students evaluated, not evaluated and the average result of the career"""
         career_students = EvaluationsStudents.objects.filter(
             idcareer=career.idcareer)
         data = {}
@@ -149,11 +155,30 @@ class GeneralFunctions(object):
         return data
 
     @classmethod
-    def get_teacher_signature_results(self, teacher, signature):
-        pass
+    def get_career_teachers_signatures(self, career):
+        """return a dictionary with all the teachers of the career and each teacher signatures that they give"""
+        signatures = self.get_career_signatures(career)
+
+        teachers_id = EvaluationsDetailGroupPeriodSignature.objects.filter(
+            idsignature__in=signatures.values('id')).values('idteacher').distinct()
+        teachers = EvaluationsTeachers.objects.filter(idperson__in=teachers_id)
+
+        data = {}
+        for teacher in teachers:
+            teacher_signatures_id = EvaluationsDetailGroupPeriodSignature.objects.filter(
+                idsignature__in=signatures.values('id'), idteacher__exact=teacher.idperson).values('idsignature')
+            teacher_signatures = []
+
+            for signature_id in teacher_signatures_id:
+                teacher_signatures.append(EvaluationsSignatures.objects.get(
+                    id__exact=signature_id['idsignature']))
+
+            data[teacher] = teacher_signatures
+        return data
 
     @classmethod
     def get_career_signatures(self, career):
+        """return all the signatures currently open in the career"""
         signatures = []
         students_id = EvaluationsStudents.objects.filter(
             idcareer=career.idcareer).values('idperson')
