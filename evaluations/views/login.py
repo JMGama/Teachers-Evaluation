@@ -25,24 +25,37 @@ class LoginView(View):
     def post(self, request):
         # Try to load student
         try:
-            student = EvaluationsStudents.objects.get(
-                enrollment__exact=request.POST['id_matricula'])
-            if student.value == request.POST['password']:
-                request.session['id_student'] = student.idperson
-                request.session['session'] = True
-                request.session['type'] = 'student'
+            if self.load_student(request, request.POST['id_matricula'], request.POST['password']):
                 return redirect('home/')
-        except Exception:
+        except Exception as e:
+            print(e)
             # Try to load coordinator
             try:
-                coordinator = EvaluationsCoordinators.objects.get(
-                    enrollment__exact=request.POST['id_matricula'])
-                if coordinator.value == request.POST['password']:
-                    request.session['id_coordinator'] = coordinator.idperson
-                    request.session['session'] = True
-                    request.session['type'] = 'coordinator'
+                if self.load_coordinator(request, request.POST['id_matricula'], request.POST['password']):
                     return redirect('monitoring/')
             except Exception:
                 pass
 
         return render(request, self.template_login, {'second_time': True, 'validate': 'invalid'})
+
+    def load_student(self, request, matricula, password):
+        student = EvaluationsStudents.objects.get(
+            enrollment__exact=matricula)
+        if student.value == password:
+            request.session['id_student'] = student.idperson
+            request.session['session'] = True
+            request.session['type'] = 'student'
+            return True
+        else:
+             return False
+
+    def load_coordinator(self, request, matricula, password):
+        coordinator = EvaluationsCoordinators.objects.get(
+            enrollment__exact=matricula)
+        if coordinator.value == password:
+            request.session['id_coordinator'] = coordinator.idperson
+            request.session['session'] = True
+            request.session['type'] = 'coordinator'
+            return True
+        else:
+             return False
