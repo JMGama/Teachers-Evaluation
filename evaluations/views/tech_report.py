@@ -104,4 +104,4 @@ class tech_report(View, GeneralFunctions):
                 }
         for code in htmlCodes:
             s = s.replace(code[0], code[1])
-        return s
+        return str(s)
