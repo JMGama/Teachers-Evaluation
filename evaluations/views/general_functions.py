@@ -59,6 +59,12 @@ class GeneralFunctions(object):
         return next_evaluation
 
     @classmethod
+    def dumps(self, obj):
+        for attr in dir(obj):
+            if hasattr( obj, attr ):
+                print( "obj.%s = %s" % (attr, getattr(obj, attr)))
+
+    @classmethod
     def write_to_excel(self, students, career, writer):
         """creates the CSV with the student data that were past"""
         writer.writerow([

@@ -1,4 +1,8 @@
 venv/
+#virtual env
+teachersEvaluationEnv/
+#ide
+.idea/
 __pycache__/
 db.cnf
 db.sqlite3

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'evaluations.apps.EvaluationsConfig',
     'djangobower',
+    'easy_pdf',
 ]
 
 MIDDLEWARE = [
