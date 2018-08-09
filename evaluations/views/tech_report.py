@@ -47,7 +47,7 @@ class tech_report(View, GeneralFunctions):
         #key maestro #val materia
         for key,val in data.items():
             for signature in val:
-                aux["name"]=self.html_decode(key.name + " " + key.lastname + " " + key.lastname2)
+                aux["name"]=self.html_decode(str(key.name) + " " + str(key.lastname) + " " + str(key.lastname2))
                 aux["signature"] = self.html_decode(signature.name)
                 #Total de Estudiantes
                 query = "SELECT COUNT(DISTINCT ANS.idStudent) as avg FROM evaluations_answers ANS INNER JOIN evaluations_detail_student_group DET ON DET.id=ANS.idGroup WHERE DET.idSignature = " + str(signature.id)
