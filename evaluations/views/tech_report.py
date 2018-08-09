@@ -20,47 +20,65 @@ class tech_report(View, GeneralFunctions):
         coordinator = EvaluationsCoordinators.objects.get(
             idperson__exact=request.session['id_coordinator'])
 #           Carreras x coordinador
+#           Para extraer carreras del cordinador coord_career.idcareer
         coordinator_careers = EvaluationsDetailCoordinatorCareer.objects.select_related(
         'idcoordinator').filter(idcoordinator=coordinator.idperson)
-#           Datos del maestro
-#           Para extraer nombre career_teachers.iddocente.name
-        career_teachers=getTeachers(coordinator_careers)
-
-        teachers={1:"z",2:"y"}
-
-#        self.dumps(coord_career)
+        x=self.getInfo(coordinator_careers)
+#        self.dumps(x[0])
         context = {
-        'teachers' : career_teachers,
+        'all' : self.getInfo(coordinator_careers),
         'questions': self.getQuestions(self.exam)
         }
         return render_to_pdf_response(request,template,context)
-        #return render(request, template, context)
+#       return render(request, template, context)
 
     def getTeachers(self, coordinator_careers):
         teachers = {}
         for coord_career in coordinator_careers:
-            career_teachers = EvaluationsDetailTeacherCareer.objects.select_related(
-            'iddocente','idcareer').filter(idcareer=coord_career.idcareer)
-            teachers[coord_career.idcareer]=career_teachers
+            career_teachers = EvaluationsDetailGroupPeriodSignature.objects.select_related(
+            'idsignature','idteacher').filter(idteacher=coord_career.idcareer.idcareer)
+            for career_teacher in career_teachers:
+                teachers[career_teacher.iddocente]=career_teacher.idsignature
         return teachers
 
-    def getTeacherSubjects(self, career_teachers):
-        subjects = []
-        for career_teacher in career_teachers:
-            teacher = EvaluationsTeachers.objects.get(
-                idperson=career_teacher.iddocente)
-            signature = EvaluationsDetailGroupPeriodSignature.objects.filter(
-                idteacher=career_teacher.iddocente)
-        return career_teachers
+    def getInfo(self, coordinator_careers):
+        data = []
+        aux = {}
+        j=1
+        aux["signature"] = ""
+        for coord_career in coordinator_careers:
+            teachers = EvaluationsDetailTeacherCareer.objects.filter(idcareer__exact=coord_career.idcareer).select_related('iddocente')
+            for teacher in teachers:
+                signatures = EvaluationsDetailStudentSignatureExam.objects.filter(idteacher__exact=teacher.iddocente).select_related('idstudent')
+                j=1
+                aux["signature"] = ""
+                for sig in signatures:
+                    if j==1:
+                        if aux["signature"] != sig.idsignature.name:
+                            aux["signature"] = sig.idsignature.name
+                            aux["name"] = teacher.iddocente.name + " " + teacher.iddocente.lastname + " " + teacher.iddocente.lastname2
+                            for i in [1,2,3,4,5]:
+                                if i != 5:
+                                    for q in Average.objects.raw("select fnQavg(%s,%s) as avg",[i,sig.idsignature.id]):
+                                        aux["Q"+str(i)] = q.avg
+                                else:
+                                    query = "SELECT GROUP_CONCAT(ANS.answer SEPARATOR ':') as avg FROM evaluations_answers ANS INNER JOIN evaluations_detail_student_group DET ON DET.id=ANS.idGroup WHERE ANS.idQuestion = 5 AND DET.idSignature = " + str(sig.idsignature.id)
+                                    for q in Average.objects.raw(query):
+                                        if q.avg:
+                                            aux["Q"+str(i)] = q.avg.split(':')
+                            data.append(aux)
+                            aux={}
+                        else:
+                            aux["signature"] = sig.idsignature.name
+                    else:
+                        aux["signature"] = ""
+                    j+=1
+        return data
 
     def getQuestions(self, exam):
         qst=[]
         questions = EvaluationsDetailExamQuestion.objects.select_related('idquestion').filter(
         idexam=exam)
         for question in questions:
-            qst[]=question.idquestion
+            qst.append(question.idquestion.description)
         return qst
-
-    def getAverage(self, question):
-        EvaluationsAnswers.objects.get()
-        return

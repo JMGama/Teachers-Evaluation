@@ -117,7 +117,7 @@
 {% endblock %}
 
 {% block content %}
-  {% for key in teachers %}
+  {% for a in all %}
   <div class=WordSection1>
            <p class=MsoNormal align=right style='text-align:right'><span style='font-size:
                                                                          10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'></span></p>
@@ -133,13 +133,13 @@
 
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'></span><span
-                                                               style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{docente.nombre}}</span><span style='font-size:10.0pt;line-height:107%;
+                                                               style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{a.name}}</span><span style='font-size:10.0pt;line-height:107%;
                                                                                                                           font-family:"Gotham Rounded Book"'>:</span></p>
 
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>Anexo los resultados de la
                    opini&oacuten de su grupo de la materia </span><span
-                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{docente.carrera}}</span><span style='font-size:10.0pt;
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{a.signature}}</span><span style='font-size:10.0pt;
                    line-height:107%;font-family:"Gotham Rounded Book"'> a su digno cargo, con la
                    intenci&oacuten de que considere los mismos para hacer las modificaciones que
                    encuentre pertinentes; y al mismo tiempo nos permita reconocer su importante
@@ -158,66 +158,22 @@
 
            <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
                   style='margin-left:-1.0cm;border-collapse:collapse;border:none'>
+{% for key in questions %}
                <tr>
                    <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
                        <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
                           0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
                           -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>1.<span
                                    style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&iquestTe parece experto
-                               en su materia?</span></p>
+                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{key}}</span></p>
                    </td>
                    <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
                        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
                           justify;line-height:normal'><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{answers.q1}}</span></p>
+                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{a.Q1}}</span></p>
                    </td>
                </tr>
-               <tr>
-                   <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                       <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
-                          0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
-                          -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>2.<span
-                                   style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&iquestRecomendar&iacuteas la
-                               clase a los estudiantes que vienen atr&aacutes?</span></p>
-                   </td>
-                   <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
-                       <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
-                          justify;line-height:normal'><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{answers.q2}}</span></p>
-                   </td>
-               </tr>
-               <tr>
-                   <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                       <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
-                          0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
-                          -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>3.<span
-                                   style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&iquestHace interesante
-                               su clase?</span></p>
-                   </td>
-                   <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
-                       <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
-                          justify;line-height:normal'><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{answers.q3}}</span></p>
-                   </td>
-               </tr>
-               <tr>
-                   <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                       <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
-                          0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
-                          -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>4.<span
-                                   style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp; </span></span><span
-                                       style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&iquestVes &uacute;til la
-                               materia?</span></p>
-                   </td>
-                   <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
-                       <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
-                          justify;line-height:normal'><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{answers.q4}}</span></p>
-                   </td>
-               </tr>
+{% endfor %}
                <tr>
                    <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
                        <p class=MsoListParagraphCxSpFirst style='margin-top:0cm;margin-right:0cm;
@@ -243,10 +199,10 @@
 
            <p class=MsoNormal style='text-align:justify;line-height:normal'><span
                    style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Comentarios:</span></p>
-
+{% for opt in a.Q5 %}
            <p class=MsoNormal style='text-align:justify;line-height:normal'><span
-                   style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{answers.q5}}</span></p>
-
+                   style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{opt}}</span></p>
+{% endfor %}
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
 
@@ -267,7 +223,7 @@
                    "Gotham Rounded Book"'>________________________________</span></p>
 
            <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
-              text-align:center;line-height:normal'><span style='font-size:10.0pt'> </span><span style='font-size:10.0pt'>{{docente.nombre}}</span></p>
+              text-align:center;line-height:normal'><span style='font-size:10.0pt'> </span><span style='font-size:10.0pt'>{{a.name}}</span></p>
 
            <p class=MsoNormal align=center style='text-align:center'><span
                    style='font-size:10.0pt;line-height:107%'>Enterado</span></p>

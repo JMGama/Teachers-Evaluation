@@ -287,8 +287,8 @@ class EvaluationsDetailStudentGroup(models.Model):
 
 class EvaluationsDetailTeacherCareer(models.Model):
     # Field name made lowercase.
-    iddocente = models.IntegerField(
-        db_column='idDocente', blank=True, null=True)
+    iddocente = models.ForeignKey(
+        'EvaluationsTeachers', on_delete=models.PROTECT,blank=True, null=True, db_column='idDocente')
     # Field name made lowercase.
     idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
                                  db_column='idCareer', max_length=255, blank=True, null=True)
@@ -522,3 +522,12 @@ class EvaluationsCareers(models.Model):
         db_table = 'evaluations_careers'
         verbose_name = 'Carrera'
         verbose_name_plural = 'Carreras'
+
+class Average(models.Model):
+    avg = models.IntegerField(primary_key=True)
+
+    def __str__(self):
+        return '%s' % (self.avg)
+
+    class Meta:
+        managed = False
