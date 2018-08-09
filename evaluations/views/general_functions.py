@@ -147,6 +147,8 @@ class GeneralFunctions(object):
         career_students = EvaluationsStudents.objects.filter(
             idcareer=career.idcareer)
         data = {}
+        data['exams'] = user_exams = EvaluationsExams.objects.filter(
+            Q(idcareer__exact=career) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
         data['students'] = self.get_evaluated_students(
             career_students)
         data['average_data'] = self. get_career_average(
@@ -187,3 +189,29 @@ class GeneralFunctions(object):
         signatures = EvaluationsSignatures.objects.filter(id__in=signatures_id)
 
         return signatures
+
+    @classmethod
+    def get_teacher_signature_results(self, teacher, signature, exam):
+        """Return the results of the evaluations to the teacher at the signature of the submitted test"""
+
+        groups = EvaluationsDetailStudentSignatureExam.objects.filter(
+            idsignature__exact=signature, idteacher__exact=teacher.idperson).values('id')
+        questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
+            idexam__exact=exam.id)
+
+        results = {}
+        for question_exam in questions_detail_exam:
+            question = question_exam.idquestion
+
+            if question.optional == 'NO':
+                yes_answers = EvaluationsAnswers.objects.filter(
+                    iddetailquestion__exact=question_exam.id, answer='YES', idgroup__in=groups)
+                no_answers = EvaluationsAnswers.objects.filter(
+                    iddetailquestion__exact=question_exam.id, answer='NO', idgroup__in=groups)
+                results[question] = {'yes': len(yes_answers), 'no': len(no_answers)}
+            else:
+                answer = EvaluationsAnswers.objects.filter(
+                    iddetailquestion__exact=question_exam.id, idgroup__in=groups).exclude(answer__isnull=True)
+                results[question] = {'answers': answer}
+
+        return results
