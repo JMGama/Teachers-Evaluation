@@ -214,7 +214,10 @@ class GeneralFunctions(object):
                     iddetailquestion__exact=question_exam.id, answer='YES', idgroup__in=groups)
                 no_answers = EvaluationsAnswers.objects.filter(
                     iddetailquestion__exact=question_exam.id, answer='NO', idgroup__in=groups)
-                results[question] = {'yes': len(yes_answers), 'no': len(no_answers)}
+
+                average = len(yes_answers) /(len(yes_answers) + len(no_answers)) * 100
+                
+                results[question] = {'yes': len(yes_answers), 'no': len(no_answers), 'average': average}
             else:
                 answer = EvaluationsAnswers.objects.filter(
                     iddetailquestion__exact=question_exam.id, idgroup__in=groups).exclude(answer__isnull=True)
