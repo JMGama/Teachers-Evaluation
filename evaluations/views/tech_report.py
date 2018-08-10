@@ -27,8 +27,8 @@ class tech_report(View, GeneralFunctions):
         for dcarrer in coordinator_careers:
             data.append(self.getInfo2(dcarrer.idcareer))
         context = {
-        'all' : data
-        'x':'asas'
+        'all' : data,
+        'x' : 'asas'
         }
         return render_to_pdf_response(request,template,context)
         #return render(request, template, context)
