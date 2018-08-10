@@ -120,12 +120,16 @@
 {% block content %}
     {% for carrer in all %}
       {% for data in carrer %}
-
+        <img width="20%" height="20%" src="{% static 'evaluations/images/Logo.jpg' %}" alt="logo">
   <div class=WordSection1>
-           <p class=MsoNormal align=right style='text-align:right'>
+            <br><br><br>
+            <p class=MsoNormal align=center style='text-align:right'>
            <span style='font-size:10.0pt;
-           line-height:107%;font-family:"Gotham Rounded Book"'></span></p>
+           line-height:107%;font-family:"Gotham Rounded Book"'>UNIVERSIDAD CUAHUT&Eacute;MOC CAMPUS QUER&Eacute;TARO</span></p>
 
+           <p class=MsoNormal align=center style='text-align:right'>
+          <span style='font-size:10.0pt;
+          line-height:107%;font-family:"Gotham Rounded Book"'>DEPARTAMENTO ACADEM&Iacute;CO</span></p>
            <p class=MsoNormal align=right
            style='text-align:right'>
            <span style='font-size:10.0pt;
@@ -182,6 +186,7 @@
                                style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ val }}%</span></p>
                    </td>
                </tr>
+
 {% endfor %}
            </table>
 
