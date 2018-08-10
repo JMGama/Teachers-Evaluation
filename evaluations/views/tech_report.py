@@ -28,6 +28,7 @@ class tech_report(View, GeneralFunctions):
             data.append(self.getInfo2(dcarrer.idcareer))
         context = {
         'all' : data
+        'x':'asas'
         }
         return render_to_pdf_response(request,template,context)
         #return render(request, template, context)
@@ -74,7 +75,7 @@ class tech_report(View, GeneralFunctions):
                     data[self.html_decode(qst.description)]=q.avg
                     avgT+=q.avg
             i+=1
-        data["Promedio general"]=avgT/(i-2)
+        data["Promedio general"]=(avgT/(i-2))
         return data
 
     def html_decode(self, s):
