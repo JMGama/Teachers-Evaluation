@@ -1,5 +1,6 @@
 {% extends "easy_pdf/base.html" %}
 {% load static %}
+{% load html_decode %}
 {% block extra_style %}
 <style>
             <!--
@@ -144,7 +145,7 @@
 
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
            line-height:107%;font-family:"Gotham Rounded Book"'></span><span
-           style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ teacher.name|safe }} {{ teacher.lastname|safe }} {{ teacher.lastname2|safe }}
+           style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ teacher.name|html_decode|safe }} {{ teacher.lastname|html_decode|safe }} {{ teacher.lastname2|html_decode|safe }}
          </span><span style='font-size:10.0pt;line-height:107%;
          font-family:"Gotham Rounded Book"'>:</span>
         </p>
@@ -152,7 +153,7 @@
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>Anexo los resultados de la
                    opini&oacuten de su grupo de la materia </span><span
-                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature.name|safe }}</span><span style='font-size:10.0pt;
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature.name|html_decode|safe }}</span><span style='font-size:10.0pt;
                    line-height:107%;font-family:"Gotham Rounded Book"'> a su digno cargo, con la
                    intenci&oacuten de que considere los mismos para hacer las modificaciones que
                    encuentre pertinentes; y al mismo tiempo nos permita reconocer su importante
@@ -179,7 +180,7 @@
                           0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
                           -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ forloop.counter }}.<span
                                    style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.description|safe }}</span></p>
+                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.description|html_decode|safe }}</span></p>
                    </td>
                    <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
                        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
@@ -200,7 +201,7 @@
                   <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
                       <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
                          justify;line-height:normal'><span
-                              style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ options.average }}%</span></p>
+                              style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ options.average|safe }}%</span></p>
                   </td>
               </tr>
 
@@ -217,7 +218,7 @@
           <div class="saltopagina"></div>
         {% endif %}
                  <p class=MsoNormal style='text-align:justify;line-height:normal'><span
-                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{answer.answer|safe}}.</span></p>
+                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ answer.answer|html_decode|safe }}.</span></p>
       {% endwith %}
     {% endfor %}
   {% endif %}
@@ -242,7 +243,7 @@
                    "Gotham Rounded Book"'>________________________________</span></p>
 
            <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
-              text-align:center;line-height:normal'><span style='font-size:10.0pt'> </span><span style='font-size:10.0pt'>{{ teacher.name|safe }} {{ teacher.lastname|safe }} {{ teacher.lastname2|safe }}</span></p>
+              text-align:center;line-height:normal'><span style='font-size:10.0pt'> </span><span style='font-size:10.0pt'>{{ teacher.name|html_decode|safe }} {{ teacher.lastname|html_decode|safe }} {{ teacher.lastname2|html_decode|safe }}</span></p>
 
            <p class=MsoNormal align=center style='text-align:center'><span
                    style='font-size:10.0pt;line-height:107%'>Enterado</span></p>

@@ -31,8 +31,8 @@ class tech_report(View, GeneralFunctions):
             teachers_signatures_results = self.get_teachers_signatures_results(career, career_data)
             data[career] = teachers_signatures_results
         context = {
-        'all' : data,
-        'x' : 'asas'
+        'all': data,
+        'x':'asas'
         }
         return render_to_pdf_response(request,template,context)
         #return render(request, template, context)
