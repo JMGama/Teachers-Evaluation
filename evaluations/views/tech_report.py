@@ -21,11 +21,15 @@ class tech_report(View, GeneralFunctions):
         coordinator = EvaluationsCoordinators.objects.get(idperson__exact=request.session['id_coordinator'])
         #Carreras x coordinador
         #Para extraer carreras del cordinador coord_career.idcareer
-        data = []
+        data = {}
+
         coordinator_careers = EvaluationsDetailCoordinatorCareer.objects.select_related(
         'idcareer').filter(idcoordinator__exact=coordinator.idperson)
-        for dcarrer in coordinator_careers:
-            data.append(self.getInfo2(dcarrer.idcareer))
+        for career in coordinator_careers:
+            career = career.idcareer
+            career_data = self.get_career_data(career)
+            teachers_signatures_results = self.get_teachers_signatures_results(career, career_data)
+            data[career] = teachers_signatures_results
         context = {
         'all' : data
         'x':'asas'

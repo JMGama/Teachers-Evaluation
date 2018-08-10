@@ -28,8 +28,12 @@ class CareerResultsView(View, GeneralFunctions):
 
         career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
         career_data = self.get_career_data(career)
+        teachers_signatures_results = self.get_teachers_signatures_results(career, career_data)
+
+        print(teachers_signatures_results)
 
         context = {
+            'coordinator': coordinator,
             'careers': careers,
             'career': career,
             'career_data': career_data,
@@ -44,7 +48,8 @@ class CareerResultsView(View, GeneralFunctions):
             students = careers['students']['not_evaluated']
 
             response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename=Alumnos_No_Evaluados_' + str(career).capitalize() + '.csv'
+            response['Content-Disposition'] = 'attachment; filename=Alumnos_No_Evaluados_' + \
+                str(career).capitalize() + '.csv'
             writer = csv.writer(response, csv.excel)
             response.write(u'\ufeff'.encode('utf8'))
 
