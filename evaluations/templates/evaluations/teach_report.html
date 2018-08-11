@@ -1,5 +1,6 @@
 {% extends "easy_pdf/base.html" %}
 {% load static %}
+{% load html_decode %}
 {% block extra_style %}
 <style>
             <!--
@@ -118,14 +119,18 @@
 {% endblock %}
 
 {% block content %}
-    {% for carrer in all %}
-      {% for data in carrer %}
+{% for career, teachers in all.items %}
+  {% for teacher, signatures in teachers.items %}
+    {% for signature, options in signatures.items %}
 
+        <img width="20%" height="20%" src="{% static 'evaluations/images/Logo.jpg' %}" alt="logo">
   <div class=WordSection1>
-           <p class=MsoNormal align=right style='text-align:right'>
+            <p class=MsoNormal align=center style='text-align:right'>
            <span style='font-size:10.0pt;
-           line-height:107%;font-family:"Gotham Rounded Book"'></span></p>
-
+           line-height:107%;font-family:"Gotham Rounded Book"'>UNIVERSIDAD CUAHUT&Eacute;MOC CAMPUS QUER&Eacute;TARO</span>{{x}}</p>
+           <p class=MsoNormal align=center style='text-align:right'>
+          <span style='font-size:10.0pt;
+          line-height:107%;font-family:"Gotham Rounded Book"'>DEPARTAMENTO ACADEM&Iacute;CO</span></p>
            <p class=MsoNormal align=right
            style='text-align:right'>
            <span style='font-size:10.0pt;
@@ -140,7 +145,7 @@
 
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
            line-height:107%;font-family:"Gotham Rounded Book"'></span><span
-           style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{data.name|safe}}
+           style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ teacher.name|html_decode|safe }} {{ teacher.lastname|html_decode|safe }} {{ teacher.lastname2|html_decode|safe }}
          </span><span style='font-size:10.0pt;line-height:107%;
          font-family:"Gotham Rounded Book"'>:</span>
         </p>
@@ -148,7 +153,7 @@
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>Anexo los resultados de la
                    opini&oacuten de su grupo de la materia </span><span
-                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{data.signature|safe}}</span><span style='font-size:10.0pt;
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature.name|html_decode|safe }}</span><span style='font-size:10.0pt;
                    line-height:107%;font-family:"Gotham Rounded Book"'> a su digno cargo, con la
                    intenci&oacuten de que considere los mismos para hacer las modificaciones que
                    encuentre pertinentes; y al mismo tiempo nos permita reconocer su importante
@@ -160,44 +165,63 @@
                    por sus estudiantes de manera an&oacutenima. </span></p>
 
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
-                                                               line-height:107%;font-family:"Gotham Rounded Book"'>No. Estudiantes encuestados
+                                                               line-height:107%;font-family:"Gotham Rounded Book"'>No. Estudiantes encuestados:
                </span><span
-                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{data.Stotal}}</span><span
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ options.evaluated|safe }}</span><span
                    style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>                                                                 </span></p>
 
            <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
                   style='margin-left:-1.0cm;border-collapse:collapse;border:none'>
-{% for key,val in data.rst.items %}
+{% for question, results in options.questions.items %}
+  {% if question.optional == 'NO' %}
                <tr>
                    <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
                        <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
                           0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
                           -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ forloop.counter }}.<span
                                    style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ key|safe }}</span></p>
+                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.description|html_decode|safe }}</span></p>
                    </td>
                    <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
                        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
                           justify;line-height:normal'><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ val }}</span></p>
+                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ results.average|safe }}%</span></p>
                    </td>
                </tr>
-{% endfor %}
-           </table>
+  {% else %}
+              <tr></tr>
+              <tr>
+                <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+                       0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
+                       -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>--<span
+                                style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
+                            style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Promedio general:</span></p>
+                </td>
+                  <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
+                      <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                         justify;line-height:normal'><span
+                              style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ options.average|safe }}%</span></p>
+                  </td>
+              </tr>
 
-           <p class=MsoNormal style='text-align:justify;line-height:normal'><span
-                   style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+              </table>
 
-           <p class=MsoNormal style='text-align:justify;line-height:normal'><span
-                   style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Comentarios:</span></p>
-{% for opt in data.Q5 %}
-{% with i=forloop.counter %}
-  {% if i == 9 %}
-    <div class="saltopagina"></div>
+              <p class=MsoNormal style='text-align:justify;line-height:normal'><span
+                      style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+
+              <p class=MsoNormal style='text-align:justify;line-height:normal'><span
+                      style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Comentarios:</span></p>
+    {% for answer in results.answers%}
+      {% with i=forloop.counter %}
+        {% if i == 9 %}
+          <div class="saltopagina"></div>
+        {% endif %}
+                 <p class=MsoNormal style='text-align:justify;line-height:normal'><span
+                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ answer.answer|html_decode|safe }}.</span></p>
+      {% endwith %}
+    {% endfor %}
   {% endif %}
-           <p class=MsoNormal style='text-align:justify;line-height:normal'><span
-                   style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{opt|safe}}</span></p>
-{% endwith %}
 {% endfor %}
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
@@ -219,7 +243,7 @@
                    "Gotham Rounded Book"'>________________________________</span></p>
 
            <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
-              text-align:center;line-height:normal'><span style='font-size:10.0pt'> </span><span style='font-size:10.0pt'>{{ data.name|safe }}</span></p>
+              text-align:center;line-height:normal'><span style='font-size:10.0pt'> </span><span style='font-size:10.0pt'>{{ teacher.name|html_decode|safe }} {{ teacher.lastname|html_decode|safe }} {{ teacher.lastname2|html_decode|safe }}</span></p>
 
            <p class=MsoNormal align=center style='text-align:center'><span
                    style='font-size:10.0pt;line-height:107%'>Enterado</span></p>
@@ -227,6 +251,7 @@
        </div>
     <div class="saltopagina"></div>
 
+      {% endfor %}
     {% endfor %}
   {% endfor %}
 {% endblock %}

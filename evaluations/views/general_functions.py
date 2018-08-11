@@ -61,8 +61,8 @@ class GeneralFunctions(object):
     @classmethod
     def dumps(self, obj):
         for attr in dir(obj):
-            if hasattr( obj, attr ):
-                print( "obj.%s = %s" % (attr, getattr(obj, attr)))
+            if hasattr(obj, attr):
+                print("obj.%s = %s" % (attr, getattr(obj, attr)))
 
     @classmethod
     def write_to_excel(self, students, career, writer):
@@ -153,6 +153,8 @@ class GeneralFunctions(object):
         career_students = EvaluationsStudents.objects.filter(
             idcareer=career.idcareer)
         data = {}
+        data['exams'] = user_exams = EvaluationsExams.objects.filter(
+            Q(idcareer__exact=career) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
         data['students'] = self.get_evaluated_students(
             career_students)
         data['average_data'] = self. get_career_average(
@@ -193,3 +195,68 @@ class GeneralFunctions(object):
         signatures = EvaluationsSignatures.objects.filter(id__in=signatures_id)
 
         return signatures
+
+    @classmethod
+    def get_teacher_signature_results(self, teacher, signature, exam):
+        """Return the results of the evaluations to the teacher at the signature of the submitted test"""
+
+        groups = EvaluationsDetailStudentSignatureExam.objects.filter(
+            idsignature__exact=signature, idteacher__exact=teacher.idperson).values('id')
+        questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
+            idexam__exact=exam.id)
+
+        results = {}
+
+        preguntas = {}
+        evaluated = 0
+        counter = 0
+        final_average = 0
+        for question_exam in questions_detail_exam:
+            question = question_exam.idquestion
+
+            if question.optional == 'NO':
+
+                yes_answers = EvaluationsAnswers.objects.filter(
+                    iddetailquestion__exact=question_exam.id, answer='YES', idgroup__in=groups)
+                no_answers = EvaluationsAnswers.objects.filter(
+                    iddetailquestion__exact=question_exam.id, answer='NO', idgroup__in=groups)
+
+                if not yes_answers:
+                    yes_answers = [1]
+                if not no_answers:
+                    no_answers = [1]
+
+                average = int(len(yes_answers) /
+                              (len(yes_answers) + len(no_answers)) * 100)
+
+                preguntas[question] = {'yes': len(yes_answers), 'no': len(
+                    no_answers), 'average': average}
+
+                counter += 1
+                final_average += average
+                evaluated = (len(yes_answers) + len(no_answers))
+            else:
+                answers = EvaluationsAnswers.objects.filter(
+                    iddetailquestion__exact=question_exam.id, idgroup__in=groups).exclude(answer__isnull=True)
+                preguntas[question] = {'answers': answers}
+
+        final_average = (final_average / counter)
+        results['questions'] = preguntas
+        results['evaluated'] = evaluated
+        results['average'] = final_average
+
+        return results
+
+    @classmethod
+    def get_teachers_signatures_results(self, career, career_data):
+        teachers_signatures = self.get_career_teachers_signatures(career)
+
+        for exam in career_data['exams']:
+            for teacher, signatures in teachers_signatures.items():
+                signatures_results = {}
+                for signature in signatures:
+                    signatures_results[signature] = self.get_teacher_signature_results(
+                        teacher, signature, exam)
+                teachers_signatures[teacher] = signatures_results
+
+        return teachers_signatures

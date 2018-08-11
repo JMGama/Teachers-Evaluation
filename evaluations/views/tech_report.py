@@ -21,13 +21,18 @@ class tech_report(View, GeneralFunctions):
         coordinator = EvaluationsCoordinators.objects.get(idperson__exact=request.session['id_coordinator'])
         #Carreras x coordinador
         #Para extraer carreras del cordinador coord_career.idcareer
-        data = []
+        data = {}
+
         coordinator_careers = EvaluationsDetailCoordinatorCareer.objects.select_related(
         'idcareer').filter(idcoordinator__exact=coordinator.idperson)
-        for dcarrer in coordinator_careers:
-            data.append(self.getInfo2(dcarrer.idcareer))
+        for career in coordinator_careers:
+            career = career.idcareer
+            career_data = self.get_career_data(career)
+            teachers_signatures_results = self.get_teachers_signatures_results(career, career_data)
+            data[career] = teachers_signatures_results
         context = {
-        'all' : data
+        'all': data,
+        'x':'asas'
         }
         return render_to_pdf_response(request,template,context)
         #return render(request, template, context)
@@ -47,7 +52,7 @@ class tech_report(View, GeneralFunctions):
         #key maestro #val materia
         for key,val in data.items():
             for signature in val:
-                aux["name"]=self.html_decode(key.name + " " + key.lastname + " " + key.lastname2)
+                aux["name"]=self.html_decode(str(key.name) + " " + str(key.lastname) + " " + str(key.lastname2))
                 aux["signature"] = self.html_decode(signature.name)
                 #Total de Estudiantes
                 query = "SELECT COUNT(DISTINCT ANS.idStudent) as avg FROM evaluations_answers ANS INNER JOIN evaluations_detail_student_group DET ON DET.id=ANS.idGroup WHERE DET.idSignature = " + str(signature.id)
@@ -74,7 +79,7 @@ class tech_report(View, GeneralFunctions):
                     data[self.html_decode(qst.description)]=q.avg
                     avgT+=q.avg
             i+=1
-        data["Promedio general"]=avgT/(i-2)
+        data["Promedio general"]=(avgT/(i-2))
         return data
 
     def html_decode(self, s):
@@ -104,4 +109,4 @@ class tech_report(View, GeneralFunctions):
                 }
         for code in htmlCodes:
             s = s.replace(code[0], code[1])
-        return s
+        return str(s)
