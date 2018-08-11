@@ -1,0 +1,142 @@
+{% extends "easy_pdf/base.html" %}
+{% load static %}
+{% load html_decode %}
+{% block extra_style %}
+<style>
+            <!--
+            /* Font Definitions */
+            @font-face
+            {font-family:"Cambria Math";
+             panose-1:2 4 5 3 5 4 6 3 2 4;}
+            @font-face
+            {font-family:Calibri;
+             panose-1:2 15 5 2 2 2 4 3 2 4;}
+            @font-face
+            {font-family:"Segoe UI";
+             panose-1:2 11 5 2 4 2 4 2 2 3;}
+            @font-face
+            {font-family:"Gotham Rounded Book";
+             panose-1:0 0 0 0 0 0 0 0 0 0;}
+            @font-face
+            {font-family:"Gotham Rounded Bold";
+             panose-1:0 0 0 0 0 0 0 0 0 0;}
+            /* Style Definitions */
+            p.MsoNormal, li.MsoNormal, div.MsoNormal
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:8.0pt;
+             margin-left:0cm;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoHeader, li.MsoHeader, div.MsoHeader
+            {mso-style-link:"Encabezado Car";
+             margin:0cm;
+             margin-bottom:.0001pt;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoFooter, li.MsoFooter, div.MsoFooter
+            {mso-style-link:"Pie de página Car";
+             margin:0cm;
+             margin-bottom:.0001pt;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+            {mso-style-link:"Texto de globo Car";
+             margin:0cm;
+             margin-bottom:.0001pt;
+             font-size:9.0pt;
+             font-family:"Segoe UI",sans-serif;}
+            p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:8.0pt;
+             margin-left:36.0pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:0cm;
+             margin-left:36.0pt;
+             margin-bottom:.0001pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:0cm;
+             margin-left:36.0pt;
+             margin-bottom:.0001pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:8.0pt;
+             margin-left:36.0pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            span.EncabezadoCar
+            {mso-style-name:"Encabezado Car";
+             mso-style-link:Encabezado;}
+            span.PiedepginaCar
+            {mso-style-name:"Pie de página Car";
+             mso-style-link:"Pie de página";}
+            span.TextodegloboCar
+            {mso-style-name:"Texto de globo Car";
+             mso-style-link:"Texto de globo";
+             font-family:"Segoe UI",sans-serif;}
+            .MsoChpDefault
+            {font-family:"Calibri",sans-serif;}
+            .MsoPapDefault
+            {margin-bottom:8.0pt;
+             line-height:107%;}
+            /* Page Definitions */
+            @page WordSection1
+            {size:612.0pt 792.0pt;
+             margin:70.85pt 3.0cm 70.85pt 3.0cm;}
+            div.WordSection1
+            {page:WordSection1;}
+            /* List Definitions */
+            ol
+            {margin-bottom:0cm;}
+            ul
+            {margin-bottom:0cm;}
+
+            -->
+        </style>
+    <style type="text/css">
+        div.saltopagina{
+          display:block;
+          page-break-before:always;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+{% for career, teachers in all.items %}
+  {% for teacher, signatures in teachers.items %}
+    {% for signature, options in signatures.items %}
+    {{options}}
+
+
+    {% for question, results in options.questions.items %}
+  {% if question.optional == 'NO' %}
+
+  {% else %}
+    {% for answer in results.answers%}
+
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+
+
+      {% endfor %}
+    {% endfor %}
+  {% endfor %}
+{% endblock %}

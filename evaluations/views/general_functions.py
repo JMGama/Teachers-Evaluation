@@ -258,5 +258,43 @@ class GeneralFunctions(object):
                     signatures_results[signature] = self.get_teacher_signature_results(
                         teacher, signature, exam)
                 teachers_signatures[teacher] = signatures_results
-
         return teachers_signatures
+
+    @classmethod
+    def write_to_excelAll(self, data, writer):
+        """creates the CSV with the student data that were past"""
+        writer.writerow([
+            smart_str(u"Nombre"),
+            smart_str(u"Materia"),
+            smart_str(u"Encuestados"),
+            smart_str(u"Promedio General"),
+            smart_str(u"Pregunta"),
+            smart_str(u"Promedio"),
+            smart_str(u"Pregunta"),
+            smart_str(u"Promedio"),
+            smart_str(u"Pregunta"),
+            smart_str(u"Promedio"),
+            smart_str(u"Pregunta"),
+            smart_str(u"Promedio"),
+            smart_str(u"Comentarios"),
+        ])
+        row=[]
+        comments=""
+        for career, teachers in data.items():
+            for teacher, signatures in teachers.items():
+                for signature, options in signatures.items():
+                    row.append(
+                    smart_str(teacher.name+" "+
+                    teacher.lastname+" "+teacher.lastname2))
+                    row.append(signature.name)
+                    row.append(options["evaluated"])
+                    row.append(options["average"])
+                    for question, results in options["questions"].items():
+                        if question.optional == 'NO':
+                            row.append(question.id)
+                            row.append(results["average"])
+                        else:
+                            for answer in results["answers"]:
+                                row.append(answer.answer)
+                    writer.writerow(row)
+                    row=[]

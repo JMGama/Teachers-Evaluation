@@ -115,7 +115,8 @@
             <div class="row center-align">
               <form id="download{{career.idcareer}}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading({{career.idcareer}})"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
+              <!--  <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading({{career.idcareer}})"><i class="material-icons right">get_app</i>Alumnos faltantes</button> -->
+                <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading1({{career.idcareer}})"><i class="material-icons right">get_app</i>Datos en Exel</button>
                 <input type="hidden" name="action" value="excel"/>
                 <input type="hidden" name="career" value="{{career.idcareer}}"/>
               </form>
@@ -125,6 +126,7 @@
             <div class="row center-align">
               <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes<a>
             </div>
+
 
           </div>
         </div>
@@ -155,6 +157,31 @@
     $.ajax({
       type:"POST",
       url:"{% url 'evaluations:monitoring' %}",
+      data: {
+            'action': action,
+            'career': career,
+            'csrfmiddlewaretoken': csrftoken,
+            },
+      success: function(){
+        $('#modal1').modal('close');
+      },
+      complete: function(){
+        $('#modal1').modal('close');
+      },
+      error: function(){
+        $('#modal1').modal('close');
+      }
+    });
+  }
+
+  function loading1(idCareer){
+    $('#modal1').modal('open');
+    var csrftoken = $('#download'+idCareer).find('input[name="csrfmiddlewaretoken"]').val();
+    var action = $('#download'+idCareer).find('input[name="action"]').val();
+    var career = $('#download'+idCareer).find('input[name="career"]').val();
+    $.ajax({
+      type:"POST",
+      url:"{% url 'evaluations:tech_report' %}",
       data: {
             'action': action,
             'career': career,
