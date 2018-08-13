@@ -221,9 +221,8 @@ class GeneralFunctions(object):
                 no_answers = EvaluationsAnswers.objects.filter(
                     iddetailquestion__exact=question_exam.id, answer='NO', idgroup__in=groups)
 
-                if not yes_answers:
+                if not yes_answers and not no_answers:
                     yes_answers = [1]
-                if not no_answers:
                     no_answers = [1]
 
                 average = int(len(yes_answers) /
