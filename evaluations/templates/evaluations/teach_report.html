@@ -99,7 +99,7 @@
             /* Page Definitions */
             @page WordSection1
             {size:612.0pt 792.0pt;
-             margin:70.85pt 3.0cm 70.85pt 3.0cm;}
+             margin:80.85pt 3.0cm 70.85pt 3.0cm;}
             div.WordSection1
             {page:WordSection1;}
             /* List Definitions */
@@ -123,12 +123,14 @@
   {% for teacher, signatures in teachers.items %}
     {% for signature, options in signatures.items %}
 
-        <img width="20%" height="20%" src="{% static 'evaluations/images/Logo.jpg' %}" alt="logo">
+    <img style="width:190px; height:50px;" src="{% static 'evaluations/images/Logo.jpg' %}" alt="logo">
+
   <div class=WordSection1>
-            <p class=MsoNormal align=center style='text-align:right'>
+    <br><br>
+            <p class=MsoNormal align=center style='margin-up: 2em; text-align:right'>
            <span style='font-size:10.0pt;
-           line-height:107%;font-family:"Gotham Rounded Book"'>UNIVERSIDAD CUAHUT&Eacute;MOC CAMPUS QUER&Eacute;TARO</span>{{x}}</p>
-           <p class=MsoNormal align=center style='text-align:right'>
+           line-height:107%;font-family:"Gotham Rounded Book"'>UNIVERSIDAD CUAHUT&Eacute;MOC CAMPUS QUER&Eacute;TARO</span></p>
+          <p class=MsoNormal align=center style='text-align:right'>
           <span style='font-size:10.0pt;
           line-height:107%;font-family:"Gotham Rounded Book"'>DEPARTAMENTO ACADEM&Iacute;CO</span></p>
            <p class=MsoNormal align=right
