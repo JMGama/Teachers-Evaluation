@@ -201,7 +201,7 @@ class GeneralFunctions(object):
         """Return the results of the evaluations to the teacher at the signature of the submitted test"""
 
         groups = EvaluationsDetailStudentSignatureExam.objects.filter(
-            idsignature__exact=signature, idteacher__exact=teacher.idperson).values('id')
+            idsignature__exact=signature, idteacher__exact=teacher.idperson).values('idgroup')
         questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
             idexam__exact=exam.id)
 
