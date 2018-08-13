@@ -523,6 +523,7 @@ class EvaluationsCareers(models.Model):
         verbose_name = 'Carrera'
         verbose_name_plural = 'Carreras'
 
+
 class Average(models.Model):
     avg = models.IntegerField(primary_key=True)
 
@@ -531,3 +532,22 @@ class Average(models.Model):
 
     class Meta:
         managed = False
+
+
+class Eb1(models.Model):
+    signature = models.CharField(max_length=255)
+    name = models.CharField(max_length=182, blank=True, null=True)
+    q1 = models.IntegerField(db_column='Q1', blank=True, null=True)  # Field name made lowercase.
+    q2 = models.IntegerField(db_column='Q2', blank=True, null=True)  # Field name made lowercase.
+    q3 = models.IntegerField(db_column='Q3', blank=True, null=True)  # Field name made lowercase.
+    q4 = models.IntegerField(db_column='Q4', blank=True, null=True)  # Field name made lowercase.
+    q5 = models.TextField(db_column='Q5', blank=True, null=True)  # Field name made lowercase.
+    ptotal = models.BigIntegerField(db_column='Ptotal', blank=True, null=True)  # Field name made lowercase.
+    idteacher = models.CharField(db_column='idTeacher', max_length=20)  # Field name made lowercase.
+    idsignature = models.IntegerField(db_column='idSignature')  # Field name made lowercase.
+    idgroup = models.IntegerField(db_column='idGroup')  # Field name made lowercase.
+    average = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'EB1'
