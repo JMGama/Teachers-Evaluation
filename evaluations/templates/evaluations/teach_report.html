@@ -99,7 +99,7 @@
             /* Page Definitions */
             @page WordSection1
             {size:612.0pt 792.0pt;
-             margin:70.85pt 3.0cm 70.85pt 3.0cm;}
+             margin:80.85pt 3.0cm 70.85pt 3.0cm;}
             div.WordSection1
             {page:WordSection1;}
             /* List Definitions */
@@ -122,11 +122,15 @@
 {% for career, teachers in all.items %}
   {% for teacher, signatures in teachers.items %}
     {% for signature, options in signatures.items %}
+
+    <img style="width:190px; height:50px;" src="{% static 'evaluations/images/Logo.jpg' %}" alt="logo">
+
   <div class=WordSection1>
-            <p class=MsoNormal align=center style='text-align:right'>
+    <br><br>
+            <p class=MsoNormal align=center style='margin-up: 2em; text-align:right'>
            <span style='font-size:10.0pt;
-           line-height:107%;font-family:"Gotham Rounded Book"'>UNIVERSIDAD CUAHUT&Eacute;MOC CAMPUS QUER&Eacute;TARO</span>{{x}}</p>
-           <p class=MsoNormal align=center style='text-align:right'>
+           line-height:107%;font-family:"Gotham Rounded Book"'>UNIVERSIDAD CUAHUT&Eacute;MOC CAMPUS QUER&Eacute;TARO</span></p>
+          <p class=MsoNormal align=center style='text-align:right'>
           <span style='font-size:10.0pt;
           line-height:107%;font-family:"Gotham Rounded Book"'>DEPARTAMENTO ACADEM&Iacute;CO</span></p>
            <p class=MsoNormal align=right
@@ -204,6 +208,7 @@
               </tr>
 
               </table>
+
               <p class=MsoNormal style='text-align:justify;line-height:normal'><span
                       style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
 
@@ -211,7 +216,7 @@
                       style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Comentarios:</span></p>
     {% for answer in results.answers%}
       {% with i=forloop.counter %}
-        {% if i == 9 %}
+        {% if i == 4 %}
           <div class="saltopagina"></div>
         {% endif %}
                  <p class=MsoNormal style='text-align:justify;line-height:normal'><span
