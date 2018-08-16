@@ -25,12 +25,12 @@ class MonitoringView(View, GeneralFunctions):
             idcoordinator__exact=coordinator.idperson).values('idcareer')
         careers = EvaluationsCareers.objects.filter(idcareer__in=careers_id)
 
-        careers_data = self.get_careers_data(coordinator)
+        general_data = self.get_general_data()
 
         context = {
             'coordinator': coordinator,
             'careers': careers,
-            'careers_data': careers_data,
+            'general_data': general_data,
         }
 
         return render(request, self.template_monitoring, context)

@@ -89,39 +89,25 @@
               </div>
             </div>
 
-
-            {% for career, values in careers_data.items %}
-
-            <h6 class="header center">{{career.description.capitalize}}</h6>
-            <hr style="width:60%;">
             <div class="row">
               <div class="col s12 m12 l12">
                 <div class="row">
                   <div class="col s12 m6 l6">
                     <div class="sample-chart-wrapper">
-                      <canvas id="myChart{{career.idcareer}}" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      <canvas id="myChartEvaluations" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                     </div>
                     <p class="header center">Evaluaciones Realizadas</p>
                   </div>
                   <div class="col s12 m6 l6">
                     <div class="sample-chart-wrapper">
-                      <canvas id="myChart{{career.idcareer}}Average" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                     </div>
                     <p class="header center">Promedio General</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="row center-align">
-              <form id="download{{career.idcareer}}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading({{career.idcareer}})"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
-                <input type="hidden" name="action" value="excel"/>
-                <input type="hidden" name="career" value="{{career.idcareer}}"/>
-              </form>
 
-            </div>
-            {% endfor %}
             <div class="row center-align">
               <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes<a>
             </div>
@@ -218,15 +204,17 @@
 </script>
 
 <script type="text/javascript ">
-  {% for career, values in careers_data.items %}
-    var ctx = document.getElementById("myChart{{career.idcareer}}").getContext('2d');
-    var evaluated = {{values.evaluated|length}};
-    var not_evaluated = {{values.not_evaluated|length}};
-    var percentage = (evaluated / (not_evaluated + evaluated) * 100).toFixed(0) + "%";
+    var ctx = document.getElementById("myChartEvaluations").getContext('2d');
+
+    var evaluated = {{ general_data.students_evaluated }};
+    var not_evaluated = {{ general_data.total_students }} - {{ general_data.students_evaluated }};
+    var total_students = {{ general_data.total_students }};
+    var percentage = (evaluated / (total_students) * 100).toFixed(0) + "%";
+
     var data = {
       labels: ["Realizadas ", "Faltantes "],
       datasets: [{
-        data: [{{values.evaluated|length}},{{values.not_evaluated|length}}],
+        data: [evaluated,not_evaluated],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -256,16 +244,20 @@
       data: data,
       options: options
     });
-  {% endfor %}
 </script>
 
 <script type="text/javascript ">
-  {% for career, values in careers_data.items %}
-    var ctx = document.getElementById("myChart{{career.idcareer}}Average").getContext('2d');
+    var ctx = document.getElementById("myChartAverage").getContext('2d');
+
+    var no_answers = {{ general_data.no_answers }};
+    var yes_answers = {{ general_data.yes_answers }};
+    var total_answers = {{ general_data.total_answers }};
+    var percentage = (yes_answers / (total_answers) * 100).toFixed(0) + "%";
+
     var data = {
       labels: ["Si ", "No "],
       datasets: [{
-        data: [{{values.average_data.yes}}, {{values.average_data.no}}],
+        data: [{{ general_data.yes_answers }}, {{ general_data.no_answers }}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -283,7 +275,7 @@
       },
       elements: {
         center: {
-          text: {{values.average_data.average}}.toFixed(0) + "%", // Porcentaje de alumnos
+          text: percentage, // Porcentaje de alumnos
           color: 'black', // Default is #000000
           fontStyle: 'Arial', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
@@ -295,7 +287,6 @@
       data: data,
       options: options
     });
-  {% endfor %}
 </script>
 
 </html>
