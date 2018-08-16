@@ -304,6 +304,5 @@ class GeneralFunctions(object):
             data['no_answers'] = cursor.fetchone()[0]
 
         data['total_answers'] = data['no_answers'] + data['yes_answers']
-        
-        print(data)    
+
         return data
