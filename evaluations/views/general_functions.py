@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.db import connection
 from evaluations.models import *
+import datetime
 
 
 class GeneralFunctions(object):
@@ -121,18 +122,16 @@ class GeneralFunctions(object):
         answers_yes = 0
         answers_no = 0
         data = {}
-        for student in evaluated_students:
-            # Only consider non optional questions for the average
-            questions = EvaluationsDetailExamQuestion.objects.filter()
-            for question in questions:
-                if question.idquestion.optional == 'NO':
-                    answers = EvaluationsAnswers.objects.filter(
-                        idstudent__exact=student.idperson, iddetailquestion__exact=question.id)
-                    for answer in answers:
-                        if answer.answer == 'YES':
-                            answers_yes = answers_yes + 1
-                        else:
-                            answers_no = answers_no + 1
+
+        # Only consider non optional questions for the average
+        questions = EvaluationsDetailExamQuestion.objects.filter()
+        for question in questions:
+            if question.idquestion.optional == 'NO':
+                answers_yes += len(EvaluationsAnswers.objects.filter(
+                    idstudent__in=(student.idperson for student in evaluated_students), iddetailquestion__exact=question.id, answer='YES'))
+                answers_no += len(EvaluationsAnswers.objects.filter(
+                    idstudent__in=(student.idperson for student in evaluated_students), iddetailquestion__exact=question.id, answer='NO'))
+
         data['average'] = answers_yes / (answers_yes + answers_no) * 100
         data['yes'] = answers_yes
         data['no'] = answers_no
@@ -150,7 +149,6 @@ class GeneralFunctions(object):
             career_students)
         data['average_data'] = self. get_career_average(
             data['students']['evaluated'])
-
         return data
 
     @classmethod
