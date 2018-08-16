@@ -15,26 +15,34 @@ def html_decode(s):
     Returns the ASCII decoded version of the given HTML string. This does
     NOT remove normal HTML tags like <p>.
     """
-    htmlCodes = {
-            ("¿", '&iquest;'),
-            ("'", '&#39;'),
-            ('"', '&quot;'),
-            ('>', '&gt;'),
-            ('<', '&lt;'),
-            ('ó', '&oacute;'),
-            ('Ó', '&Oacute;'),
-            ('Á', '&Aacute;'),
-            ('É', '&Eacute;'),
-            ('Í', '&Iacute;'),
-            ('Ú', '&Uacute;'),
-            ('á', '&aacute;'),
-            ('é', '&eacute;'),
-            ('í', '&iacute;'),
-            ('ó', '&oacute;'),
-            ('ú', '&uacute;'),
-            ('Ñ', '&Ntilde;'),
-            ('ñ', '&ntilde;')
-            }
-    for code in htmlCodes:
-        s = s.replace(code[0], code[1])
+    if s:
+        htmlCodes = {
+                ("¿", '&iquest;'),
+                ("'", '&#39;'),
+                ('"', '&quot;'),
+                ('>', '&gt;'),
+                ('<', '&lt;'),
+                ('ó', '&oacute;'),
+                ('Ó', '&Oacute;'),
+                ('Á', '&Aacute;'),
+                ('É', '&Eacute;'),
+                ('Í', '&Iacute;'),
+                ('Ú', '&Uacute;'),
+                ('á', '&aacute;'),
+                ('é', '&eacute;'),
+                ('í', '&iacute;'),
+                ('ó', '&oacute;'),
+                ('ú', '&uacute;'),
+                ('Ñ', '&Ntilde;'),
+                ('ñ', '&ntilde;'),
+                ('ñ', '&ntilde;'),
+                ('❤️','&#9829;'),
+                ('❤','&#9825;'),
+                ('“','&#8220;'),
+                ('”','&#8221;'),
+                ('!','&#33;'),
+                ('¡','&#161;'),
+                }
+        for code in htmlCodes:
+            s = s.replace(code[0], code[1])
     return str(s)
