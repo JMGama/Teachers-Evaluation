@@ -103,23 +103,16 @@ class GeneralFunctions(object):
         not_eval_students = []
 
         for student in career_students:
-            evaluations = self.get_evaluations(student)
-            evaluated = self.get_evaluated_signatures(student)
-            not_evaluated = []
-
-            for evaluation in evaluations:
-                for group in evaluation['groups']:
-                    if not group.id in evaluated:
-                        not_evaluated.append(group.id)
-                        break
-
-            if not not_evaluated:
+            verification_student = EvaluationsDetailStudentSignatureExam.objects.filter(
+                idstudent__exact=student.idperson).order_by('idstudent')
+            if verification_student:
                 eval_students.append(student)
             else:
                 not_eval_students.append(student)
 
         students['evaluated'] = eval_students
         students['not_evaluated'] = not_eval_students
+
         return students
 
     @classmethod
@@ -195,7 +188,7 @@ class GeneralFunctions(object):
         return signatures
 
     @classmethod
-    def get_teacher_signature_results_2(self, teacher, signature, exam):
+    def get_teacher_signature_results(self, teacher, signature, exam):
         """Return the results of the evaluations to the teacher at the signature of the submitted test"""
 
         groups = EvaluationsDetailStudentSignatureExam.objects.filter(
@@ -245,7 +238,7 @@ class GeneralFunctions(object):
         return results
 
     @classmethod
-    def get_teacher_signature_results(self, teacher, signature, exam):
+    def get_teacher_signature_results_2(self, teacher, signature, exam):
         results = {}
         questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
             idexam__exact=exam.id)
@@ -297,10 +290,12 @@ class GeneralFunctions(object):
                 'SELECT COUNT(DISTINCT(idStudent)) FROM evaluations_detail_student_signature_exam')
             data['students_evaluated'] = cursor.fetchone()[0]
 
-            cursor.execute('SELECT count(id) FROM evaluations_answers where answer="YES";')
+            cursor.execute(
+                'SELECT count(id) FROM evaluations_answers where answer="YES";')
             data['yes_answers'] = cursor.fetchone()[0]
 
-            cursor.execute('SELECT count(id) FROM evaluations_answers where answer="NO";')
+            cursor.execute(
+                'SELECT count(id) FROM evaluations_answers where answer="NO";')
             data['no_answers'] = cursor.fetchone()[0]
 
         data['total_answers'] = data['no_answers'] + data['yes_answers']
