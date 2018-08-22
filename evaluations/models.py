@@ -9,6 +9,9 @@ from django.db import models
 
 
 class EvaluationsStudents(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idperson = models.AutoField(db_column='idPerson', primary_key=True)
     enrollment = models.CharField(max_length=30)
@@ -66,6 +69,9 @@ class EvaluationsStudents(models.Model):
 
 
 class EvaluationsCoordinators(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idperson = models.AutoField(db_column='idPerson', primary_key=True)
     enrollment = models.CharField(max_length=30)
@@ -120,6 +126,9 @@ class EvaluationsCoordinators(models.Model):
 
 
 class EvaluationsTeachers(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idperson = models.AutoField(db_column='idPerson', primary_key=True)
     enrollment = models.CharField(max_length=30)
@@ -175,6 +184,9 @@ class EvaluationsTeachers(models.Model):
 
 
 class EvaluationsAnswers(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idstudent = models.ForeignKey(
         'EvaluationsStudents', on_delete=models.PROTECT, db_column='idStudent')
@@ -207,12 +219,15 @@ class EvaluationsAnswers(models.Model):
 
 
 class EvaluationsDetailCoordinatorCareer(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idcoordinator = models.ForeignKey('EvaluationsCoordinators', on_delete=models.PROTECT,
-        db_column='idCoordinator', blank=True, null=True)
+                                      db_column='idCoordinator', blank=True, null=True)
     # Field name made lowercase.
     idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
-        db_column='idCareer', max_length=255, blank=True, null=True)
+                                 db_column='idCareer', max_length=255, blank=True, null=True)
     STATUS_CHOICES = (
         ('ACTIVO', 'Activo'),
         ('INACTIVO', 'Inactivo'),
@@ -226,6 +241,9 @@ class EvaluationsDetailCoordinatorCareer(models.Model):
 
 
 class EvaluationsDetailExamQuestion(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idexam = models.ForeignKey(
         'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
@@ -255,6 +273,9 @@ class EvaluationsDetailExamQuestion(models.Model):
 
 
 class EvaluationsDetailStudentGroup(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idgroup = models.CharField(db_column='idGroup', max_length=10)
     # Field name made lowercase.
@@ -286,9 +307,12 @@ class EvaluationsDetailStudentGroup(models.Model):
 
 
 class EvaluationsDetailTeacherCareer(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     iddocente = models.ForeignKey(
-        'EvaluationsTeachers', on_delete=models.PROTECT,blank=True, null=True, db_column='idDocente')
+        'EvaluationsTeachers', on_delete=models.PROTECT, blank=True, null=True, db_column='idDocente')
     # Field name made lowercase.
     idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
                                  db_column='idCareer', max_length=255, blank=True, null=True)
@@ -311,6 +335,12 @@ class EvaluationsDetailTeacherCareer(models.Model):
 
 
 class EvaluationsDetailGroupPeriodSignature(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idgroup = models.IntegerField(db_column='idGroup')
     # Field name made lowercase.
@@ -345,6 +375,9 @@ class EvaluationsDetailGroupPeriodSignature(models.Model):
 
 
 class EvaluationsDetailStudentSignatureExam(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idsignature = models.ForeignKey(
         'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
@@ -387,6 +420,9 @@ class EvaluationsDetailStudentSignatureExam(models.Model):
 
 
 class EvaluationsExams(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     description = models.CharField(max_length=255)
     # Field name made lowercase.
     idcareer = models.ForeignKey(
@@ -414,6 +450,9 @@ class EvaluationsExams(models.Model):
 
 
 class EvaluationsQuestions(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     TYPE_CHOICES = (
         ('DATEPICKER', 'Seleccion de fecha'),
         ('RADIO', 'Si y No'),
@@ -454,6 +493,9 @@ class EvaluationsQuestions(models.Model):
 
 
 class EvaluationsSignatures(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     name = models.CharField(max_length=255)
     credits = models.IntegerField()
 
@@ -485,6 +527,9 @@ class EvaluationsSignatures(models.Model):
 
 
 class EvaluationsPeriods(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idperiod = models.AutoField(db_column='idPeriod', primary_key=True)
     period = models.CharField(max_length=15, blank=True, null=True)
@@ -502,6 +547,9 @@ class EvaluationsPeriods(models.Model):
 
 
 class EvaluationsCareers(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     # Field name made lowercase.
     idcareer = models.AutoField(db_column='idCareer', primary_key=True)
     # Field name made lowercase.
@@ -525,6 +573,9 @@ class EvaluationsCareers(models.Model):
 
 
 class Average(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     avg = models.IntegerField(primary_key=True)
 
     def __str__(self):
@@ -535,17 +586,29 @@ class Average(models.Model):
 
 
 class Eb1(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
     signature = models.CharField(max_length=255)
     name = models.CharField(max_length=182, blank=True, null=True)
-    q1 = models.IntegerField(db_column='Q1', blank=True, null=True)  # Field name made lowercase.
-    q2 = models.IntegerField(db_column='Q2', blank=True, null=True)  # Field name made lowercase.
-    q3 = models.IntegerField(db_column='Q3', blank=True, null=True)  # Field name made lowercase.
-    q4 = models.IntegerField(db_column='Q4', blank=True, null=True)  # Field name made lowercase.
-    q5 = models.TextField(db_column='Q5', blank=True, null=True)  # Field name made lowercase.
-    ptotal = models.BigIntegerField(db_column='Ptotal', blank=True, null=True)  # Field name made lowercase.
-    idteacher = models.CharField(db_column='idTeacher', max_length=20)  # Field name made lowercase.
-    idsignature = models.IntegerField(db_column='idSignature')  # Field name made lowercase.
-    idgroup = models.IntegerField(db_column='idGroup')  # Field name made lowercase.
+    # Field name made lowercase.
+    q1 = models.IntegerField(db_column='Q1', blank=True, null=True)
+    # Field name made lowercase.
+    q2 = models.IntegerField(db_column='Q2', blank=True, null=True)
+    # Field name made lowercase.
+    q3 = models.IntegerField(db_column='Q3', blank=True, null=True)
+    # Field name made lowercase.
+    q4 = models.IntegerField(db_column='Q4', blank=True, null=True)
+    # Field name made lowercase.
+    q5 = models.TextField(db_column='Q5', blank=True, null=True)
+    # Field name made lowercase.
+    ptotal = models.BigIntegerField(db_column='Ptotal', blank=True, null=True)
+    # Field name made lowercase.
+    idteacher = models.CharField(db_column='idTeacher', max_length=20)
+    # Field name made lowercase.
+    idsignature = models.IntegerField(db_column='idSignature')
+    # Field name made lowercase.
+    idgroup = models.IntegerField(db_column='idGroup')
     average = models.FloatField(blank=True, null=True)
 
     class Meta:
