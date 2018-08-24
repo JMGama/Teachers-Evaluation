@@ -186,7 +186,7 @@ class GeneralFunctions(object):
         return signatures
 
     @classmethod
-    def get_teacher_signature_results(self, teacher, signature, exam):
+    def get_teacher_signature_results_2(self, teacher, signature, exam):
         """Return the results of the evaluations to the teacher at the signature of the submitted test"""
 
         groups = EvaluationsDetailStudentSignatureExam.objects.filter(
@@ -236,7 +236,7 @@ class GeneralFunctions(object):
         return results
 
     @classmethod
-    def get_teacher_signature_results_2(self, teacher, signature, exam):
+    def get_teacher_signature_results(self, teacher, signature, exam):
         results = {}
         questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
             idexam__exact=exam.id)
