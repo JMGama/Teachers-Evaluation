@@ -26,12 +26,14 @@ class MonitoringView(View, GeneralFunctions):
         careers = EvaluationsCareers.objects.filter(idcareer__in=careers_id)
 
         general_data = self.get_general_data()
-
         context = {
             'coordinator': coordinator,
             'careers': careers,
             'general_data': general_data,
         }
+
+        if request.session['id_coordinator'] == 5941:
+            context['admin_user'] = True
 
         return render(request, self.template_monitoring, context)
 
