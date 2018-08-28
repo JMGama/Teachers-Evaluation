@@ -220,7 +220,7 @@
           <div class="saltopagina"></div>
         {% endif %}
                  <p class=MsoNormal style='text-align:justify;line-height:normal'><span
-                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ answer|html_decode|safe }}.</span></p>
+                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ answer.answer|html_decode|safe }}.</span></p>
       {% endwith %}
     {% endfor %}
   {% endif %}
