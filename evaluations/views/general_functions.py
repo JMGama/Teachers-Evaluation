@@ -132,7 +132,11 @@ class GeneralFunctions(object):
                 answers_no += len(EvaluationsAnswers.objects.filter(
                     idstudent__in=(student.idperson for student in evaluated_students), iddetailquestion__exact=question.id, answer='NO'))
 
-        data['average'] = answers_yes / (answers_yes + answers_no) * 100
+        if (answers_yes + answers_no) == 0:
+            data['average'] = 0
+        else:
+            data['average'] = answers_yes / (answers_yes + answers_no) * 100
+
         data['yes'] = answers_yes
         data['no'] = answers_no
         return data
