@@ -77,43 +77,57 @@
             </div>
             {% endif %}
 
-            <div class="row valign-wrapper ">
-              <div class="col s8 m10 ">
-                <span class="card-title ">
-                  <b>Resultados de {{career.description.capitalize}}</b>
-                </span>
-                <hr/>
-              </div>
-              <div class="col s4 m2 ">
-                <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %} ">
+            <div class="row">
+              <div class="col s12">
+                <ul class="tabs">
+                  <li class="tab col s4"><a class="active" href="#resultados">Resultados</a></li>
+                  <li class="tab col s4"><a href="#docentes">Docentes</a></li>
+                  <li class="tab col s4"><a href="#reportes">Reportes</a></li>
+                </ul>
               </div>
             </div>
-
-
-            <div class="row">
-              <div class="col s12 m12 l12">
-                <div class="row">
-                  <div class="col s12 m6 l6">
-                    <div class="sample-chart-wrapper">
-                      <canvas id="myChart" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+            
+            <div id="resultados" >
+              <br>
+              <div class="row valign-wrapper ">
+                <div class="col s12 m12 ">
+                  <span class="card-title center">
+                    <b>Resultados de {{career.description.capitalize}}</b>
+                  </span>
+                  <hr style="width: 12rem !important"/>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s12 m12 l12">
+                  <div class="row">
+                    <div class="col s12 m6 l6">
+                      <div class="sample-chart-wrapper">
+                        <canvas id="myChart" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      </div>
+                      <p class="header center">Evaluaciones Realizadas</p>
                     </div>
-                    <p class="header center">Evaluaciones Realizadas</p>
-                  </div>
-                  <div class="col s12 m6 l6">
-                    <div class="sample-chart-wrapper">
-                      <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                    <div class="col s12 m6 l6">
+                      <div class="sample-chart-wrapper">
+                        <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      </div>
+                      <p class="header center">Promedio General</p>
                     </div>
-                    <p class="header center">Promedio General</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="row center-align">
-              <form id="download" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading()"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
-                <input type="hidden" name="action" value="excel"/>
-              </form>
+
+            <div id="docentes">
+            </div>
+
+            <div id="reportes">
+              <div class="row center-align">
+                <form id="download" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading()"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
+                  <input type="hidden" name="action" value="excel"/>
+                </form>
+              </div>
             </div>
 
           </div>
@@ -134,6 +148,7 @@
 <script type="text/javascript ">
 
   $(document).ready(function(){
+    $('.tabs').tabs();
     $('.modal').modal({dismissible:false});
   });
 
