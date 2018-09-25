@@ -157,7 +157,7 @@ class GeneralFunctions(object):
 
     @classmethod
     def get_career_teachers_signatures(self, career):
-        """return a dictionary with all the teachers of the career and each teacher signatures that they give"""
+        """return a dictionary with all the teachers of the career and each signatures that they give"""
         signatures = self.get_career_signatures(career)
 
         teachers_id = EvaluationsDetailGroupPeriodSignature.objects.filter(
@@ -166,13 +166,13 @@ class GeneralFunctions(object):
 
         data = {}
         for teacher in teachers:
-            teacher_signatures_id = EvaluationsDetailGroupPeriodSignature.objects.filter(
-                idsignature__in=signatures.values('id'), idteacher__exact=teacher.idperson).values('idsignature')
             teacher_signatures = []
 
-            for signature_id in teacher_signatures_id:
-                teacher_signatures.append(EvaluationsSignatures.objects.get(
-                    id__exact=signature_id['idsignature']))
+            details = EvaluationsDetailGroupPeriodSignature.objects.select_related('idsignature').filter(
+                idsignature__in=signatures.values('id'), idteacher__exact=teacher.idperson)
+
+            for detail_signature in details:
+                teacher_signatures.append(detail_signature.idsignature)
 
             data[teacher] = teacher_signatures
         return data
