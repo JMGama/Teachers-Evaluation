@@ -196,7 +196,7 @@ class GeneralFunctions(object):
         groups = EvaluationsDetailStudentSignatureExam.objects.filter(
             idsignature__exact=signature, idteacher__exact=teacher.idperson).values('idgroup')
         questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
-            idexam__exact=exam.id)
+            idexam__exact=exam.id) # No es necesario repetirlo siempre aqui
 
         results = {}
 
