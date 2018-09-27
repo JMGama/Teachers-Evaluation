@@ -30,12 +30,15 @@ class CareerResultsView(View, GeneralFunctions):
         career_data = self.get_career_data(career)
         
         # Getting teachers results
-        career_data = self.get_career_data(career)
-        teachers_signatures_results = self.get_teachers_signatures_results(career, career_data)
-        teachers_results = teachers_signatures_results
+        # career_data = self.get_career_data(career)
+        # teachers_signatures_results = self.get_teachers_signatures_results(
+        #     career, career_data)
+        # teachers_results = teachers_signatures_results
         
+        teachers = self.get_career_teachers(career)
+
         context = {
-            'teacher_results': teachers_results,
+            'teachers': teachers,
             'coordinator': coordinator,
             'careers': careers,
             'career': career,

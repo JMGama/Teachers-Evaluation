@@ -196,7 +196,7 @@ class GeneralFunctions(object):
         groups = EvaluationsDetailStudentSignatureExam.objects.filter(
             idsignature__exact=signature, idteacher__exact=teacher.idperson).values('idgroup')
         questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
-            idexam__exact=exam.id) # No es necesario repetirlo siempre aqui
+            idexam__exact=exam.id)  # No es necesario repetirlo siempre aqui
 
         results = {}
 
@@ -303,3 +303,13 @@ class GeneralFunctions(object):
         data['total_answers'] = data['no_answers'] + data['yes_answers']
 
         return data
+
+    @classmethod
+    def get_career_teachers(cls, career):
+        teachers_id = EvaluationsDetailTeacherCareer.objects.filter(
+            idcareer__exact=career).select_related('iddocente')
+
+        teachers = []
+        for teacher in teachers_id:
+            teachers.append(teacher.iddocente)
+        return teachers
