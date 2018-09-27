@@ -119,22 +119,26 @@
                 <b>Docentes de {{career.description.capitalize}}</b>
               </span>
               <hr style="width: 12rem !important"/>
-              <table class="highlight striped">
-                <thead>
-                  <tr>
-                      <th>Nombre</th>
-                      <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {% for teacher in teachers %}
-                  <tr>
-                    <td>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</td>
-                    <td><a href="#!" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">poll</i></a></td>
-                  </tr>
-                {% endfor %}
-                </tbody>
-              </table>
+              <div class="row">
+                <div class="col s10 offset-s1">
+                  <table class="border striped highlight bordered">
+                    <thead>
+                      <trx>
+                          <th>Nombre</th>
+                          <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for teacher in teachers %} 
+                      <tr style="border-top:1px solid #1e2e5042;">
+                        <td>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</td>
+                        <td><a href="#!" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
 
             <div id="reportes">
