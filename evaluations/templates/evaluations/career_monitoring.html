@@ -82,15 +82,14 @@
             <div class="row">
               <div class="col s12" >
                 <ul class="tabs" style="overflow-x: hidden">
-                  <li class="tab col s4"><a class="active" href="#resultados">Resultados</a></li>
-                  <li class="tab col s4"><a href="#docentes">Docentes</a></li>
+                  <li class="tab col s4"><a href="#resultados">Resultados</a></li>
+                  <li class="tab col s4"><a id="docentesTab" href="#docentes">Docentes</a></li>
                   <li class="tab col s4"><a href="#reportes">Reportes</a></li>
                 </ul>
               </div>
             </div>
             
             <div id="resultados" >
-              <br>
                 <span class="card-title center">
                   <b>Resultados de {{career.description.capitalize}}</b>
                 </span>
@@ -116,7 +115,6 @@
             </div>
 
             <div id="docentes">
-              <br>
               <span class="card-title center" >
                 <b>Docentes de {{career.description.capitalize}}</b>
               </span>
@@ -141,6 +139,28 @@
                   </table>
                 </div>
               </div>
+
+              {% if teachers.has_other_pages %}
+                <ul class="pagination center">
+                  {% if teachers.has_previous %}
+                    <li><a href="?page={{ teachers.previous_page_number }}&active=docentes"><i class="material-icons">chevron_left</i></a></li>
+                  {% else %}
+                    <li class="disabled"><span><i class="material-icons">chevron_left</i></span></li>
+                  {% endif %}
+                  {% for i in teachers.paginator.page_range %}
+                    {% if teachers.number == i %}
+                      <li class="active waves-effect"><a>{{ i }}</a></li>
+                    {% else %}
+                      <li><a href="?page={{ i }}&active=docentes">{{ i }}</a></li>
+                    {% endif %}
+                  {% endfor %}
+                  {% if teachers.has_next %}
+                    <li><a href="?page={{ teachers.next_page_number }}&active=docentes"><i class="material-icons">chevron_right</i></a></li>
+                  {% else %}
+                    <li class="disabled"><span><i class="material-icons">chevron_right</i></span></li>
+                  {% endif %}
+                </ul>
+              {% endif %}
             </div>
 
             <div id="reportes">
@@ -169,6 +189,16 @@
 </body>
 
 <script type="text/javascript ">
+  var $_GET = {};
+  document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
+      function decode(s) {
+          return decodeURIComponent(s.split("+").join(" "));
+      }
+      $_GET[decode(arguments[1])] = decode(arguments[2]);
+  });
+  if ($_GET["active"] == 'docentes') {
+    $("#docentesTab").addClass("active");
+  }
 
   $(document).ready(function(){
     $('.tabs').tabs();
