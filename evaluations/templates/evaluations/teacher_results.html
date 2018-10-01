@@ -15,7 +15,7 @@
   <link rel="shortcut icon" type="image/x-icon" href="{% static 'evaluations/images/icono.ico' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/nav_bar.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/home/style.css' %}" />
-  <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/monitoring/style.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'evaluations/css/teacher_results/style.css' %}" />
 
   <!-- Import Chart.js for graphics -->
   <script type="text/javascript" src="{% static 'chart.js/dist/Chart.js' %}"></script>
@@ -78,11 +78,26 @@
             </div>
             {% endif %}
             
+            <!--
             <div class="row">
-              <div class="col s12" >
+              <div class="nav-wrapper">
+                <div class="col s12 valign-wrapper">
+                  <a href="#!" class="breadcrumb valign-wrapper">First</a>
+                  <a href="#!" class="breadcrumb valign-wrapper">Second</a>
+                  <a href="#!" class="breadcrumb valign-wrapper">Third</a>
+                </div>
+              </div>
+            </div>
+            -->
+
+            <div class="row valign-wrapper">
+              <div class="col s1">
+                <a class="btn-floating btn-small waves-effect waves-light z-depth-3 red lighten-1" href="{% url 'evaluations:career_results' career_id=career.idcareer %}"><i class="material-icons">keyboard_arrow_left</i></a>
+              </div>
+              <div class="col s11" >
                 <ul class="tabs" style="overflow-x: hidden">
-                  <li class="tab col s4"><a class="active" href="#resultados">Resultados Generales</a></li>
-                  <li class="tab col s4"><a href="#materias">Materias</a></li>
+                  <li class="tab col s3"><a class="active" href="#resultados">Resultados</a></li>
+                  <li class="tab col s5"><a href="#materias">Materias</a></li>
                   <li class="tab col s4"><a href="#reportes">Reportes</a></li>
                 </ul>
               </div>
@@ -90,10 +105,10 @@
             
             <div id="resultados" >
               <br>
-                <span class="card-title center">
-                  <b>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</b>
-                </span>
-                <hr style="width: 12rem !important"/>
+              <span class="card-title center">
+                <b>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</b>
+              </span>
+              <hr style="width: 12rem !important"/>
               <div class="row">
                 <div class="col s12 m12 l12">
                   <div class="row">
@@ -116,8 +131,8 @@
 
             <div id="materias">
               <br>
-              <span class="card-title center" >
-                <b>Docentes de {{career.description.capitalize}}</b>
+              <span class="card-title center">
+                <b>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</b>
               </span>
               <hr style="width: 12rem !important"/>
               <div class="row">
