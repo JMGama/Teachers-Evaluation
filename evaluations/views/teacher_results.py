@@ -31,8 +31,11 @@ class TeacherResultsView(View, GeneralFunctions):
         career_data = self.get_career_data(career)
         teacher = EvaluationsTeachers.objects.get(idperson__exact=teacher_id)
 
+        teacher_results = self.get_teacher_signatures_results(career, career_data, teacher)
+        print(teacher_results)
 
         context = {
+            'teacher_results': teacher_results,
             'teacher': teacher,
             'coordinator': coordinator,
             'careers': careers,

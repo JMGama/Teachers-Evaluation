@@ -190,6 +190,21 @@ class GeneralFunctions(object):
         return signatures
 
     @classmethod
+    def get_teachers_signatures_results(self, career, career_data):
+        teachers_signatures = self.get_career_teachers_signatures(career)
+
+        for exam in career_data['exams']:
+            for teacher, signatures in teachers_signatures.items():
+                signatures_results = {}
+                for signature in signatures:
+                    signatures_results[signature] = self.get_teacher_signature_results(
+                        teacher, signature, exam)
+                teachers_signatures[teacher] = signatures_results
+
+        return teachers_signatures
+    
+    # Get teachers evaluations results START ---------
+    @classmethod
     def get_teacher_signature_results(self, teacher, signature, exam):
         """Return the results of the evaluations to the teacher at the signature of the submitted test"""
 
@@ -240,46 +255,37 @@ class GeneralFunctions(object):
         return results
 
     @classmethod
-    def get_teacher_signature_results_2(self, teacher, signature, exam):
-        results = {}
-        questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
-            idexam__exact=exam.id)
-        data = Eb1.objects.get(idteacher=teacher.idperson,
-                               idsignature=signature.id)
-        preguntas = {}
+    def get_career_teacher_signatures(self, career, teacher):
+        """return a dictionary with all the teachers of the career and each signatures that they give"""
+        signatures = self.get_career_signatures(career)
 
-        preguntas[questions_detail_exam[0].idquestion] = {'average': data.q1}
-        preguntas[questions_detail_exam[1].idquestion] = {'average': data.q2}
-        preguntas[questions_detail_exam[2].idquestion] = {'average': data.q3}
-        preguntas[questions_detail_exam[3].idquestion] = {'average': data.q4}
+        data = {}
+        teacher_signatures = []
 
-        all_answers = []
-        answers = data.q5
-        if answers:
-            all_answers = answers.split(':')
+        details = EvaluationsDetailGroupPeriodSignature.objects.select_related('idsignature').filter(
+            idsignature__in=signatures.values('id'), idteacher__exact=teacher.idperson)
 
-        preguntas[questions_detail_exam[4].idquestion] = {
-            'answers': all_answers}
+        for detail_signature in details:
+            teacher_signatures.append(detail_signature.idsignature)
 
-        results['questions'] = preguntas
-        results['evaluated'] = data.ptotal
-        results['average'] = data.average
-
-        return results
+        data = teacher_signatures
+        return data
 
     @classmethod
-    def get_teachers_signatures_results(self, career, career_data):
-        teachers_signatures = self.get_career_teachers_signatures(career)
+    def get_teacher_signatures_results(self, career, career_data, teacher):
 
+        teacher_results = {}
+        teacher_signatures = self.get_career_teacher_signatures(
+            career, teacher)
         for exam in career_data['exams']:
-            for teacher, signatures in teachers_signatures.items():
-                signatures_results = {}
-                for signature in signatures:
-                    signatures_results[signature] = self.get_teacher_signature_results(
-                        teacher, signature, exam)
-                teachers_signatures[teacher] = signatures_results
+            signatures_results = {}
+            for signature in teacher_signatures:
+                signatures_results[signature] = self.get_teacher_signature_results(
+                    teacher, signature, exam)
+            teacher_results[exam] = signatures_results
 
-        return teachers_signatures
+        return teacher_results
+    # Get teachers evaluations results FINISH ---------
 
     @classmethod
     def get_general_data(cls):
@@ -313,3 +319,31 @@ class GeneralFunctions(object):
         for teacher in teachers_id:
             teachers.append(teacher.iddocente)
         return teachers
+
+# @classmethod
+    # def get_teacher_signature_results_2(self, teacher, signature, exam):
+    #     results = {}
+    #     questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
+    #         idexam__exact=exam.id)
+    #     data = Eb1.objects.get(idteacher=teacher.idperson,
+    #                            idsignature=signature.id)
+    #     preguntas = {}
+
+    #     preguntas[questions_detail_exam[0].idquestion] = {'average': data.q1}
+    #     preguntas[questions_detail_exam[1].idquestion] = {'average': data.q2}
+    #     preguntas[questions_detail_exam[2].idquestion] = {'average': data.q3}
+    #     preguntas[questions_detail_exam[3].idquestion] = {'average': data.q4}
+
+    #     all_answers = []
+    #     answers = data.q5
+    #     if answers:
+    #         all_answers = answers.split(':')
+
+    #     preguntas[questions_detail_exam[4].idquestion] = {
+    #         'answers': all_answers}
+
+    #     results['questions'] = preguntas
+    #     results['evaluated'] = data.ptotal
+    #     results['average'] = data.average
+
+    #     return results
