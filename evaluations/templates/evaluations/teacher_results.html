@@ -104,7 +104,7 @@
                       <div class="sample-chart-wrapper">
                         <canvas id="myChart" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                       </div>
-                      <p class="header center">Evaluaciones Realizadas</p>
+                      <p class="header center">Promedio General</p>
                     </div>
                     <div class="col s12 m6 l6">
                       <div class="sample-chart-wrapper">
@@ -149,12 +149,10 @@
             </div>
 
             <div id="reportes">
+            
               <div class="row center-align">
-                <form id="download" method="post">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading()"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
-                  <input type="hidden" name="action" value="excel"/>
-                </form>
+                <img class="responsive-img" style="max-height: 27%;max-width: 27%;" src="{% static 'evaluations/images/Rocket.png' %}">
+                <h5>Estamos trabajando en increibles reportes para ti</h5>
               </div>
             </div>
 
@@ -251,13 +249,11 @@
 
 <script type="text/javascript ">
     var ctx = document.getElementById("myChart").getContext('2d');
-    var evaluated = {{career_data.students.evaluated|length}};
-    var not_evaluated = {{career_data.students.not_evaluated|length}};
-    var percentage = (evaluated / (not_evaluated + evaluated) * 100).toFixed(0) + "%";
+    var percentage = Math.round({{ final_average }}) + "%";
     var data = {
       labels: ["Realizadas ", "Faltantes "],
       datasets: [{
-        data: [{{career_data.students.evaluated|length}},{{career_data.students.not_evaluated|length}}],
+        data: [{{ final_average }}, 100-{{ final_average }}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -280,7 +276,14 @@
           fontStyle: 'Arial', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
 				}
-			}
+			},
+      tooltips: {
+        callbacks: {
+           label: function(tooltipItem) {
+                  return tooltipItem.yLabel;
+           }
+        }
+      }
     }
     var myDoughnutChart = new Chart(ctx, {
       type: 'doughnut',
@@ -304,7 +307,7 @@
     {% endfor %}
 
     var averageData = {
-      data: [{% for exam, options in exams_averages.items %}{{options.final_average}}, {% endfor %}],
+      data: [{% for exam, options in exams_averages.items %}{{options.evaluation_average}}, {% endfor %}],
       backgroundColor: colors,
     }
     var options = {
