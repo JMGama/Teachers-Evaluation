@@ -80,7 +80,7 @@
             
             <div class="row valign-wrapper">
               <div class="col s1">
-                <a class="btn-floating btn-small waves-effect waves-light z-depth-3 red lighten-1" href="{% url 'evaluations:career_results' career_id=career.idcareer %}"><i class="material-icons">keyboard_arrow_left</i></a>
+                <a class="btn-floating btn-small waves-effect waves-light z-depth-3 red lighten-1" href="{% url 'evaluations:career_results' career_id=career.idcareer %}?active=docentes"><i class="material-icons">keyboard_arrow_left</i></a>
               </div>
               <div class="col s11" >
                 <ul class="tabs" style="overflow-x: hidden">
@@ -128,16 +128,19 @@
                   <table class="border striped highlight bordered">
                     <thead>
                       <trx>
-                          <th>Nombre</th>
-                          <th>Acciones</th>
+                          <th>Materia</th>
+                          <th>Alumnos</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {% for teacher in teachers %} 
-                      <tr style="border-top:1px solid #1e2e5042;">
-                        <td>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</td>
-                        <td><a href="#!" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>
-                      </tr>
+                    {% for exam,signatures in teacher_results.items %} 
+                      {% for signature, results in signatures.items %}
+                        <tr style="border-top:1px solid #1e2e5042;">
+                          <td>{{ signature.name.upper }}</td>
+                          <!--<td><a href="#!" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>-->
+                          <td>{{ results.evaluated }}</td>
+                        </tr>
+                      {% endfor %}
                     {% endfor %}
                     </tbody>
                   </table>

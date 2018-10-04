@@ -32,7 +32,6 @@ class TeacherResultsView(View, GeneralFunctions):
         teacher = EvaluationsTeachers.objects.get(idperson__exact=teacher_id)
 
         teacher_results = self.get_teacher_signatures_results(career, career_data, teacher)
-        print(teacher_results)
 
         context = {
             'teacher_results': teacher_results,
