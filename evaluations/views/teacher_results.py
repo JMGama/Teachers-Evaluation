@@ -31,9 +31,12 @@ class TeacherResultsView(View, GeneralFunctions):
         career_data = self.get_career_data(career)
         teacher = EvaluationsTeachers.objects.get(idperson__exact=teacher_id)
 
-        teacher_results = self.get_teacher_signatures_results(career, career_data, teacher)
-
+        teacher_results = self.get_teacher_signatures_results(
+            career, career_data, teacher)
+        exams_averages = self.get_teacher_exams_averages(teacher_results)
+        
         context = {
+            'exams_averages': exams_averages,
             'teacher_results': teacher_results,
             'teacher': teacher,
             'coordinator': coordinator,
@@ -43,3 +46,14 @@ class TeacherResultsView(View, GeneralFunctions):
         }
 
         return render(request, self.template_teacher_results, context)
+
+    def get_teacher_exams_averages(self, teacher_results):
+        exams_averages = {}
+        for exam, signatures in teacher_results.items():
+            averages = []
+            for results in signatures.values():
+                averages.append(results['average'])
+            final_average = sum(averages)/len(averages)
+            exams_averages[exam] = {'averages':averages, 'final_average':final_average}
+
+        return exams_averages

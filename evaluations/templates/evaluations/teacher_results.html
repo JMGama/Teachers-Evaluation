@@ -110,7 +110,7 @@
                       <div class="sample-chart-wrapper">
                         <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                       </div>
-                      <p class="header center">Promedio General</p>
+                      <p class="header center">Resultados por Evaluaciones</p>
                     </div>
                   </div>
                 </div>
@@ -290,21 +290,22 @@
 </script>
 
 <script type="text/javascript ">
-    var ctx = document.getElementById("myChartAverage").getContext('2d');
-    var data = {
-      labels: ["Si ", "No "],
-      datasets: [{
-        data: [{{career_data.average_data.yes}}, {{career_data.average_data.no}}],
-        backgroundColor: [
-          '#21da7d',
-          '#f7464a',
-        ],
-        borderColor: [
-          'rgb(255, 255, 255)',
-          'rgb(255, 255, 255)',
-        ],
-        borderWidth: 3
-      }]
+    var ctxBar = document.getElementById("myChartAverage").getContext('2d');
+    var colors = [];
+
+    var dynamicColors = function() {
+      var r = Math.floor(Math.random() * 255);
+      var g = Math.floor(Math.random() * 255);
+      var b = Math.floor(Math.random() * 255);
+      return "rgb(" + r + "," + g + "," + b + ")";
+    };
+    {% for exam in exams_averages %}
+      colors.push(dynamicColors())
+    {% endfor %}
+
+    var averageData = {
+      data: [{% for exam, options in exams_averages.items %}{{options.final_average}}, {% endfor %}],
+      backgroundColor: colors,
     }
     var options = {
       legend: {
@@ -312,16 +313,19 @@
       },
       elements: {
         center: {
-          text: {{career_data.average_data.average}}.toFixed(0) + "%", // Porcentaje de alumnos
+          text: "", // Porcentaje de alumnos
           color: 'black', // Default is #000000
           fontStyle: 'Arial', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
         }
       }
     }
-    var myDoughnutChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: data,
+    var myBarChart = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels:[{% for exam in exams_averages%}'{{exam.description}}', {% endfor %}],
+        datasets: [averageData]
+      },
       options: options
     });
 </script>
