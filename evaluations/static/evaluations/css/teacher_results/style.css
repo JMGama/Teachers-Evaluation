@@ -1,0 +1,14 @@
+.breadcrumb:before {
+    color: #e57373;
+}
+
+.breadcrumb, .breadcrumb:last-child {
+    color: #e57373;
+ }
+
+ .modal {
+    width: auto !important;
+    right: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
