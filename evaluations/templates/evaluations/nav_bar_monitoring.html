@@ -20,9 +20,12 @@
       <a href="#email"><span class="white-text email">{{ coordinator.instemail }}</span></a>
     </div>
   </li>
+      <li >
+        <a class="waves-effect" href="{% url 'evaluations:monitoring' %}"><i class="material-icons right icon-black">bookmark_border</i><b>RESULTADOS GENERALES</b></a>
+      </li>
     {% for career in careers %}
       <li>
-        <a class="waves-effect" href="{% url 'evaluations:career_results' career.idcareer %}"><i class="material-icons right">reorder</i>{{ career.description }}</a>
+        <a class="waves-effect" href="{% url 'evaluations:career_results' career.idcareer %}"><i class="material-icons right">short_text</i>{{ career.description }}</a>
       </li>
     {% endfor %}
   <li>

@@ -10,6 +10,10 @@ i.icon-green {
   color: green !important;
 }
 
+i.icon-black {
+  color: black !important;
+}
+
 .sidenav .user-view {
   margin-bottom: 0px !important;
 }
