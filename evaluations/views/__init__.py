@@ -7,3 +7,4 @@ from .monitoring import *
 from .career_results import *
 from .tech_report import *
 from .admin_reports import *
+from .teacher_results import *
