@@ -30,16 +30,7 @@ class CareerResultsView(View, GeneralFunctions):
         career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
         career_data = self.get_career_data(career)
         
-        # Pagination teachers
-        page = request.GET.get('page', 1)
-        teachers_list = self.get_career_teachers(career)
-        paginator = Paginator(teachers_list, 7)
-        try:
-            teachers = paginator.page(page)
-        except PageNotAnInteger:
-            teachers = paginator.page(1)
-        except EmptyPage:
-            teachers = paginator.page(paginator.num_pages)
+        teachers = self.get_career_teachers(career)
 
         context = {
             'teachers': teachers,

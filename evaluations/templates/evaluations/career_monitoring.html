@@ -119,6 +119,13 @@
                 <b>Docentes de {{career.description.capitalize}}</b>
               </span>
               <hr style="width: 12rem !important"/>
+
+              <div class="input-field col m5 offset-m6 s10 offset-s1">
+                <i class="material-icons prefix">search</i>
+                <input type="text" id="teacherFilter" onkeyup="filterTeacher()">
+                <label for="teacherFilter">Nombre del Docente</label>
+              </div>
+
               <div class="row">
                 <div class="col s10 offset-s1">
                   <table class="border striped highlight bordered">
@@ -128,7 +135,7 @@
                           <th>Acciones</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="teachersTable">
                     {% for teacher in teachers %} 
                       <tr style="border-top:1px solid #1e2e5042;">
                         <td>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</td>
@@ -139,41 +146,37 @@
                   </table>
                 </div>
               </div>
-
-              {% if teachers.has_other_pages %}
-                <ul class="pagination center">
-                  {% if teachers.has_previous %}
-                    <li><a href="?page={{ teachers.previous_page_number }}&active=docentes"><i class="material-icons">chevron_left</i></a></li>
-                  {% else %}
-                    <li class="disabled"><span><i class="material-icons">chevron_left</i></span></li>
-                  {% endif %}
-                  {% for i in teachers.paginator.page_range %}
-                    {% if teachers.number == i %}
-                      <li class="active waves-effect"><a>{{ i }}</a></li>
-                    {% else %}
-                      <li><a href="?page={{ i }}&active=docentes">{{ i }}</a></li>
-                    {% endif %}
-                  {% endfor %}
-                  {% if teachers.has_next %}
-                    <li><a href="?page={{ teachers.next_page_number }}&active=docentes"><i class="material-icons">chevron_right</i></a></li>
-                  {% else %}
-                    <li class="disabled"><span><i class="material-icons">chevron_right</i></span></li>
-                  {% endif %}
-                </ul>
-              {% endif %}
+              <div class="row center-align">
+                <ul class="pagination pager" id="myPager"></ul>
+              </div>
             </div>
 
-            <div id="reportes">
-              <div class="row center-align">
-                <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
-              </div>
 
-              <div class="row center-align">
-                <form id="download" method="post">
-                  {% csrf_token %}
-                  <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading()"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
-                  <input type="hidden" name="action" value="excel"/>
-                </form>
+            <div id="reportes">
+              <div class="row">
+                <div class="col s12 m6 l6">
+                  <div class="row center-align">
+                    <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                  </div>
+
+                  <div class="row center-align">
+                    <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Entregable con resultados de cada docente por materia en la carrera." target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Entregable Docentes</a>
+                  </div>
+                </div>
+
+                <div class="col s12 m6 l6">      
+                  <div class="row center-align">
+                    <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                  </div>
+
+                  <div class="row center-align">
+                    <form id="download" method="post">
+                      {% csrf_token %}
+                      <button type="submit" class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Listado de los alumnos faltantes de realizar evaluación" onClick="loading()"><i class="material-icons right">get_app</i>Alumnos faltantes</button>
+                      <input type="hidden" name="action" value="excel"/>
+                    </form>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -186,6 +189,8 @@
 
   <!-- jQuery Library -->
   <script type="text/javascript " src="{% static 'evaluations/js/jquery-1.11.2.min.js' %} "></script>
+  <script type="text/javascript " src="{% static 'evaluations/js/pagination.js' %} "></script>
+
   <!--JavaScript at end of body for optimized loading-->
   <script type="text/javascript " src="{% static 'evaluations/js/materialize.min.js' %} "></script>
   <script type="text/javascript " src="{% static 'evaluations/js/nav_bar.js' %} "></script>
@@ -193,6 +198,39 @@
 </body>
 
 <script type="text/javascript ">
+  // Function to filter teachers table
+  function filterTeacher() {
+    var input, filter, table, tr, td, i;
+    input = document.getElementById("teacherFilter");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("teachersTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
+    if (filter == ""){
+      $("#myPager").empty();
+      $('#teachersTable').pageMe({
+        pagerSelector:'#myPager',
+        activeColor: 'red',
+        perPage: 7,
+        showPrevNext: true,
+        nextText: 'Next',
+        prevText: 'Prev',
+        hidePageNumbers: false
+      });
+    }
+    
+  }
+
+  // Getting the URL variable to pen in the docentes tab.
   var $_GET = {};
   document.location.search.replace(/\??(?:([^=]+)=([^&]*)&?)/g, function () {
       function decode(s) {
@@ -204,12 +242,7 @@
     $("#docentesTab").addClass("active");
   }
 
-  $(document).ready(function(){
-    $('.tabs').tabs();
-    $('.modal').modal({dismissible:false});
-    $('.tooltipped').tooltip();
-  });
-
+  // AJAX function to download Not evaluated students PDF and show Loading Modal
   function loading(){
     $('#modal1').modal('open');
     var csrftoken = $('#download').find('input[name="csrfmiddlewaretoken"]').val();
@@ -232,6 +265,24 @@
       }
     });
   }
+
+  // Initial functions for materialize
+  $(document).ready(function(){
+    $('.tabs').tabs();
+    $('.modal').modal({dismissible:false});
+    $('.tooltipped').tooltip();
+    $('#teachersTable').pageMe({
+      pagerSelector:'#myPager',
+      activeColor: 'red',
+      perPage: 7,
+      showPrevNext: true,
+      nextText: 'Next',
+      prevText: 'Prev',
+      hidePageNumbers: false
+    });
+  });
+
+  
 </script>
 
 <script type="text/javascript ">
