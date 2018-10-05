@@ -108,14 +108,16 @@
               </div>
             </div>
 
-            <div class="row center-align">
-              <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
-            </div>
+            
 
             {% if admin_user == True %}
-            <div class="row center-align">
-              <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:admin_reports' %}"><i class="material-icons right">get_app</i>Reporte General</a>
-            </div>
+              <div class="row center-align">
+                <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
+              </div>
+
+              <div class="row center-align">
+                <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:admin_reports' %}"><i class="material-icons right">get_app</i>Reporte General</a>
+              </div>
             {% endif %}
 
           </div>

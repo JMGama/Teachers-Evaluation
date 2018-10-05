@@ -165,6 +165,10 @@
 
             <div id="reportes">
               <div class="row center-align">
+                <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
+              </div>
+
+              <div class="row center-align">
                 <form id="download" method="post">
                   {% csrf_token %}
                   <button type="submit" class="btn-small waves-effect center red lighten-1 " onClick="loading()"><i class="material-icons right">get_app</i>Alumnos faltantes</button>

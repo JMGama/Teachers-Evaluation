@@ -33,7 +33,8 @@ class TeacherResultsView(View, GeneralFunctions):
 
         teacher_results = self.get_teacher_signatures_results(
             career, career_data, teacher)
-        exams_averages, final_average = self.get_teacher_exams_averages(teacher_results)
+        exams_averages, final_average = self.get_teacher_exams_averages(
+            teacher_results)
         context = {
             'final_average': final_average,
             'exams_averages': exams_averages,
@@ -59,5 +60,5 @@ class TeacherResultsView(View, GeneralFunctions):
                 'averages': averages, 'evaluation_average': evaluation_average}
             final_average.append(evaluation_average)
 
-        final_average = round(sum(final_average)/len(final_average),2)
+        final_average = round(sum(final_average)/len(final_average), 2)
         return exams_averages, final_average
