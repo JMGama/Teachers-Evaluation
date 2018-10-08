@@ -23,7 +23,6 @@ class TeachersReport(View, GeneralFunctions):
             data[teacher] = self.get_teacher_signatures_results(
                 career, career_data, teacher, exam=career_data['exams'][0])
 
-        print(data)
         context = {
             'data': data,
         }
