@@ -1,0 +1,256 @@
+{% extends "easy_pdf/base.html" %}
+{% load static %}
+{% load html_decode %}
+{% block extra_style %}
+<style>
+            <!--
+            /* Font Definitions */
+            @font-face
+            {font-family:"Cambria Math";
+             panose-1:2 4 5 3 5 4 6 3 2 4;}
+            @font-face
+            {font-family:Calibri;
+             panose-1:2 15 5 2 2 2 4 3 2 4;}
+            @font-face
+            {font-family:"Segoe UI";
+             panose-1:2 11 5 2 4 2 4 2 2 3;}
+            @font-face
+            {font-family:"Gotham Rounded Book";
+             panose-1:0 0 0 0 0 0 0 0 0 0;}
+            @font-face
+            {font-family:"Gotham Rounded Bold";
+             panose-1:0 0 0 0 0 0 0 0 0 0;}
+            /* Style Definitions */
+            p.MsoNormal, li.MsoNormal, div.MsoNormal
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:8.0pt;
+             margin-left:0cm;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoHeader, li.MsoHeader, div.MsoHeader
+            {mso-style-link:"Encabezado Car";
+             margin:0cm;
+             margin-bottom:.0001pt;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoFooter, li.MsoFooter, div.MsoFooter
+            {mso-style-link:"Pie de página Car";
+             margin:0cm;
+             margin-bottom:.0001pt;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+            {mso-style-link:"Texto de globo Car";
+             margin:0cm;
+             margin-bottom:.0001pt;
+             font-size:9.0pt;
+             font-family:"Segoe UI",sans-serif;}
+            p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:8.0pt;
+             margin-left:36.0pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:0cm;
+             margin-left:36.0pt;
+             margin-bottom:.0001pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:0cm;
+             margin-left:36.0pt;
+             margin-bottom:.0001pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+            {margin-top:0cm;
+             margin-right:0cm;
+             margin-bottom:8.0pt;
+             margin-left:36.0pt;
+             line-height:107%;
+             font-size:11.0pt;
+             font-family:"Calibri",sans-serif;}
+            span.EncabezadoCar
+            {mso-style-name:"Encabezado Car";
+             mso-style-link:Encabezado;}
+            span.PiedepginaCar
+            {mso-style-name:"Pie de página Car";
+             mso-style-link:"Pie de página";}
+            span.TextodegloboCar
+            {mso-style-name:"Texto de globo Car";
+             mso-style-link:"Texto de globo";
+             font-family:"Segoe UI",sans-serif;}
+            .MsoChpDefault
+            {font-family:"Calibri",sans-serif;}
+            .MsoPapDefault
+            {margin-bottom:8.0pt;
+             line-height:107%;}
+            /* Page Definitions */
+            @page WordSection1
+            {size:612.0pt 792.0pt;
+             margin:80.85pt 3.0cm 70.85pt 3.0cm;}
+            div.WordSection1
+            {page:WordSection1;}
+            /* List Definitions */
+            ol
+            {margin-bottom:0cm;}
+            ul
+            {margin-bottom:0cm;}
+
+            -->
+        </style>
+    <style type="text/css">
+        div.saltopagina{
+          display:block;
+          page-break-before:always;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+{% for teacher, signatures in data.items %}
+    {% for signature, options in signatures.items %}
+ 
+    <img style="width:190px; height:50px;" src="{% static 'evaluations/images/Logo.jpg' %}" alt="logo">
+
+  <div class=WordSection1>
+    <br><br>
+            <p class=MsoNormal align=center style='margin-up: 2em; text-align:right'>
+           <span style='font-size:10.0pt;
+           line-height:107%;font-family:"Gotham Rounded Book"'>UNIVERSIDAD CUAHUT&Eacute;MOC CAMPUS QUER&Eacute;TARO</span></p>
+          <p class=MsoNormal align=center style='text-align:right'>
+          <span style='font-size:10.0pt;
+          line-height:107%;font-family:"Gotham Rounded Book"'>DEPARTAMENTO ACADEM&Iacute;CO</span></p>
+           <p class=MsoNormal align=right
+           style='text-align:right'>
+           <span style='font-size:10.0pt;
+           line-height:107%;font-family:"Gotham Rounded Book"'>{% now "d/m/y" %}</span></p>
+
+
+           <p class=MsoNormal>
+             <span style='font-size:10.0pt;
+             line-height:107%;
+             font-family:Gotham Rounded Book"'>
+             INFORME DE EVALUACI&Oacute;N DOCENTE PERIODO 2018-02</span></p>
+
+           <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
+           line-height:107%;font-family:"Gotham Rounded Book"'></span><span
+           style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ teacher.name|html_decode|safe }} {{ teacher.lastname|html_decode|safe }} {{ teacher.lastname2|html_decode|safe }}
+         </span><span style='font-size:10.0pt;line-height:107%;
+         font-family:"Gotham Rounded Book"'>:</span>
+        </p>
+
+           <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
+                                                               line-height:107%;font-family:"Gotham Rounded Book"'>Anexo los resultados de la
+                   opini&oacuten de su grupo de la materia </span><span
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature.name|html_decode|safe }}</span><span style='font-size:10.0pt;
+                   line-height:107%;font-family:"Gotham Rounded Book"'> a su digno cargo, con la
+                   intenci&oacuten de que considere los mismos para hacer las modificaciones que
+                   encuentre pertinentes; y al mismo tiempo nos permita reconocer su importante
+                   labor. </span></p>
+
+           <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
+                                                               line-height:107%;font-family:"Gotham Rounded Book"'>La escala es de 1 a 10
+                   respecto a cada pregunta, un promedio general y los comentarios textuales emitidos
+                   por sus estudiantes de manera an&oacutenima. </span></p>
+
+           <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
+                                                               line-height:107%;font-family:"Gotham Rounded Book"'>No. Estudiantes encuestados:
+               </span><span
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ options.evaluated|safe }}</span><span
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>                                                                 </span></p>
+
+           <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+                  style='margin-left:-1.0cm;border-collapse:collapse;border:none'>
+{% for question, results in options.questions.items %}
+  {% if question.optional == 'NO' %}
+               <tr>
+                   <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                       <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+                          0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
+                          -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ forloop.counter }}.<span
+                                   style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
+                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.description|html_decode|safe }}</span></p>
+                   </td>
+                   <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
+                       <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                          justify;line-height:normal'><span
+                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ results.average|safe }}%</span></p>
+                   </td>
+               </tr>
+  {% else %}
+              <tr></tr>
+              <tr>
+                <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+                       0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
+                       -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>--<span
+                                style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
+                            style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Promedio general:</span></p>
+                </td>
+                  <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 5.4pt'>
+                      <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                         justify;line-height:normal'><span
+                              style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ options.average|safe }}%</span></p>
+                  </td>
+              </tr>
+
+              </table>
+
+              <p class=MsoNormal style='text-align:justify;line-height:normal'><span
+                      style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+
+              <p class=MsoNormal style='text-align:justify;line-height:normal'><span
+                      style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Comentarios:</span></p>
+    {% for answer in results.answers%}
+      {% with i=forloop.counter %}
+        {% if i == 4 %}
+          <div class="saltopagina"></div>
+        {% endif %}
+                 <p class=MsoNormal style='text-align:justify;line-height:normal'><span
+                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ answer.answer|html_decode|safe }}.</span></p>
+      {% endwith %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+           <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
+                                                               line-height:107%;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+
+           <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+              justify;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+
+           <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+              justify;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+
+           <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+              justify;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+
+           <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+              justify;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
+
+           <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+              text-align:center;line-height:normal'><span style='font-size:10.0pt;font-family:
+                   "Gotham Rounded Book"'>________________________________</span></p>
+
+           <p class=MsoNormal align=center style='margin-bottom:0cm;margin-bottom:.0001pt;
+              text-align:center;line-height:normal'><span style='font-size:10.0pt'> </span><span style='font-size:10.0pt'>{{ teacher.name|html_decode|safe }} {{ teacher.lastname|html_decode|safe }} {{ teacher.lastname2|html_decode|safe }}</span></p>
+
+           <p class=MsoNormal align=center style='text-align:center'><span
+                   style='font-size:10.0pt;line-height:107%'>Enterado</span></p>
+
+       </div>
+    <div class="saltopagina"></div>
+        {% endfor %}
+    {% endfor %}
+{% endblock %}
