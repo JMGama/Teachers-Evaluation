@@ -154,13 +154,18 @@
 
             <div id="reportes">
               <div class="row">
+                <span class="card-title center" >
+                  <b>Reportes para {{career.description.capitalize}}</b>
+                </span>
+                <hr style="width: 12rem !important"/>
+
                 <div class="col s12 m6 l6">
                   <div class="row center-align">
                     <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
                   </div>
 
                   <div class="row center-align">
-                    <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Entregable con resultados de cada docente por materia en la carrera." target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Entregable Docentes</a>
+                    <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Entregable con resultados de cada docente por materia en la carrera." target="_blank"  href="{% url 'evaluations:teachers_report' career_id=career.idcareer %}"><i class="material-icons right">get_app</i>Entregable Docentes</a>
                   </div>
                 </div>
 

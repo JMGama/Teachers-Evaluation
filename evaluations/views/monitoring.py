@@ -32,7 +32,7 @@ class MonitoringView(View, GeneralFunctions):
             'general_data': general_data,
         }
 
-        if request.session['id_coordinator'] == 5941:
+        if coordinator.enrollment == '503':
             context['admin_user'] = True
 
         return render(request, self.template_monitoring, context)

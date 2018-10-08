@@ -202,7 +202,7 @@ class GeneralFunctions(object):
                 teachers_signatures[teacher] = signatures_results
 
         return teachers_signatures
-    
+
     # Get teachers evaluations results START ---------
     @classmethod
     def get_teacher_signature_results(self, teacher, signature, exam):
@@ -272,17 +272,26 @@ class GeneralFunctions(object):
         return data
 
     @classmethod
-    def get_teacher_signatures_results(self, career, career_data, teacher):
+    def get_teacher_signatures_results(self, career, career_data, teacher, **kwargs):
 
         teacher_results = {}
         teacher_signatures = self.get_career_teacher_signatures(
             career, teacher)
-        for exam in career_data['exams']:
+        exam = kwargs.get('exam', None)
+
+        if exam == None:
+            for exam in career_data['exams']:
+                signatures_results = {}
+                for signature in teacher_signatures:
+                    signatures_results[signature] = self.get_teacher_signature_results(
+                        teacher, signature, exam)
+                teacher_results[exam] = signatures_results
+        else:
             signatures_results = {}
             for signature in teacher_signatures:
                 signatures_results[signature] = self.get_teacher_signature_results(
                     teacher, signature, exam)
-            teacher_results[exam] = signatures_results
+            teacher_results = signatures_results
 
         return teacher_results
     # Get teachers evaluations results FINISH ---------
@@ -313,7 +322,7 @@ class GeneralFunctions(object):
     @classmethod
     def get_career_teachers(cls, career):
         teachers_id = EvaluationsDetailTeacherCareer.objects.filter(
-            idcareer__exact=career).select_related('iddocente')
+            idcareer__exact=career.idcareer).select_related('iddocente')
 
         teachers = []
         for teacher in teachers_id:
