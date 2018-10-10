@@ -122,6 +122,10 @@
 
             
             <div id="acciones">
+              <span class="card-title center" >
+                <b>Acciones para las evaluaciones</b>
+              </span>
+              <hr style="width: 12rem !important"/>
               {% if admin_user == True %}
                 <div class="row center-align">
                   <form id="download" method="post">
@@ -130,15 +134,40 @@
                     <input type="hidden" name="action" value="excel"/>
                   </form>
                 </div>
-
-                <div class="row center-align">
-                  <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
-                </div>
-
-                <div class="row center-align">
-                  <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:admin_reports' %}"><i class="material-icons right">get_app</i>Reporte General</a>
-                </div>
               {% endif %}
+            </div>
+
+            <div id="reportes">
+              <div class="row">
+                <span class="card-title center" >
+                  <b>Reportes de los Resultados Generales</b>
+                </span>
+                <hr style="width: 12rem !important"/>
+
+                {% if admin_user == True %}
+
+                  <div class="col s12 m6 l6">
+                    <div class="row center-align">
+                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                    </div>
+
+                    <div class="row center-align">
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Reportes de todos los docentes con cada materia" target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
+                    </div>
+                  </div>
+
+                  <div class="col s12 m6 l6">
+                    <div class="row center-align">
+                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                    </div>
+
+                    <div class="row center-align">
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera" target="_blank"  href="{% url 'evaluations:admin_reports' %}"><i class="material-icons right">get_app</i>Reporte General</a>
+                    </div>
+                  </div>
+
+                {% endif %}
+              </div>
             </div>
 
           </div>
@@ -161,6 +190,7 @@
   $(document).ready(function(){
     $('.modal').modal({dismissible:false});
     $('.tabs').tabs();
+    $('.tooltipped').tooltip();
   });
 
   // AJAX function to delete student and show Loading Modal
