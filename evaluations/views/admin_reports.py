@@ -7,7 +7,7 @@ from .general_functions import GeneralFunctions
 import csv
 
 
-class AdminReports(View, GeneralFunctions):
+class AdminReportsView(View, GeneralFunctions):
 
     def get(self, request):
         response = self.general_report(request)

@@ -19,7 +19,7 @@ urlpatterns = [
 
     path('monitoring/', views.MonitoringView.as_view(), name='monitoring'),
     path('monitoring/admin_reports',
-         views.AdminReports.as_view(), name='admin_reports'),
+         views.AdminReportsView.as_view(), name='admin_reports'),
     path('monitoring/tech_report', views.tech_report.as_view(), name='tech_report'),
-
+    path('monitoring/delete_student', views.DeleteStudentView.as_view(), name='delete_student'),
 ]
