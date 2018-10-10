@@ -112,6 +112,15 @@
 
             {% if admin_user == True %}
               <div class="row center-align">
+                <form id="download" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Borrar Alumno" onClick="loading()"><i class="material-icons right">delete</i>Borrar Alumno</button>
+                  <input type="hidden" name="action" value="excel"/>
+                </form>
+              </div>
+
+
+              <div class="row center-align">
                 <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
               </div>
 
