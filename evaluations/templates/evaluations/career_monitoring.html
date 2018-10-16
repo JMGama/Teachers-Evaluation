@@ -58,7 +58,7 @@
         <div class="card z-depth-4 hoverable ">
           <div class="card-content ">
 
-          
+
             <!-- Card to print message -->
             {% if not message is defined %}
             <div class="row " id="alert_box ">
@@ -88,7 +88,7 @@
                 </ul>
               </div>
             </div>
-            
+
             <div id="resultados" >
                 <span class="card-title center">
                   <b>Resultados de {{career.description.capitalize}}</b>
@@ -136,10 +136,10 @@
                       </tr>
                     </thead>
                     <tbody id="teachersTable">
-                    {% for teacher in teachers %} 
+                    {% for teacher in teachers %}
                       <tr style="border-top:1px solid #1e2e5042;">
                         <td>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</td>
-                        <td><a href="{% url 'evaluations:teacher_results' career_id=career.idcareer teacher_id=teacher.idperson %}" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>
+                        <td><a href="{% url 'evaluations:teacher_results' career_id=career.idcareer teacher_id=teacher.idperson|default:'1' %}" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>
                       </tr>
                     {% endfor %}
                     </tbody>
@@ -169,7 +169,7 @@
                   </div>
                 </div>
 
-                <div class="col s12 m6 l6">      
+                <div class="col s12 m6 l6">
                   <div class="row center-align">
                     <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
                   </div>
@@ -218,7 +218,7 @@
         } else {
           tr[i].style.display = "none";
         }
-      }       
+      }
     }
     if (filter == ""){
       $("#myPager").empty();
@@ -232,7 +232,7 @@
         hidePageNumbers: false
       });
     }
-    
+
   }
 
   // Getting the URL variable to pen in the docentes tab.
@@ -287,7 +287,7 @@
     });
   });
 
-  
+
 </script>
 
 <script type="text/javascript ">
