@@ -24,7 +24,6 @@ class DeleteStudentView(View, GeneralFunctions):
             return render(request, self.template_login)
 
         students = EvaluationsStudents.objects.all()
-        print(students)
         context = {
             'students': students,
             'coordinator': coordinator,
