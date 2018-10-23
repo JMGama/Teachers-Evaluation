@@ -77,48 +77,101 @@
             </div>
             {% endif %}
 
-            <div class="row valign-wrapper ">
-              <div class="col s8 m10 ">
-                <span class="card-title ">
-                  <b>Resultados Generales de las Evaluaciones</b>
-                </span>
-                <hr/>
-              </div>
-              <div class="col s4 m2 ">
-                <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %} ">
+            <div class="row">
+              <div class="col s12" >
+                <ul class="tabs" style="overflow-x: hidden">
+                  <li class="tab col s4"><a href="#resultados">Resultados</a></li>
+                  <li class="tab col s4"><a href="#acciones">Acciones</a></li>
+                  <li class="tab col s4"><a href="#reportes">Reportes</a></li>
+                </ul>
               </div>
             </div>
 
-            <div class="row">
-              <div class="col s12 m12 l12">
-                <div class="row">
-                  <div class="col s12 m6 l6">
-                    <div class="sample-chart-wrapper">
-                      <canvas id="myChartEvaluations" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+            <div id="resultados">
+              <div class="row valign-wrapper ">
+                <div class="col s8 m10 ">
+                  <span class="card-title ">
+                    <b>Resultados Generales de las Evaluaciones</b>
+                  </span>
+                  <hr/>
+                </div>
+                <div class="col s4 m2 ">
+                  <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %} ">
+                </div>
+              </div>
+            
+              <div class="row">
+                <div class="col s12 m12 l12">
+                  <div class="row">
+                    <div class="col s12 m6 l6">
+                      <div class="sample-chart-wrapper">
+                        <canvas id="myChartEvaluations" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      </div>
+                      <p class="header center">Evaluaciones Realizadas</p>
                     </div>
-                    <p class="header center">Evaluaciones Realizadas</p>
-                  </div>
-                  <div class="col s12 m6 l6">
-                    <div class="sample-chart-wrapper">
-                      <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                    <div class="col s12 m6 l6">
+                      <div class="sample-chart-wrapper">
+                        <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      </div>
+                      <p class="header center">Promedio General</p>
                     </div>
-                    <p class="header center">Promedio General</p>
                   </div>
                 </div>
               </div>
             </div>
 
             
+            <div id="acciones">
+              <span class="card-title center" >
+                <b>Acciones para las evaluaciones</b>
+              </span>
+              <hr style="width: 12rem !important"/>
 
-            {% if admin_user == True %}
-              <div class="row center-align">
-                <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
-              </div>
+              {% if admin_user == True %}
 
-              <div class="row center-align">
-                <a class="btn-small waves-effect center red lighten-1 " target="_blank"  href="{% url 'evaluations:admin_reports' %}"><i class="material-icons right">get_app</i>Reporte General</a>
+                <div class="row center-align">
+                  <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/RemoveStudent.png' %}">
+                </div>
+
+                <div class="row center-align">
+                    <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Eliminar alumno de la evaluacion activa (Alumnos que se dieron de baja)" href="{% url 'evaluations:delete_student' %}"><i class="material-icons right">delete</i>Eliminar Alumno</a>
+                </div>
+
+              {% endif %}
+            </div>
+
+            <div id="reportes">
+              <div class="row">
+                <span class="card-title center" >
+                  <b>Reportes de los Resultados Generales</b>
+                </span>
+                <hr style="width: 12rem !important"/>
+
+                {% if admin_user == True %}
+
+                  <div class="col s12 m6 l6">
+                    <div class="row center-align">
+                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                    </div>
+
+                    <div class="row center-align">
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Reportes de todos los docentes con cada materia" target="_blank"  href="{% url 'evaluations:tech_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
+                    </div>
+                  </div>
+
+                  <div class="col s12 m6 l6">
+                    <div class="row center-align">
+                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                    </div>
+
+                    <div class="row center-align">
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera" target="_blank"  href="{% url 'evaluations:admin_reports' %}"><i class="material-icons right">get_app</i>Reporte General</a>
+                    </div>
+                  </div>
+
+                {% endif %}
               </div>
-            {% endif %}
+            </div>
 
           </div>
         </div>
@@ -136,11 +189,14 @@
 </body>
 
 <script type="text/javascript ">
-
+  // Initial functions for materialize
   $(document).ready(function(){
     $('.modal').modal({dismissible:false});
+    $('.tabs').tabs();
+    $('.tooltipped').tooltip();
   });
 
+  // AJAX function to delete student and show Loading Modal
   function loading(idCareer){
     $('#modal1').modal('open');
     var csrftoken = $('#download'+idCareer).find('input[name="csrfmiddlewaretoken"]').val();
