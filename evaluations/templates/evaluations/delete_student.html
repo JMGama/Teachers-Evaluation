@@ -90,44 +90,56 @@
 
 
               <div>
-                <div class="input-field col m5 offset-m6 s10 offset-s1">
-                  <i class="material-icons prefix">search</i>
-                  <input type="text" id="studentFilter" onkeyup="filterStudent()">
-                  <label for="studentFilter">Matricula del Alumno</label>
-                </div>
-
-                <div class="row">
-                  <div class="col s10 offset-s1">
-                    <table class="border striped highlight bordered">
-                      <thead>
-                        <tr>
-                          <th>Matricula</th>
-                          <th>Nombre</th>
-                          <th>Carrera</th>
-                          <th class="center-align"><i class="material-icons prefix icon-red">delete</i></th>
-                        </tr>
-                      </thead>
-                      <tbody id="studentsTable">
-                        {% for student in students %}
-                        <tr style="border-top:1px solid #1e2e5042;">
-                          <td>{{ student.enrollment }}</td>
-                          <td>{{ student.name }} {{ student.lastname }} {{ student.lastname2 }}</td>
-                          <td>{{ student.idcareer }}</td>
-                          <td class="right-align">
-                            <label>
-                              <input type="checkbox" />
-                              <span></span>
-                            </label>
-                          </td>
-                        </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
+                <form action="{% url 'evaluations:delete_student' %}" method="POST">
+                  {% csrf_token %}
+                  <div class="input-field col m5 s10">
+                    <button class="btn-small waves-effect waves-light red darken-1" type="submit" name="action">Borrar
+                      Alumno(s)
+                      <i class="material-icons right">delete</i>
+                    </button>
                   </div>
-                </div>
-                <div class="row center-align">
-                  <ul class="pagination pager" id="myPager"></ul>
-                </div>
+
+                  <div class="input-field col m5 offset-m1 s10 offset-s1">
+                    <i class="material-icons prefix">search</i>
+                    <input type="text" id="studentFilter" onkeyup="filterStudent()">
+                    <label for="studentFilter">Matricula del Alumno</label>
+                  </div>
+
+                  <div class="row">
+                    <div class="col s10 offset-s1">
+                      <table class="border striped highlight bordered">
+                        <thead>
+                          <tr>
+                            <th>Matricula</th>
+                            <th>Nombre</th>
+                            <th>Carrera</th>
+                            <th>Contraseña</th>
+                            <th class="center-align"><i class="material-icons prefix icon-red">delete</i></th>
+                          </tr>
+                        </thead>
+                        <tbody id="studentsTable">
+                          {% for student in students %}
+                          <tr style="border-top:1px solid #1e2e5042;">
+                            <td>{{ student.enrollment }}</td>
+                            <td>{{ student.name }} {{ student.lastname }} {{ student.lastname2 }}</td>
+                            <td>{{ student.idcareer }}</td>
+                            <td>{{ student.value }}</td>
+                            <td class="right-align">
+                              <label>
+                                <input type="checkbox" name="students" value="{{student.idperson}}" />
+                                <span></span>
+                              </label>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="row center-align">
+                    <ul class="pagination pager" id="myPager"></ul>
+                  </div>
+                </form>
               </div>
 
             </div>
