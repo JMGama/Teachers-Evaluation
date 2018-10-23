@@ -49,8 +49,13 @@ class DeleteStudentView(View, GeneralFunctions):
 
         # Check for the selected students
         students_to_delete = request.POST.getlist('students')
-        print(students_to_delete)
 
+        # Delete all the information about the student(s)
+        EvaluationsAnswers.objects.filter(idstudent__in=students_to_delete).delete()
+        EvaluationsDetailStudentSignatureExam.objects.filter(idstudent__in=students_to_delete).delete()
+        EvaluationsDetailStudentGroup.objects.filter(idstudent__in=students_to_delete).delete()
+        EvaluationsStudents.objects.filter(idperson__in=students_to_delete).delete()
+        
         students = EvaluationsStudents.objects.all()
         context = {
             'students': students,
