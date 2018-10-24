@@ -10,3 +10,4 @@ from .admin_reports import *
 from .teachers_report import *
 from .teacher_results import *
 from .delete_student import *
+from .teacher_evaluation import *

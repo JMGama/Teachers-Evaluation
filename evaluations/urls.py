@@ -9,6 +9,7 @@ urlpatterns = [
 
     path('evaluation/<slug:exam_id>/<slug:signature>/',
          views.EvaluationView.as_view(), name='evaluation'),
+    path('evaluation/teacher/', views.TeacherEvaluationView.as_view(), name='teacher_evaluation'),
 
     path('career_results/<slug:career_id>/',
          views.CareerResultsView.as_view(), name='career_results'),

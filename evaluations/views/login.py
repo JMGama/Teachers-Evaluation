@@ -15,8 +15,10 @@ class LoginView(View):
             if request.session['session']:
                 if request.session['type'] == 'student':
                     return redirect('home/')
-                else:
+                elif request.session['type'] == 'coordinator':
                     return redirect('monitoring/')
+                else:
+                    return redirect('evaluation/teacher/')
 
         except KeyError:
             pass
@@ -27,14 +29,18 @@ class LoginView(View):
         try:
             if self.load_student(request, request.POST['id_matricula'], request.POST['password']):
                 return redirect('home/')
-        except Exception as e:
-            print(e)
+        except Exception:
             # Try to load coordinator
             try:
                 if self.load_coordinator(request, request.POST['id_matricula'], request.POST['password']):
                     return redirect('monitoring/')
             except Exception:
-                pass
+                # Try to load teacher
+                try:
+                    if self.load_teacher(request, request.POST['id_matricula'], request.POST['password']):
+                        return redirect('evaluation/teacher/')
+                except Exception:
+                    pass
 
         return render(request, self.template_login, {'second_time': True, 'validate': 'invalid'})
 
@@ -47,7 +53,7 @@ class LoginView(View):
             request.session['type'] = 'student'
             return True
         else:
-             return False
+            return False
 
     def load_coordinator(self, request, matricula, password):
         coordinator = EvaluationsCoordinators.objects.get(
@@ -58,4 +64,14 @@ class LoginView(View):
             request.session['type'] = 'coordinator'
             return True
         else:
-             return False
+            return False
+
+    def load_teacher(self, request, matricula, password):
+        teacher = EvaluationsTeachers.objects.get(enrollment__exact=matricula)
+        if teacher.value == password:
+            request.session['id_teacher'] = teacher.idperson
+            request.session['session'] = True
+            request.session['type'] = 'teacher'
+            return True
+        else:
+            return False
