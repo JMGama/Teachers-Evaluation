@@ -418,6 +418,49 @@ class EvaluationsDetailStudentSignatureExam(models.Model):
         verbose_name = 'Estudiante - Materia - Examen'
         verbose_name_plural = 'Grupos'
 
+class EvaluationsDetailTeacherSignatureExam(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    # Field name made lowercase.
+    idsignature = models.ForeignKey(
+        'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
+    # Field name made lowercase.
+    idteacher = models.ForeignKey(
+        'EvaluationsTeachers', on_delete=models.PROTECT, db_column='idTeacher')
+    # Field name made lowercase.
+    idperiod = models.ForeignKey(
+        'EvaluationsPeriods', on_delete=models.PROTECT, db_column='idPeriod')
+    # Field name made lowercase.
+    idgroup = models.IntegerField(db_column='idGroup')
+    # Field name made lowercase.
+    idexam = models.ForeignKey(
+        'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
+    # Field name made lowercase.
+    updatedon = models.DateTimeField(db_column='updatedOn')
+    # Field name made lowercase.
+    createdon = models.DateTimeField(db_column='createdOn')
+    # Field name made lowercase.
+    idcareer = models.ForeignKey(
+        'EvaluationsCareers', on_delete=models.PROTECT, db_column='idCareer', blank=True, null=True)
+    EVALUATED_CHOICES = (
+        ('YES', 'Si'),
+        ('NO', 'No'),
+    )
+    evaluated = models.CharField(
+        max_length=3, choices=EVALUATED_CHOICES, default='NO')
+    STATUS_CHOICES = (
+        ('ACTIVO', 'Activo'),
+        ('INACTIVO', 'Inactivo'),
+    )
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_detail_student_signature_exam'
+        verbose_name = 'Estudiante - Materia - Examen'
+        verbose_name_plural = 'Grupos'
 
 class EvaluationsExams(models.Model):
     # add it always at the top of each model
