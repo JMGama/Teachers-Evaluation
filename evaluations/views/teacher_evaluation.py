@@ -16,7 +16,11 @@ class TeacherEvaluationView(View, GeneralFunctions):
 
         teacher = EvaluationsTeachers.objects.get(
             idperson__exact=request.session['id_teacher'])
-        signatures = EvaluationsSignatures.objects.filter(pk__in=EvaluationsDetailGroupPeriodSignature.objects.filter(
-            idteacher__exact=teacher.idperson).values_list('idsignature', flat=True))
-        print(signatures)
+        signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
+            idteacher__exact=teacher.idperson)
+
+
         return HttpResponse("WELCOME TO THE TEACHERS VIEW")
+
+    def get_teacher_eval_signatures(self, teacher):
+        pass
