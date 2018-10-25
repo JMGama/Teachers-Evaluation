@@ -418,6 +418,7 @@ class EvaluationsDetailStudentSignatureExam(models.Model):
         verbose_name = 'Estudiante - Materia - Examen'
         verbose_name_plural = 'Grupos'
 
+
 class EvaluationsDetailTeacherSignatureExam(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
@@ -461,6 +462,7 @@ class EvaluationsDetailTeacherSignatureExam(models.Model):
         db_table = 'evaluations_detail_student_signature_exam'
         verbose_name = 'Estudiante - Materia - Examen'
         verbose_name_plural = 'Grupos'
+
 
 class EvaluationsExams(models.Model):
     # add it always at the top of each model
