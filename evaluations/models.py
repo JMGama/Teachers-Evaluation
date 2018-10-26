@@ -459,7 +459,7 @@ class EvaluationsDetailTeacherSignatureExam(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'evaluations_detail_student_signature_exam'
+        db_table = 'evaluations_detail_teacher_signature_exam'
         verbose_name = 'Estudiante - Materia - Examen'
         verbose_name_plural = 'Grupos'
 
@@ -483,6 +483,15 @@ class EvaluationsExams(models.Model):
     )
     status = models.CharField(
         max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+
+    TYPE_CHOICES = (
+        ('DOCENTES', 'Docentes'),
+        ('CUATRIMESTRALES', 'Cuatrimestrales'),
+        ('SEMESTRALES', 'Semestrales'),
+        ('TODOS', 'Todos'),
+    )
+    type = models.CharField(
+        max_length=8, choices=TYPE_CHOICES, default='ACTIVO')
 
     def __str__(self):
         return '%s' % (self.description)
