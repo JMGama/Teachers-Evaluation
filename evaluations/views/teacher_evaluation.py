@@ -62,8 +62,6 @@ class TeacherEvaluationView(View, GeneralFunctions):
     def get_teacher_next_eval_signature(self, signatures, evaluated_signatures):
         """return the exam and group that is the next to evaluate (havent evaluated) for the teacher"""
 
-        print(evaluated_signatures)
-
         next_evaluation = {}
         for signature_dtl in signatures:
             if signature_dtl not in evaluated_signatures:
