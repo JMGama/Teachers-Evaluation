@@ -25,6 +25,17 @@ class TeacherEvaluationView(View, GeneralFunctions):
         next_evaluation = self.get_teacher_next_eval_signature(
             signatures_detail, evaluated_signatures)
 
+        if not next_evaluation:
+            try:
+                request.session.flush()
+            except KeyError:
+                pass
+            context = {
+                'student': teacher,
+                'complete': 'YES',
+            }
+            return render(request, self.template_login, context)
+
         context = {
             'teacher': teacher,
             'teacher_exams': teacher_exams,
