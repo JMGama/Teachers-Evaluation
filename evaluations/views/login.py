@@ -18,7 +18,7 @@ class LoginView(View):
                 elif request.session['type'] == 'coordinator':
                     return redirect('monitoring/')
                 else:
-                    return redirect('evaluation/teacher/')
+                    return redirect('teacher/home')
 
         except KeyError:
             pass
@@ -38,7 +38,7 @@ class LoginView(View):
                 # Try to load teacher
                 try:
                     if self.load_teacher(request, request.POST['id_matricula'], request.POST['password']):
-                        return redirect('evaluation/teacher/')
+                        return redirect('teacher/home')
                 except Exception:
                     pass
 
