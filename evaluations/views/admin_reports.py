@@ -10,8 +10,59 @@ import csv
 class AdminReportsView(View, GeneralFunctions):
 
     def get(self, request):
-        response = self.general_report(request)
+        response = self.general_results(request)
+
+        #response = self.general_report(request)
         return response
+
+    def general_results(self, request):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=Resultados_Generales.csv'
+        writer = csv.writer(response, csv.excel)
+        response.write(u'\ufeff'.encode('utf8'))
+
+        results = self.get_teachers_results("CUATRIMESTRAL")
+
+        titles = ['CARRERA', 'MATERIA', 'DOCENTE', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6',
+                  'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'TOTAL ALUMNOS EVALUADOS']
+
+        writer.writerow([smart_str(u""+title) for title in titles])
+        for career, teachers in results.items():
+            for teacher, signatures in teachers.items():
+                for singature, items in signatures.items():
+                    teacher_data = [career.description, singature.name,
+                                    teacher.name+" "+teacher.lastname+" "+teacher.lastname2]
+                    for question, data in items['questions'].items():
+                        if 'average'in data:
+                            teacher_data.append(str(data['average']) + "%")
+                        else:
+                            comments = ''
+                            for answer in data['answers']:
+                                if len(answer.answer) > 2:
+                                    comments += answer.answer + " | "
+                            comments.replace('\n', '').replace('\r', '')
+                            teacher_data.append(comments)
+                    teacher_data.append(items['evaluated'])
+                    writer.writerow(teacher_data)
+            writer.writerow([])
+        return response
+
+    def get_teachers_results(self, careers_type):
+        results = {}
+        careers = EvaluationsCareers.objects.filter(
+            abbreviation__exact=careers_type)
+
+        for career in careers:
+            data = {}
+            career_teachers = self.get_career_teachers(career)
+            career_data = self.get_career_data(career)
+
+            for teacher in career_teachers:
+                data[teacher] = self.get_teacher_signatures_results(
+                    career, career_data, teacher, exam=career_data['exams'][0])
+            results[career] = data
+
+        return results
 
     def general_report(self, request):
         response = HttpResponse(content_type='text/csv')
