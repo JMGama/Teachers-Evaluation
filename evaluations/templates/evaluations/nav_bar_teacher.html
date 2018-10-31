@@ -36,7 +36,7 @@
             </li>
             {% else %}
             <li>
-              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam.id signature_dtl.idsignature.id %}"><i class="material-icons right">bookmark_border</i>{{ signature_dtl.idsignature.name }}</a>
+              <a class="waves-effect" href="{% url 'evaluations:teacher_evaluation' exam.id signature_dtl.id %}"><i class="material-icons right">bookmark_border</i>{{ signature_dtl.idsignature.name }}</a>
             </li>
             {% endif %}
             {% endfor %}
