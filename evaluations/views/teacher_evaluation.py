@@ -26,10 +26,8 @@ class TeacherEvaluationView(View, GeneralFunctions):
         # Values for the view
         exam_questions = EvaluationsDetailExamQuestion.objects.filter(
             idexam__exact=exam_id)
-        signature_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
-            pk__exact=signature_dtl_id).select_related('idsignature')
-        
-        print(signature_detail)
+        signature_detail = EvaluationsDetailGroupPeriodSignature.objects.get(
+            pk__exact=signature_dtl_id)
         
         context = {
             'teacher': teacher,
