@@ -32,7 +32,7 @@ class MonitoringView(View, GeneralFunctions):
             'general_data': general_data,
         }
 
-        if coordinator.enrollment == '503':
+        if coordinator.type == 'ADMINISTRATIVO':
             context['admin_user'] = True
 
         return render(request, self.template_monitoring, context)
