@@ -65,7 +65,7 @@ class TeacherHomeView(View, GeneralFunctions):
         next_evaluation = {}
         for exam in teacher_exams:
             for signature_dtl in signatures:
-                if signature_dtl not in evaluated_signatures:
+                if signature_dtl not in evaluated_signatures[exam]:
                     next_evaluation['exam'] = exam
                     next_evaluation['signature_dtl'] = signature_dtl
                     return next_evaluation
