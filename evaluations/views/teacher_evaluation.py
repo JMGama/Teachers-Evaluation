@@ -1,7 +1,7 @@
+from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
-from django.http import HttpResponse
-from django.db import transaction
 
 from .general_functions import *
 
@@ -13,7 +13,7 @@ class TeacherEvaluationView(View, GeneralFunctions):
 
     def get(self, request, exam_id, signature_dtl_id):
         """ Get the necesary values to show the formulary for the evaluation"""
-        
+
         # Verify if the user is correctly logged in
         if not request.session.get('session', False) or not request.session['type'] == 'teacher':
             return render(request, self.template_login)
@@ -52,25 +52,41 @@ class TeacherEvaluationView(View, GeneralFunctions):
         if not request.session.get('session', False) or not request.session['type'] == 'teacher':
             return render(request, self.template_login)
 
-        # Values for the navigation bar
         teacher = EvaluationsTeachers.objects.get(
             idperson__exact=request.session['id_teacher'])
+        # Get exam questions
+        exam_questions = EvaluationsDetailExamQuestion.objects.filter(
+            idexam__exact=exam_id)
+
+        # Submit anwsers for the evaluation
+        self.submit_answers(request, teacher, exam_id,
+                            signature_dtl_id, exam_questions)
+        # Submit evaluation done
+        self.finish_evaluation(request, teacher, exam_id, signature_dtl_id)
+
+        # Values for the navigation bar
         teacher_exams = EvaluationsExams.objects.filter(
             Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
         signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
             idteacher__exact=teacher.idperson)
         evaluated_signatures = self.get_teacher_eval_signatures(
             teacher, signatures_detail, teacher_exams)
+        next_evaluation = self.get_teacher_next_eval_signature(
+            signatures_detail, evaluated_signatures, teacher_exams)
 
-        # Get exam questions
-        exam_questions = EvaluationsDetailExamQuestion.objects.filter(
-            idexam__exact=exam_id)
+        # Exit if there is no more evaluations
+        if not next_evaluation:
+            try:
+                request.session.flush()
+            except KeyError:
+                pass
+            context = {
+                'student': teacher,
+                'complete': 'YES',
+            }
+            return render(request, self.template_login, context)
 
-        # Submit anwsers for the evaluation finish
-        self.submit_answers(request, teacher, exam_id,
-                            signature_dtl_id, exam_questions)
-
-        pass
+        return self.get(request, next_evaluation['exam'].id, next_evaluation['signature_dtl'].id)
 
     @transaction.atomic
     def submit_answers(self, request, teacher, exam_id, signature_dtl_id, exam_questions):
@@ -99,6 +115,23 @@ class TeacherEvaluationView(View, GeneralFunctions):
         if num_answers != len(exam_questions):
             raise Exception('Error uploading all questions')
 
+    def finish_evaluation(self, request, teacher, exam_id, signature_dtl_id):
+        """saves the record in the Database, which says that the evaluation has completed successfully"""
+        signature_dtl = EvaluationsDetailGroupPeriodSignature.objects.get(
+            pk__exact=signature_dtl_id)
+
+        evaluated_signature = EvaluationsDetailTeacherSignatureExam(
+            idsignature=signature_dtl.idsignature,
+            idteacher=teacher,
+            idperiod=signature_dtl.idperiod,
+            idgroup=signature_dtl.idgroup,
+            idexam=EvaluationsExams.objects.get(pk__exact=exam_id),
+            idcareer=signature_dtl.idsignature.idcareer,
+            evaluated='YES',
+            status='ACTIVO'
+        )
+        evaluated_signature.save()
+
     def get_teacher_eval_signatures(self, teacher, signatures_detail, teacher_exams):
         """return a list of all the evaluations (groupid) already made by the teacher"""
 
@@ -113,11 +146,13 @@ class TeacherEvaluationView(View, GeneralFunctions):
             eval_exam_signatures[exam] = eval_signatures
         return eval_exam_signatures
 
-    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures):
+    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures, teacher_exams):
         """return the exam and group that is the next to evaluate (havent evaluated) for the teacher"""
 
         next_evaluation = {}
-        for signature_dtl in signatures:
-            if signature_dtl not in evaluated_signatures:
-                next_evaluation = signature_dtl
-        return next_evaluation
+        for exam in teacher_exams:
+            for signature_dtl in signatures:
+                if signature_dtl not in evaluated_signatures[exam]:
+                    next_evaluation['exam'] = exam
+                    next_evaluation['signature_dtl'] = signature_dtl
+                    return next_evaluation
