@@ -1,0 +1,61 @@
+{% load static %}
+
+<div class="navbar-fixed">
+  <nav style="background-color: #132d4e;">
+    <div class="nav-wrapper">
+      <a href="{% url 'evaluations:teacher_home' %}" class="brand-logo center">Evaluación Docente</a>
+      <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+    </div>
+  </nav>
+</div>
+
+<ul id="slide-out" class="sidenav sidenav-fixed">
+  <li>
+    <div class="user-view">
+      <div class="background">
+        <img src="{% static 'evaluations/images/Banner.jpg' %}">
+      </div>
+      <a href="#user"><img class="circle" src="{% static 'evaluations/images/User.png' %}"></a>
+      <a href="#name"><span class="white-text name">{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</span></a>
+      <a href="#email"><span class="white-text email">{{ teacher.instemail }}</span></a>
+    </div>
+  </li>
+
+  {% for exam in teacher_exams %}
+  <li>
+    <ul class="collapsible collapsible-accordion">
+      <li class="active">
+        <a class="collapsible-header waves-effect tooltipped" data-position="right" data-tooltip="{{ exam.description }}""><i class="material-icons right">assignment</i><b>{{ exam.description|slice:":28" }}</b></a>
+        <div class="collapsible-body">
+          <ul>
+            {% for signature_dtl in signatures_detail%} 
+            {% for exam, eval_signs in evaluated_signatures.items %}
+            {% if signature_dtl in eval_signs %}
+            <li>
+              <a class="waves-effect disabled" href=""><i class="material-icons right icon-green">check</i>{{ signature_dtl.idsignature.name }}</a>
+            </li>
+            {% else %}
+            <li>
+              <a class="waves-effect" href="{% url 'evaluations:teacher_evaluation' exam.id signature_dtl.id %}"><i class="material-icons right">bookmark_border</i>{{ signature_dtl.idsignature.name }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </li>
+  {% endfor %}
+
+
+  <!--
+  <li>
+    <div class="divider"></div>
+  </li>
+  <li>
+    <div class="col s6 offset-s3 center">
+      <a type="" class="btn-small waves-effect center " href="{% url 'evaluations:logout' %}">Cerrar Sesión</a>
+  </li>
+  -->
+</ul>
