@@ -52,11 +52,11 @@
               <div class="col s8 m10">
                 <span class="card-title">
                   <b>Autovaluación Docente</b>
-                  <br/>
-                  <br/>
+                  <br />
+                  <br />
                   Instrucciones:
                 </span>
-                <hr/>
+                <hr />
               </div>
               <div class="col s4 m2">
                 <img class="responsive-img" src="{% static 'evaluations/images/Guerreros.png' %}">
@@ -68,10 +68,13 @@
               <ul class="collection">
                 <br>
                 <li class="collection-item">
-                  Contesta las preguntas que se encuentran en el formulario <b>seleccionando la casilla deseada</b> <i class="material-icons">check_box</i>. <br>Al final puedes dejar tu comentario de retroalimentación. <i>(evita usar palabras altisonantes o un vocabulario inadecuado)</i>.
+                  Contesta las preguntas que se encuentran en el formulario <b>seleccionando la casilla deseada</b> <i
+                    class="material-icons">check_box</i>. <br>Al final puedes dejar tu comentario de retroalimentación.
+                  <i>(evita usar palabras altisonantes o un vocabulario inadecuado)</i>.
                 </li>
               </ul>
-              <br/>
+              <br />
+              <a class="waves-effect waves-light btn-large green" href="{% url 'evaluations:teacher_evaluation' next_evaluation.exam.id next_evaluation.signature_dtl.id %}">Comenzar</a>
             </div>
 
           </div>
@@ -92,11 +95,11 @@
 </html>
 <!-- Remove message in 2 seconds -->
 <script type="text/javascript">
-  setTimeout(function() {
-    $("#alert_box").fadeOut("slow", function() {});
+  setTimeout(function () {
+    $("#alert_box").fadeOut("slow", function () {});
   }, 2000);
 
-  $(document).ready(function(){
+  $(document).ready(function () {
     $('.tooltipped').tooltip();
   });
 </script>

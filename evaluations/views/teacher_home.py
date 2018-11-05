@@ -17,13 +17,13 @@ class TeacherHomeView(View, GeneralFunctions):
         teacher = EvaluationsTeachers.objects.get(
             idperson__exact=request.session['id_teacher'])
         teacher_exams = EvaluationsExams.objects.filter(
-            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))    
+            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
         signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
             idteacher__exact=teacher.idperson)
         evaluated_signatures = self.get_teacher_eval_signatures(
-            teacher, signatures_detail,teacher_exams)
+            teacher, signatures_detail, teacher_exams)
         next_evaluation = self.get_teacher_next_eval_signature(
-            signatures_detail, evaluated_signatures)
+            signatures_detail, evaluated_signatures, teacher_exams)
 
         if not next_evaluation:
             try:
@@ -59,11 +59,13 @@ class TeacherHomeView(View, GeneralFunctions):
             eval_exam_signatures[exam] = eval_signatures
         return eval_exam_signatures
 
-    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures):
+    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures, teacher_exams):
         """return the exam and group that is the next to evaluate (havent evaluated) for the teacher"""
 
         next_evaluation = {}
-        for signature_dtl in signatures:
-            if signature_dtl not in evaluated_signatures:
-                next_evaluation = signature_dtl
-        return next_evaluation
+        for exam in teacher_exams:
+            for signature_dtl in signatures:
+                if signature_dtl not in evaluated_signatures:
+                    next_evaluation['exam'] = exam
+                    next_evaluation['signature_dtl'] = signature_dtl
+                    return next_evaluation
