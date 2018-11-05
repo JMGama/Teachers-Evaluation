@@ -5,10 +5,13 @@ app_name = 'evaluations'
 urlpatterns = [
     path('', views.LoginView.as_view(), name='login'),
     path('home/', views.HomeView.as_view(), name='home'),
+    path('teacher/home', views.TeacherHomeView.as_view(), name='teacher_home'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
 
     path('evaluation/<slug:exam_id>/<slug:signature>/',
          views.EvaluationView.as_view(), name='evaluation'),
+    path('teacher/evaluation/<slug:exam_id>/<slug:signature_dtl_id>/',
+         views.TeacherEvaluationView.as_view(), name='teacher_evaluation'),
 
     path('career_results/<slug:career_id>/',
          views.CareerResultsView.as_view(), name='career_results'),
@@ -21,5 +24,6 @@ urlpatterns = [
     path('monitoring/admin_reports',
          views.AdminReportsView.as_view(), name='admin_reports'),
     path('monitoring/tech_report', views.tech_report.as_view(), name='tech_report'),
-    path('monitoring/delete_student', views.DeleteStudentView.as_view(), name='delete_student'),
+    path('monitoring/delete_student',
+         views.DeleteStudentView.as_view(), name='delete_student'),
 ]
