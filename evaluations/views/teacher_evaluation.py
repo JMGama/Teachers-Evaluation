@@ -1,8 +1,10 @@
 from django.shortcuts import render
 from django.views import View
 from django.http import HttpResponse
+from django.db import transaction
 
 from .general_functions import *
+
 
 class TeacherEvaluationView(View, GeneralFunctions):
     template_evaluation = 'evaluations/teacher_evaluation_form.html'
@@ -10,6 +12,9 @@ class TeacherEvaluationView(View, GeneralFunctions):
     template_login = 'evaluations/login.html'
 
     def get(self, request, exam_id, signature_dtl_id):
+        """ Get the necesary values to show the formulary for the evaluation"""
+        
+        # Verify if the user is correctly logged in
         if not request.session.get('session', False) or not request.session['type'] == 'teacher':
             return render(request, self.template_login)
 
@@ -17,18 +22,18 @@ class TeacherEvaluationView(View, GeneralFunctions):
         teacher = EvaluationsTeachers.objects.get(
             idperson__exact=request.session['id_teacher'])
         teacher_exams = EvaluationsExams.objects.filter(
-            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))    
+            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
         signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
             idteacher__exact=teacher.idperson)
         evaluated_signatures = self.get_teacher_eval_signatures(
-            teacher, signatures_detail,teacher_exams)
+            teacher, signatures_detail, teacher_exams)
 
         # Values for the view
         exam_questions = EvaluationsDetailExamQuestion.objects.filter(
             idexam__exact=exam_id)
         signature_detail = EvaluationsDetailGroupPeriodSignature.objects.get(
             pk__exact=signature_dtl_id)
-        
+
         context = {
             'teacher': teacher,
             'teacher_exams': teacher_exams,
@@ -39,6 +44,60 @@ class TeacherEvaluationView(View, GeneralFunctions):
         }
 
         return render(request, self.template_evaluation, context)
+
+    def post(self, request, exam_id, signature_dtl_id):
+        """Make the full process to upload the answers of the evaluation that was finish"""
+
+        # Verify if the user is correctly logged in
+        if not request.session.get('session', False) or not request.session['type'] == 'teacher':
+            return render(request, self.template_login)
+
+        # Values for the navigation bar
+        teacher = EvaluationsTeachers.objects.get(
+            idperson__exact=request.session['id_teacher'])
+        teacher_exams = EvaluationsExams.objects.filter(
+            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
+        signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
+            idteacher__exact=teacher.idperson)
+        evaluated_signatures = self.get_teacher_eval_signatures(
+            teacher, signatures_detail, teacher_exams)
+
+        # Get exam questions
+        exam_questions = EvaluationsDetailExamQuestion.objects.filter(
+            idexam__exact=exam_id)
+
+        # Submit anwsers for the evaluation finish
+        self.submit_answers(request, teacher, exam_id,
+                            signature_dtl_id, exam_questions)
+
+        pass
+
+    @transaction.atomic
+    def submit_answers(self, request, teacher, exam_id, signature_dtl_id, exam_questions):
+        """Creates a transaction to upload all the answers, if there is an error in one answers 
+        it rise an exception and make a rollback in all the answers"""
+        num_answers = 0
+        for question_dtl in exam_questions:
+            # Verify if the question is optional or not
+            try:
+                submitted_answer = request.POST['answer_' +
+                                                str(question_dtl.idquestion.id)]
+            except Exception:
+                submitted_answer = request.POST['answer_' +
+                                                str(question_dtl.idquestion.id) + "_optional"]
+            answer = EvaluationsTeachersAnswers(
+                idteacher=teacher,
+                idteachersignaturedetail=EvaluationsDetailGroupPeriodSignature.objects.get(
+                    pk__exact=signature_dtl_id),
+                idquestion=question_dtl.idquestion,
+                answer=submitted_answer.upper() if submitted_answer != "" else None,
+                idexam=EvaluationsExams.objects.get(pk__exact=exam_id)
+            )
+            answer.save()
+            num_answers += 1
+
+        if num_answers != len(exam_questions):
+            raise Exception('Error uploading all questions')
 
     def get_teacher_eval_signatures(self, teacher, signatures_detail, teacher_exams):
         """return a list of all the evaluations (groupid) already made by the teacher"""

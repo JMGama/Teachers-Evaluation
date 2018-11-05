@@ -218,6 +218,41 @@ class EvaluationsAnswers(models.Model):
         verbose_name_plural = 'Respuestas'
 
 
+class EvaluationsTeachersAnswers(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    # Field name made lowercase.
+    idteacher = models.ForeignKey(
+        'EvaluationsTeachers', on_delete=models.PROTECT, db_column='idTeacher')
+    # Field name made lowercase.
+    idteachersignaturedetail = models.ForeignKey(
+        'EvaluationsDetailGroupPeriodSignature', on_delete=models.PROTECT, db_column='idTeacherSignatureDetail')
+    # Field name made lowercase.
+    idquestion = models.ForeignKey(
+        'EvaluationsQuestions', on_delete=models.PROTECT, db_column='idQuestion')
+    answer = models.CharField(max_length=255, blank=True, null=True)
+    # Field name made lowercase.
+    idexam = models.ForeignKey(
+        'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
+
+    STATUS_CHOICES = (
+        ('ACTIVO', 'Activo'),
+        ('INACTIVO', 'Inactivo'),
+    )
+    status = models.CharField(
+        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+
+    def __str__(self):
+        return '%s' % (self.answer)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_teachers_answers'
+        verbose_name = 'Respuesta'
+        verbose_name_plural = 'Respuestas'
+
+
 class EvaluationsDetailCoordinatorCareer(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
