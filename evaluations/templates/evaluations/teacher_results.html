@@ -115,6 +115,18 @@
                   </div>
                 </div>
               </div>
+              <div class="row">
+                <div class="col s12 m12 l12">
+                  <div class=" row">
+                    <div class="col s12 m12 l12">
+                      <div class="sample-chart-wrapper">
+                        <canvas id="myChartQuestions" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                      </div>
+                      <p class="header center">Resultados por pregunta</p>
+                    </div>
+                  </div> 
+                </div>
+              </div>
             </div>
 
             <div id="materias">
@@ -127,7 +139,7 @@
                 <div class="col s10 offset-s1">
                   <table class="border striped highlight bordered">
                     <thead>
-                      <trx>
+                      <tr>
                           <th>Materia</th>
                           <th>Alumnos</th>
                       </tr>
@@ -137,7 +149,6 @@
                       {% for signature, results in signatures.items %}
                         <tr style="border-top:1px solid #1e2e5042;">
                           <td>{{ signature.name.upper }}</td>
-                          <!--<td><a href="#!" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>-->
                           <td>{{ results.evaluated }}</td>
                         </tr>
                       {% endfor %}
@@ -172,13 +183,14 @@
 </body>
 
 <script type="text/javascript ">
-
+  // basic Jquery thigs to load
   $(document).ready(function(){
     $('.tabs').tabs();
     $('.modal').modal({dismissible:false});
     $('.tooltipped').tooltip();
   });
 
+  // Function that show a loading donut while doing a AJAX process
   function loading(){
     $('#modal1').modal('open');
     var csrftoken = $('#download').find('input[name="csrfmiddlewaretoken"]').val();
@@ -204,6 +216,7 @@
 </script>
 
 <script type="text/javascript ">
+  // Set text inside the Donut chart
   Chart.pluginService.register({
     beforeDraw: function (chart) {
       if (chart.config.options.elements.center) {
@@ -248,6 +261,7 @@
 </script>
 
 <script type="text/javascript ">
+  // Ceneral average of the teacher with donut graph
     var ctx = document.getElementById("myChart").getContext('2d');
     var percentage = Math.round({{ final_average }}) + "%";
     var data = {
@@ -293,6 +307,7 @@
 </script>
 
 <script type="text/javascript ">
+  // Average of each exams with a bar graph
     var ctxBar = document.getElementById("myChartAverage").getContext('2d');
     var colors = [];
 
@@ -321,12 +336,56 @@
           fontStyle: 'Arial', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
         }
-      }
+      },
     }
     var myBarChart = new Chart(ctxBar, {
       type: 'bar',
       data: {
-        labels:[{% for exam in exams_averages%}'{{exam.description}}', {% endfor %}],
+        labels:[{% for exam in exams_averages%}'{{exam.description|slice:":14"}}', {% endfor %}],
+        datasets: [averageData]
+      },
+      options: options
+    });
+</script>
+
+<script type="text/javascript ">
+  // Average of each question with a bar graph
+    var ctxBar = document.getElementById("myChartQuestions").getContext('2d');
+    var colors = [];
+
+    var dynamicColors = function() {
+      var r = Math.floor(Math.random() * 255);
+      var g = Math.floor(Math.random() * 255);
+      var b = Math.floor(Math.random() * 255);
+      return "rgb(" + r + "," + g + "," + b + ")";
+    };
+    {% for questions in questions_results.values %}
+      {% for question in questions %}
+        colors.push(dynamicColors())
+      {% endfor %}
+    {% endfor %}
+
+    var averageData = {
+      data: [{% for questions in questions_results.values %}{% for question, averages in questions.items %}{{averages}}, {% endfor %}{% endfor %}],
+      backgroundColor: colors,
+    }
+    var options = {
+      legend: {
+        display: false
+      },
+      elements: {
+        center: {
+          text: "", // Porcentaje de alumnos
+          color: 'black', // Default is #000000
+          fontStyle: 'Arial', // Default is Arial
+          sidePadding: 20 // Defualt is 20 (as a percentage)
+        }
+      },
+    }
+    var myBarChart = new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels:[{% for questions in questions_results.values %}{% for question, averages in questions.items %}'P {{question.id}}', {% endfor %}{% endfor %}],
         datasets: [averageData]
       },
       options: options
