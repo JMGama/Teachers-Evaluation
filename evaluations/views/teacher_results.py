@@ -88,7 +88,7 @@ class TeacherResultsView(View, GeneralFunctions):
                         questions_info[question]=items['average']
                     else: 
                         for comment in items['answers']:
-                            comments.append(comment)
+                            comments.append(comment.answer)
                 questions_results[exam] = questions_info
             exam_questions[exam]=questions_description
 
