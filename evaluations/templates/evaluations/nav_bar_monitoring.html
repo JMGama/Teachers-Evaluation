@@ -23,14 +23,28 @@
       <li >
         <a class="waves-effect" href="{% url 'evaluations:monitoring' %}"><i class="material-icons right icon-black">bookmark_border</i><b>RESULTADOS GENERALES</b></a>
       </li>
-    {% for career in careers %}
-      <li>
-        <a class="tooltipped waves-effect"
-         href="{% url 'evaluations:career_results' career.idcareer %}"
-         data-position="rigth" data-tooltip="{{ career.description }}"><i class="material-icons right">short_text</i>{{ career.abbreviation1 }}</a>
-      </li>
-    {% endfor %}
-  <li>
+      {% regroup careers|dictsort:"abbreviation" by abbreviation as career_list %}
+  {% for abbreviation in career_list %}
+    <li>
+      <ul class="collapsible collapsible-accordion">
+        <li >
+          <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ abbreviation.grouper }}</b></a>
+          <div class="collapsible-body">
+            <ul>
+              {% for career in abbreviation.list %}
+                <li>
+                  <a class="tooltipped waves-effect"
+                  href="{% url 'evaluations:career_results' career.idcareer %}"
+                  data-position="rigth" data-tooltip="{{ career.description }}"><i class="material-icons right">short_text</i>{{ career.abbreviation1 }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </li>
+  {% endfor %}
+    <li>
     <div class="divider"></div>
   </li>
   <li>
