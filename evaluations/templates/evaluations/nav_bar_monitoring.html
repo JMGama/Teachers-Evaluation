@@ -27,7 +27,7 @@
   {% for abbreviation in career_list %}
     <li>
       <ul class="collapsible collapsible-accordion">
-        <li >
+        <li>
           <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ abbreviation.grouper }}</b></a>
           <div class="collapsible-body">
             <ul>
@@ -35,7 +35,7 @@
                 <li>
                   <a class="tooltipped waves-effect"
                   href="{% url 'evaluations:career_results' career.idcareer %}"
-                  data-position="rigth" data-tooltip="{{ career.description }}"><i class="material-icons right">short_text</i>{{ career.abbreviation1 }}</a>
+                  data-position="rigth" data-tooltip="{{ career.description }}"><i class="material-icons right">short_text</i><b>{{ career.abbreviation1 }}</b></a>
                 </li>
               {% endfor %}
             </ul>
