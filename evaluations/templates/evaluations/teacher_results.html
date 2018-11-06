@@ -92,11 +92,11 @@
             </div>
             
             <div id="resultados" >
-              <br>
               <span class="card-title center">
                 <b>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</b>
               </span>
               <hr style="width: 12rem !important"/>
+
               <div class="row">
                 <div class="col s12 m12 l12">
                   <div class="row">
@@ -115,6 +115,9 @@
                   </div>
                 </div>
               </div>
+
+              <hr>
+
               <div class="row">
                 <div class="col s12 m12 l12">
                   <div class=" row">
@@ -126,6 +129,19 @@
                     </div>
                   </div> 
                 </div>
+              </div>
+              
+              <hr>
+
+              <div class="row">
+                {% for exam, questions in exam_questions.items %}
+                <div class="col s12 m12 l6">
+                  <h4>{{exam.description}}</h4>
+                  {% for question in questions %}
+                    <p>{{question.id}}.- {{question.description}}</p>
+                  {% endfor %}
+                </div>
+                {% endfor %}
               </div>
             </div>
 

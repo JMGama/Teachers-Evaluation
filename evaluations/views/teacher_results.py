@@ -36,7 +36,7 @@ class TeacherResultsView(View, GeneralFunctions):
         exams_averages, final_average = self.get_teacher_exams_averages(
             teacher_results)
         
-        questions, questions_results, comments = self.get_exam_questions_results(teacher_results)
+        exam_questions, questions_results, comments = self.get_exam_questions_results(teacher_results)
 
         context = {
             'final_average': final_average,
@@ -47,7 +47,7 @@ class TeacherResultsView(View, GeneralFunctions):
             'careers': careers,
             'career': career,
             'career_data': career_data,
-            'questions': questions,
+            'exam_questions': exam_questions,
             'questions_results': questions_results,
             'comments': comments
         }
@@ -74,20 +74,22 @@ class TeacherResultsView(View, GeneralFunctions):
          a list with the questions and a list with all the comments of that career"""
 
         questions_results = {}
-        questions = []
+        exam_questions = {}
         comments = []
         
         for exam, signatures in teacher_results.items():
             for options in signatures.values():
                 questions_info = {}
+                questions_description = []
                 for question, items in options['questions'].items():
                     # Add the questions, comments and questions results.
-                    questions.append(question)
+                    questions_description.append(question)
                     if 'average' in items:
                         questions_info[question]=items['average']
                     else: 
                         for comment in items['answers']:
                             comments.append(comment)
                 questions_results[exam] = questions_info
-        print(questions_results)
-        return questions, questions_results, comments
+            exam_questions[exam]=questions_description
+
+        return exam_questions, questions_results, comments
