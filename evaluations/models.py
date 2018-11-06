@@ -644,6 +644,7 @@ class EvaluationsCareers(models.Model):
     # Field name made lowercase.
     idcareergissa = models.CharField(db_column='idCareerGissa', max_length=20)
     abbreviation = models.CharField(max_length=20)
+    abbreviation1 = models.CharField(db_column='abbreviation1',max_length=20)
     description = models.CharField(max_length=100)
     status = models.CharField(max_length=8)
     # Field name made lowercase.

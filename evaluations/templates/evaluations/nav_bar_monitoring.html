@@ -25,7 +25,9 @@
       </li>
     {% for career in careers %}
       <li>
-        <a class="waves-effect" href="{% url 'evaluations:career_results' career.idcareer %}"><i class="material-icons right">short_text</i>{{ career.description }}</a>
+        <a class="tooltipped waves-effect"
+         href="{% url 'evaluations:career_results' career.idcareer %}"
+         data-position="rigth" data-tooltip="{{ career.description }}"><i class="material-icons right">short_text</i>{{ career.abbreviation1 }}</a>
       </li>
     {% endfor %}
   <li>
@@ -34,5 +36,6 @@
   <li>
     <div class="col s6 offset-s3 center">
       <a type="" class="btn-small waves-effect center " href="{% url 'evaluations:logout' %}">Cerrar Sesión</a>
+      </div>
   </li>
 </ul>
