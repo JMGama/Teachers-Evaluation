@@ -336,14 +336,14 @@
     var ctxBar = document.getElementById("myChartAverage").getContext('2d');
     var colors = [];
 
-    var dynamicColors = function() {
-      var r = Math.floor(Math.random() * 255);
-      var g = Math.floor(Math.random() * 255);
-      var b = Math.floor(Math.random() * 255);
-      return "rgb(" + r + "," + g + "," + b + ")";
+    var dynamicColors = (average) =>{
+      let r = parseInt((average > 50 ? 1-2*(average-50)/100.0 : 1.0) *255 - 20);
+      let g = parseInt((average > 50 ? 1.0 : 2*average/100.0) *255 - 20);
+      return "rgb(" + r + "," + g + ",100)";
     };
-    {% for exam in exams_averages %}
-      colors.push(dynamicColors())
+
+    {% for exam, options in exams_averages.items %}
+      colors.push(dynamicColors({{options.evaluation_average}}))
     {% endfor %}
 
     var averageData = {
@@ -378,15 +378,15 @@
     var ctxBar = document.getElementById("myChartQuestions").getContext('2d');
     var colors = [];
 
-    var dynamicColors = function() {
-      var r = Math.floor(Math.random() * 255);
-      var g = Math.floor(Math.random() * 255);
-      var b = Math.floor(Math.random() * 255);
-      return "rgb(" + r + "," + g + "," + b + ")";
+    var dynamicColors = (average) =>{
+      let r = parseInt((average > 50 ? 1-2*(average-50)/100.0 : 1.0) *255 - 20);
+      let g = parseInt((average > 50 ? 1.0 : 2*average/100.0) *255 - 20);
+      return "rgb(" + r + "," + g + ",100)";
     };
+
     {% for questions in questions_results.values %}
-      {% for question in questions %}
-        colors.push(dynamicColors())
+      {% for question, average in questions.items %}
+        colors.push(dynamicColors({{average}}))
       {% endfor %}
     {% endfor %}
 
@@ -406,6 +406,13 @@
           sidePadding: 20 // Defualt is 20 (as a percentage)
         }
       },
+      scales: {
+        yAxes: [{
+          ticks: {
+            suggestedMin: 0,
+          }
+        }]
+      }
     }
     var myBarChart = new Chart(ctxBar, {
       type: 'bar',
