@@ -35,8 +35,9 @@ class TeacherResultsView(View, GeneralFunctions):
             career, career_data, teacher)
         exams_averages, final_average = self.get_teacher_exams_averages(
             teacher_results)
-        
-        exam_questions, questions_results, comments = self.get_exam_questions_results(teacher_results)
+
+        exam_questions, questions_results, comments = self.get_exam_questions_results(
+            teacher_results)
 
         context = {
             'final_average': final_average,
@@ -76,20 +77,30 @@ class TeacherResultsView(View, GeneralFunctions):
         questions_results = {}
         exam_questions = {}
         comments = []
-        
+
         for exam, signatures in teacher_results.items():
+            questions_info = {}
             for options in signatures.values():
-                questions_info = {}
                 questions_description = []
+
                 for question, items in options['questions'].items():
                     # Add the questions, comments and questions results.
                     questions_description.append(question)
                     if 'average' in items:
-                        questions_info[question]=items['average']
-                    else: 
+                        if question in questions_info:
+                            # Sum the averages of the question of all signatures
+                            questions_info[question] += items['average']
+                        else:
+                            questions_info[question] = items['average']
+                    else:
                         for comment in items['answers']:
                             comments.append(comment.answer)
                 questions_results[exam] = questions_info
-            exam_questions[exam]=questions_description
+
+            exam_questions[exam] = questions_description
+            # Make the final average for each question
+            for question, val in questions_results[exam].items():
+                questions_results[exam][question] = val / \
+                    len(teacher_results[exam])
 
         return exam_questions, questions_results, comments
