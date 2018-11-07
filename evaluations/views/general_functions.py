@@ -204,6 +204,7 @@ class GeneralFunctions(object):
         return teachers_signatures
 
     # Get teachers evaluations results START ---------
+
     @classmethod
     def get_teacher_signature_results(self, teacher, signature, exam):
         """Return the results of the evaluations to the teacher at the signature of the submitted test"""
@@ -247,7 +248,7 @@ class GeneralFunctions(object):
                     iddetailquestion__exact=question_exam.id, idgroup__in=groups).exclude(answer__isnull=True)
                 preguntas[question] = {'answers': answers}
 
-        final_average = round((final_average / counter),2)
+        final_average = round((final_average / counter), 2)
         results['questions'] = preguntas
         results['evaluated'] = evaluated
         results['average'] = final_average
@@ -272,6 +273,13 @@ class GeneralFunctions(object):
         return data
 
     @classmethod
+    def validate_exam_evaluated(self, teacher_signatures, exam, teacher):
+        evaluations_made = EvaluationsDetailStudentSignatureExam.objects.filter(
+            idexam__exact=exam, idteacher__exact=teacher, idsignature__in=teacher_signatures)
+
+        return True if evaluations_made else False
+
+    @classmethod
     def get_teacher_signatures_results(self, career, career_data, teacher, **kwargs):
 
         teacher_results = {}
@@ -281,11 +289,12 @@ class GeneralFunctions(object):
 
         if exam == None:
             for exam in career_data['exams']:
-                signatures_results = {}
-                for signature in teacher_signatures:
-                    signatures_results[signature] = self.get_teacher_signature_results(
-                        teacher, signature, exam)
-                teacher_results[exam] = signatures_results
+                if self.validate_exam_evaluated(teacher_signatures, exam, teacher):
+                    signatures_results = {}
+                    for signature in teacher_signatures:
+                        signatures_results[signature] = self.get_teacher_signature_results(
+                            teacher, signature, exam)
+                    teacher_results[exam] = signatures_results
         else:
             signatures_results = {}
             for signature in teacher_signatures:
@@ -294,6 +303,7 @@ class GeneralFunctions(object):
             teacher_results = signatures_results
 
         return teacher_results
+
     # Get teachers evaluations results FINISH ---------
 
     @classmethod
