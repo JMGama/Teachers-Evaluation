@@ -29,8 +29,10 @@ class GeneralFunctions(object):
     @classmethod
     def get_evaluations(self, student):
         """returns a dictionary with the exams and groups(student-signature) that the student have"""
+        student_career_cycle = student.idcareer.abbreviation
+
         user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
+            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO') & Q(type=student_career_cycle))
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
             idstudent__exact=student.idperson, status="ACTIVO")
 
