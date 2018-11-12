@@ -17,7 +17,7 @@ class TeacherHomeView(View, GeneralFunctions):
         teacher = EvaluationsTeachers.objects.get(
             idperson__exact=request.session['id_teacher'])
         teacher_exams = EvaluationsExams.objects.filter(
-            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
+            Q(type='DOCENTE') & Q(status__exact='ACTIVO'))
         signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
             idteacher__exact=teacher.idperson)
         evaluated_signatures = self.get_teacher_eval_signatures(
