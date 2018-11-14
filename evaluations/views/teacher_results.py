@@ -67,7 +67,7 @@ class TeacherResultsView(View, GeneralFunctions):
                 'averages': averages, 'evaluation_average': evaluation_average}
             final_average.append(evaluation_average)
 
-        final_average = round(sum(final_average)/len(final_average), 2)
+        final_average = 0 if len(final_average)<1 else round(sum(final_average)/len(final_average), 2)
         return exams_averages, final_average
 
     def get_exam_questions_results(self, teacher_results):
