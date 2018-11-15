@@ -4,7 +4,7 @@ from easy_pdf.rendering import render_to_pdf_response
 from .general_functions import *
 
 
-class TeacherReports(View, GeneralFunctions):
+class TeachersReportsView(View, GeneralFunctions):
     template_login = 'evaluations/login.html'
 
     def get(self, request, report_type):
