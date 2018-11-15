@@ -25,7 +25,24 @@ class TeacherReports(View, GeneralFunctions):
         pass
 
     def teacher_report(self, request):
-        pass
+        template = 'evaluations/teachers_report.html'
+
+        career_id = request.GET.get('career_id'),
+        teacher_id = request.GET.get('teacher_id')
+        data = {}
+
+        career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
+        teacher = EvaluationsTeachers.objects.get(idperson__exact=teacher_id)
+        career_data = self.get_career_data(career)
+
+        data[teacher] = self.get_teacher_signatures_results(
+            career, career_data, teacher, exam=career_data['exams'][0])
+
+        context = {
+            'data': data,
+        }
+
+        return render_to_pdf_response(request, template, context)
 
     def career_teachers_report(self, request):
         template = 'evaluations/teachers_report.html'
