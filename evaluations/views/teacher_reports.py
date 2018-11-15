@@ -27,8 +27,8 @@ class TeacherReports(View, GeneralFunctions):
     def teacher_report(self, request):
         template = 'evaluations/teachers_report.html'
 
-        career_id = request.GET.get('career_id'),
-        teacher_id = request.GET.get('teacher_id')
+        career_id = request.GET.get('career_id',''),
+        teacher_id = request.GET.get('teacher_id','')
         data = {}
 
         career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
