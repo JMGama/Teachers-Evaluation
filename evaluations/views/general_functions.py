@@ -10,8 +10,10 @@ class GeneralFunctions(object):
     @classmethod
     def get_evaluated_signatures(self, student):
         """return a list of all the evaluations (groupid) already made by the student"""
+        student_career_cycle = student.idcareer.abbreviation
+        
         user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
+            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO')& Q(type=student_career_cycle))
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
             idstudent__exact=student.idperson, status="ACTIVO")
         evaluated_signatures = EvaluationsDetailStudentSignatureExam.objects.filter(
