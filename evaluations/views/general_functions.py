@@ -150,7 +150,7 @@ class GeneralFunctions(object):
             idcareer=career.idcareer)
         data = {}
         data['exams'] = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=career) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO'))
+            Q(idcareer__exact=career) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO') & Q(type=career.abbreviation))
         data['students'] = self.get_evaluated_students(
             career_students)
         data['average_data'] = self. get_career_average(
