@@ -11,9 +11,9 @@ class GeneralFunctions(object):
     def get_evaluated_signatures(self, student):
         """return a list of all the evaluations (groupid) already made by the student"""
         student_career_cycle = student.idcareer.abbreviation
-        
+
         user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO')& Q(type=student_career_cycle))
+            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO') & Q(type=student_career_cycle))
         user_groups = EvaluationsDetailStudentGroup.objects.filter(
             idstudent__exact=student.idperson, status="ACTIVO")
         evaluated_signatures = EvaluationsDetailStudentSignatureExam.objects.filter(
@@ -252,7 +252,8 @@ class GeneralFunctions(object):
                     iddetailquestion__exact=question_exam.id, idgroup__in=groups).exclude(answer__isnull=True)
                 preguntas[question] = {'answers': answers}
 
-        final_average = 0 if counter < 1 else round((final_average / counter), 2)
+        final_average = 0 if counter < 1 else round(
+            (final_average / counter), 2)
         results['questions'] = preguntas
         results['evaluated'] = evaluated
         results['average'] = final_average
@@ -284,8 +285,14 @@ class GeneralFunctions(object):
         return True if evaluations_made else False
 
     @classmethod
-    def get_teacher_signatures_results(self, career, career_data, teacher, **kwargs):
+    def validate_signature_evaluated(self, teacher, exam, signature):
+        signature_evaluated = EvaluationsDetailStudentSignatureExam.objects.filter(
+            idexam__exact=exam, idteacher__exact=teacher, idsignature__exact=signature)
 
+        return True if signature_evaluated else False
+
+    @classmethod
+    def get_teacher_signatures_results(self, career, career_data, teacher, **kwargs):
         teacher_results = {}
         teacher_signatures = self.get_career_teacher_signatures(
             career, teacher)
@@ -296,15 +303,18 @@ class GeneralFunctions(object):
                 if self.validate_exam_evaluated(teacher_signatures, exam, teacher):
                     signatures_results = {}
                     for signature in teacher_signatures:
-                        signatures_results[signature] = self.get_teacher_signature_results(
-                            teacher, signature, exam)
+                        if self.validate_signature_evaluated(teacher, exam, signature):
+                            signatures_results[signature] = self.get_teacher_signature_results(
+                                teacher, signature, exam)
                     teacher_results[exam] = signatures_results
         else:
-            signatures_results = {}
-            for signature in teacher_signatures:
-                signatures_results[signature] = self.get_teacher_signature_results(
-                    teacher, signature, exam)
-            teacher_results = signatures_results
+            if self.validate_exam_evaluated(teacher_signatures, exam, teacher):
+                signatures_results = {}
+                for signature in teacher_signatures:
+                    if self.validate_signature_evaluated(teacher, exam, signature):
+                        signatures_results[signature] = self.get_teacher_signature_results(
+                            teacher, signature, exam)
+                teacher_results = signatures_results
 
         return teacher_results
 
