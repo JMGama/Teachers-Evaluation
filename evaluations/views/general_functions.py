@@ -252,7 +252,7 @@ class GeneralFunctions(object):
                     iddetailquestion__exact=question_exam.id, idgroup__in=groups).exclude(answer__isnull=True)
                 preguntas[question] = {'answers': answers}
 
-        final_average = round((final_average / counter), 2)
+        final_average = 0 if counter < 1 else round((final_average / counter), 2)
         results['questions'] = preguntas
         results['evaluated'] = evaluated
         results['average'] = final_average
