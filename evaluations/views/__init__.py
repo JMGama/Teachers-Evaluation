@@ -5,7 +5,6 @@ from .evaluations import *
 from .logout import *
 from .monitoring import *
 from .career_results import *
-from .tech_report import *
 from .admin_reports import *
 from .teacher_results import *
 from .delete_student import *
