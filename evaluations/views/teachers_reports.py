@@ -16,7 +16,7 @@ class TeachersReportsView(View, GeneralFunctions):
         context = {}
 
         if report_type == 'all_teachers_report':
-            pass
+            template, context = self.all_teachers_report(request)
         elif report_type == 'teacher_report':
             template, context = self.teacher_report(request)
         elif report_type == 'career_teachers_report':
@@ -28,7 +28,25 @@ class TeachersReportsView(View, GeneralFunctions):
         return redirect('/evaluations/career_results/32/47740/#reportes')
 
     def all_teachers_report(self, request):
-        pass
+        template = 'evaluations/teach_report.html'
+        coordinator = EvaluationsCoordinators.objects.get(
+            idperson__exact=request.session['id_coordinator'])
+        coordinator_careers = EvaluationsDetailCoordinatorCareer.objects.select_related(
+            'idcareer').filter(idcoordinator__exact=coordinator.idperson)
+
+        data = {}
+        for career_detail in coordinator_careers:
+            career = career_detail.idcareer
+            career_data = self.get_career_data(career)
+            
+            teachers_signatures_results = self.get_teachers_signatures_results(
+                career, career_data)
+            data[career] = teachers_signatures_results
+
+        context = {
+            'all': data,
+        }
+        return template, context
 
     def teacher_report(self, request):
         template = 'evaluations/teachers_report.html'
@@ -41,7 +59,7 @@ class TeachersReportsView(View, GeneralFunctions):
         career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
         teacher = EvaluationsTeachers.objects.get(idperson__exact=teacher_id)
         career_data = self.get_career_data(career)
-        
+
         data[teacher] = self.get_teacher_signatures_results(
             career, career_data, teacher, exam=career_data['exams'][0])
 
