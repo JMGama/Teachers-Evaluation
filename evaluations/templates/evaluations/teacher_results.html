@@ -168,14 +168,12 @@
                       </tr>
                     </thead>
                     <tbody>
-                    {% for exam,signatures in teacher_results.items %} 
-                      {% for signature, results in signatures.items %}
+                      {% for signature in teacher_signatures %}
                         <tr style="border-top:1px solid #1e2e5042;">
                           <td>{{ signature.name.upper }}</td>
                           <td>{{ results.evaluated }}</td>
                         </tr>
                       {% endfor %}
-                    {% endfor %}
                     </tbody>
                   </table>
                 </div>

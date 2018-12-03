@@ -35,6 +35,7 @@ class TeacherResultsView(View, GeneralFunctions):
             career, career_data, teacher)
         exams_averages, final_average = self.get_teacher_exams_averages(
             teacher_results)
+        teacher_signatures = self.get_career_teacher_signatures(career, teacher)
 
         exam_questions, questions_results, comments = self.get_exam_questions_results(
             teacher_results)
@@ -48,6 +49,7 @@ class TeacherResultsView(View, GeneralFunctions):
             'careers': careers,
             'career': career,
             'career_data': career_data,
+            'teacher_signatures': teacher_signatures,
             'exam_questions': exam_questions,
             'questions_results': questions_results,
             'comments': comments
