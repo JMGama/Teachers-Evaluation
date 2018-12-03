@@ -65,6 +65,7 @@ class TeachersReportsView(View, GeneralFunctions):
 
         context = {
             'data': data,
+            'exam': career_data['exams'][0],
         }
         return template, context
 
@@ -84,6 +85,7 @@ class TeachersReportsView(View, GeneralFunctions):
 
         context = {
             'data': data,
+            'exam': career_data['exams'][0],
         }
 
         return template, context
