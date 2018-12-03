@@ -45,7 +45,7 @@ class DeleteStudentView(View, GeneralFunctions):
         careers = EvaluationsCareers.objects.filter(idcareer__in=careers_id)
 
         # Validates if the user is admin
-        if coordinator.enrollment != '503':
+        if coordinator.type != 'ADMINISTRATIVO':
             return render(request, self.template_login)
 
         # Check for the selected students
