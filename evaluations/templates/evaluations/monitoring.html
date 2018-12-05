@@ -165,7 +165,17 @@
                     </div>
 
                     <div class="row center-align">
-                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera" target="_blank"  href="{% url 'evaluations:admin_reports' %}"><i class="material-icons right">get_app</i>Reporte General</a>
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera" target="_blank"  href="{% url 'evaluations:admin_reports' 'SEMESTRAL' %}"><i class="material-icons right">get_app</i>Reporte General Semestral</a>
+                    </div>
+                  </div>
+
+                  <div class="col s12 m6 l6">
+                    <div class="row center-align">
+                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                    </div>
+
+                    <div class="row center-align">
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera" target="_blank"  href="{% url 'evaluations:admin_reports' 'CUATRIMESTRAL' %}"><i class="material-icons right">get_app</i>Reporte General Cuatrimestral</a>
                     </div>
                   </div>
 
