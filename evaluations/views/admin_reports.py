@@ -9,19 +9,22 @@ import csv
 
 class AdminReportsView(View, GeneralFunctions):
 
-    def get(self, request):
-        response = self.general_results(request)
+    def get(self, request, career_type):
+        response = self.general_results(request, career_type)
 
         #response = self.general_report(request)
         return response
 
-    def general_results(self, request):
+    def general_results(self, request,career_type):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=Resultados_Generales.csv'
         writer = csv.writer(response, csv.excel)
         response.write(u'\ufeff'.encode('utf8'))
 
-        results = self.get_teachers_results("CUATRIMESTRAL")
+        if career_type.upper() == 'CUATRIMESTRAL':
+            results = self.get_teachers_results("CUATRIMESTRAL")
+        else:
+            results = self.get_teachers_results("SEMESTRAL")
 
         titles = ['CARRERA', 'MATERIA', 'DOCENTE', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6',
                   'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'TOTAL ALUMNOS EVALUADOS']
