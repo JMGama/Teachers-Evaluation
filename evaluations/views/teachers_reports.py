@@ -118,7 +118,7 @@ class TeachersReportsView(View, GeneralFunctions):
 
     def teacher_results_excel(self, request, results):
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=Resultados_Generales.csv'
+        response['Content-Disposition'] = 'attachment; filename=Resultados_Docentes.csv'
         writer = csv.writer(response, csv.excel)
         response.write(u'\ufeff'.encode('utf8'))
 
