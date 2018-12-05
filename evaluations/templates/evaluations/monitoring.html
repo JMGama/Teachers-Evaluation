@@ -149,33 +149,33 @@
 
                 {% if admin_user == True %}
 
-                  <div class="col s12 m6 l6">
+                  <div class="col s12 m4 4">
                     <div class="row center-align">
                       <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
                     </div>
 
                     <div class="row center-align">
-                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Reportes de todos los docentes con cada materia" target="_blank"  href="{% url 'evaluations:teachers_reports' 'all_teachers_report' %}"><i class="material-icons right">get_app</i>Reporte Docentes</a>
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Reportes de todos los docentes con cada materia" target="_blank"  href="{% url 'evaluations:teachers_reports' 'all_teachers_report' %}"><i class="material-icons right">get_app</i>Entregables</a>
                     </div>
                   </div>
 
-                  <div class="col s12 m6 l6">
+                  <div class="col s12 m4 4">
                     <div class="row center-align">
-                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Excel.png' %}">
                     </div>
 
                     <div class="row center-align">
-                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera" target="_blank"  href="{% url 'evaluations:admin_reports' 'SEMESTRAL' %}"><i class="material-icons right">get_app</i>Reporte General Semestral</a>
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera semestral" target="_blank"  href="{% url 'evaluations:admin_reports' 'semestral' %}"><i class="material-icons right">get_app</i>Semestrales</a>
                     </div>
                   </div>
 
-                  <div class="col s12 m6 l6">
+                  <div class="col s12 m4 4">
                     <div class="row center-align">
-                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Report.png' %}">
+                      <img class="responsive-img" style="max-height: 20%;max-width: 20%;" src="{% static 'evaluations/images/Excel.png' %}">
                     </div>
 
                     <div class="row center-align">
-                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera" target="_blank"  href="{% url 'evaluations:admin_reports' 'CUATRIMESTRAL' %}"><i class="material-icons right">get_app</i>Reporte General Cuatrimestral</a>
+                      <a class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados generales de cada carrera cuatrimestral" target="_blank"  href="{% url 'evaluations:admin_reports' 'cuatrimestral' %}"><i class="material-icons right">get_app</i>Cuatrimestral</a>
                     </div>
                   </div>
 

@@ -10,7 +10,7 @@ import csv
 class AdminReportsView(View, GeneralFunctions):
 
     def get(self, request, career_type):
-        response = self.general_results(request,career_type)
+        response = self.general_results(request, career_type)
 
         #response = self.general_report(request)
         return response
@@ -21,7 +21,7 @@ class AdminReportsView(View, GeneralFunctions):
         writer = csv.writer(response, csv.excel)
         response.write(u'\ufeff'.encode('utf8'))
 
-        if career_type == 'CUATRIMESTRAL':
+        if career_type.upper() == 'CUATRIMESTRAL':
             results = self.get_teachers_results("CUATRIMESTRAL")
         else:
             results = self.get_teachers_results("SEMESTRAL")
