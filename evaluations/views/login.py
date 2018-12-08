@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views import View
 from django.db.models import Q
 
-from evaluations.models import *
+from evaluations.models import EvaluationsStudent, EvaluationsCoordinator, EvaluationsTeacher
 
 
 class LoginView(View):
@@ -45,10 +45,10 @@ class LoginView(View):
         return render(request, self.template_login, {'second_time': True, 'validate': 'invalid'})
 
     def load_student(self, request, matricula, password):
-        student = EvaluationsStudents.objects.get(
+        student = EvaluationsStudent.objects.get(
             enrollment__exact=matricula)
-        if student.value == password:
-            request.session['id_student'] = student.idperson
+        if student.password == password:
+            request.session['id_student'] = student.id
             request.session['session'] = True
             request.session['type'] = 'student'
             return True
@@ -56,10 +56,10 @@ class LoginView(View):
             return False
 
     def load_coordinator(self, request, matricula, password):
-        coordinator = EvaluationsCoordinators.objects.get(
+        coordinator = EvaluationsCoordinator.objects.get(
             enrollment__exact=matricula)
-        if coordinator.value == password:
-            request.session['id_coordinator'] = coordinator.idperson
+        if coordinator.password == password:
+            request.session['id_coordinator'] = coordinator.id
             request.session['session'] = True
             request.session['type'] = 'coordinator'
             return True
@@ -67,9 +67,9 @@ class LoginView(View):
             return False
 
     def load_teacher(self, request, matricula, password):
-        teacher = EvaluationsTeachers.objects.get(enrollment__exact=matricula)
-        if teacher.value == password:
-            request.session['id_teacher'] = teacher.idperson
+        teacher = EvaluationsTeacher.objects.get(enrollment__exact=matricula)
+        if teacher.password == password:
+            request.session['id_teacher'] = teacher.id
             request.session['session'] = True
             request.session['type'] = 'teacher'
             return True
