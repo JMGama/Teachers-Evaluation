@@ -8,699 +8,258 @@
 from django.db import models
 
 
-class EvaluationsStudents(models.Model):
+class EvaluationsAnswer(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    # Field name made lowercase.
-    idperson = models.AutoField(db_column='idPerson', primary_key=True)
-    enrollment = models.CharField(max_length=30)
-    # Field name made lowercase.
-    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
-                                 db_column='idCareer')
-    type = models.CharField(max_length=14, blank=True, null=True)
-    name = models.CharField(max_length=60)
-    # Field name made lowercase.
-    lastname = models.CharField(db_column='lastName', max_length=60)
-    # Field name made lowercase.
-    lastname2 = models.CharField(
-        db_column='lastName2', max_length=60, blank=True, null=True)
-    grade = models.IntegerField(blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
-    # Field name made lowercase.
-    instemail = models.CharField(
-        db_column='instEmail', max_length=100, blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    celphone = models.CharField(max_length=20, blank=True, null=True)
-    cycle = models.CharField(max_length=15, blank=True, null=True)
-    state = models.CharField(max_length=50, blank=True, null=True)
-    municipality = models.CharField(max_length=50, blank=True, null=True)
-    colony = models.CharField(max_length=60, blank=True, null=True)
-    street = models.CharField(max_length=100, blank=True, null=True)
-    # Field name made lowercase.
-    numberext = models.CharField(
-        db_column='numberExt', max_length=10, blank=True, null=True)
-    # Field name made lowercase.
-    numberint = models.CharField(
-        db_column='numberInt', max_length=10, blank=True, null=True)
-    status = models.CharField(max_length=50, blank=True, null=True)
-    lat = models.FloatField(blank=True, null=True)
-    lng = models.FloatField(blank=True, null=True)
-    turn = models.CharField(max_length=10, blank=True, null=True)
-    # Field name made lowercase.
-    userid = models.IntegerField(db_column='userId', blank=True, null=True)
-    attribute = models.CharField(max_length=64)
-    op = models.CharField(max_length=2)
-    value = models.CharField(max_length=253)
-    wifi_status = models.CharField(max_length=8)
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-    # Field name made lowercase.
-    updateon = models.DateTimeField(db_column='updateOn')
-
-    def __str__(self):
-        return '%s' % (self.enrollment)
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_students'
-        verbose_name = 'Alumno'
-        verbose_name_plural = 'Alumnos'
-
-
-class EvaluationsCoordinators(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idperson = models.AutoField(db_column='idPerson', primary_key=True)
-    enrollment = models.CharField(max_length=30)
-    type = models.CharField(max_length=14, blank=True, null=True)
-    name = models.CharField(max_length=60)
-    # Field name made lowercase.
-    lastname = models.CharField(db_column='lastName', max_length=60)
-    # Field name made lowercase.
-    lastname2 = models.CharField(
-        db_column='lastName2', max_length=60, blank=True, null=True)
-    grade = models.IntegerField(blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
-    # Field name made lowercase.
-    instemail = models.CharField(
-        db_column='instEmail', max_length=100, blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    celphone = models.CharField(max_length=20, blank=True, null=True)
-    cycle = models.CharField(max_length=15, blank=True, null=True)
-    state = models.CharField(max_length=50, blank=True, null=True)
-    municipality = models.CharField(max_length=50, blank=True, null=True)
-    colony = models.CharField(max_length=60, blank=True, null=True)
-    street = models.CharField(max_length=100, blank=True, null=True)
-    # Field name made lowercase.
-    numberext = models.CharField(
-        db_column='numberExt', max_length=10, blank=True, null=True)
-    # Field name made lowercase.
-    numberint = models.CharField(
-        db_column='numberInt', max_length=10, blank=True, null=True)
-    status = models.CharField(max_length=50, blank=True, null=True)
-    lat = models.FloatField(blank=True, null=True)
-    lng = models.FloatField(blank=True, null=True)
-    turn = models.CharField(max_length=10, blank=True, null=True)
-    # Field name made lowercase.
-    userid = models.IntegerField(db_column='userId', blank=True, null=True)
-    attribute = models.CharField(max_length=64)
-    op = models.CharField(max_length=2)
-    value = models.CharField(max_length=253)
-    wifi_status = models.CharField(max_length=8)
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-    # Field name made lowercase.
-    updateon = models.DateTimeField(db_column='updateOn')
-
-    def __str__(self):
-        return '%s' % (self.enrollment)
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_coordinators'
-        verbose_name = 'Coordinador'
-        verbose_name_plural = 'Coordinadores'
-
-
-class EvaluationsTeachers(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idperson = models.AutoField(db_column='idPerson', primary_key=True)
-    enrollment = models.CharField(max_length=30)
-    # Field name made lowercase.
-    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
-                                 db_column='idCareer', max_length=20, blank=True, null=True)
-    type = models.CharField(max_length=14, blank=True, null=True)
-    name = models.CharField(max_length=60)
-    # Field name made lowercase.
-    lastname = models.CharField(db_column='lastName', max_length=60)
-    # Field name made lowercase.
-    lastname2 = models.CharField(
-        db_column='lastName2', max_length=60, blank=True, null=True)
-    email = models.CharField(max_length=100, blank=True, null=True)
-    # Field name made lowercase.
-    instemail = models.CharField(
-        db_column='instEmail', max_length=100, blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=True)
-    celphone = models.CharField(max_length=20, blank=True, null=True)
-    state = models.CharField(max_length=50, blank=True, null=True)
-    municipality = models.CharField(max_length=50, blank=True, null=True)
-    colony = models.CharField(max_length=60, blank=True, null=True)
-    street = models.CharField(max_length=100, blank=True, null=True)
-    # Field name made lowercase.
-    numberext = models.CharField(
-        db_column='numberExt', max_length=10, blank=True, null=True)
-    # Field name made lowercase.
-    numberint = models.CharField(
-        db_column='numberInt', max_length=10, blank=True, null=True)
-    status = models.CharField(max_length=50)
-    lat = models.FloatField(blank=True, null=True)
-    lng = models.FloatField(blank=True, null=True)
-    turn = models.CharField(max_length=10, blank=True, null=True)
-    # Field name made lowercase.
-    userid = models.IntegerField(db_column='userId', blank=True, null=True)
-    attribute = models.CharField(max_length=64)
-    op = models.CharField(max_length=2)
-    value = models.CharField(max_length=253)
-    wifi_status = models.CharField(max_length=8)
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-    # Field name made lowercase.
-    updateon = models.DateTimeField(db_column='updateOn')
-
-    def __str__(self):
-        return '%s' % (self.enrollment)
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_teachers'
-        verbose_name = 'Docente'
-        verbose_name_plural = 'Docentes'
-
-
-class EvaluationsAnswers(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idstudent = models.ForeignKey(
-        'EvaluationsStudents', on_delete=models.PROTECT, db_column='idStudent')
-    # Field name made lowercase.
-    idgroup = models.ForeignKey(
-        'EvaluationsDetailStudentGroup', on_delete=models.PROTECT, db_column='idGroup')
-    # Field name made lowercase.
-    iddetailquestion = models.ForeignKey(
-        'EvaluationsDetailExamQuestion', on_delete=models.PROTECT, db_column='idQuestion')
     answer = models.CharField(max_length=255, blank=True, null=True)
-    # Field name made lowercase.
-    idexam = models.ForeignKey(
-        'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    def __str__(self):
-        return '%s' % (self.answer)
+    fk_question = models.ForeignKey('EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
+    fk_exam = models.ForeignKey('EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
+    fk_student_signature = models.ForeignKey('EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_answers'
-        verbose_name = 'Respuesta'
-        verbose_name_plural = 'Respuestas'
+        db_table = 'evaluations_answer'
 
 
-class EvaluationsTeachersAnswers(models.Model):
+class EvaluationsCareer(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    # Field name made lowercase.
-    idteacher = models.ForeignKey(
-        'EvaluationsTeachers', on_delete=models.PROTECT, db_column='idTeacher')
-    # Field name made lowercase.
-    idteachersignaturedetail = models.ForeignKey(
-        'EvaluationsDetailGroupPeriodSignature', on_delete=models.PROTECT, db_column='idTeacherSignatureDetail')
-    # Field name made lowercase.
-    idquestion = models.ForeignKey(
-        'EvaluationsQuestions', on_delete=models.PROTECT, db_column='idQuestion')
-    answer = models.CharField(max_length=255, blank=True, null=True)
-    # Field name made lowercase.
-    idexam = models.ForeignKey(
-        'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    def __str__(self):
-        return '%s' % (self.answer)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    abbreviation = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=13, blank=True, null=True)
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_teachers_answers'
-        verbose_name = 'Respuesta'
-        verbose_name_plural = 'Respuestas'
+        db_table = 'evaluations_career'
 
 
-class EvaluationsDetailCoordinatorCareer(models.Model):
+class EvaluationsCoordinator(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    # Field name made lowercase.
-    idcoordinator = models.ForeignKey('EvaluationsCoordinators', on_delete=models.PROTECT,
-                                      db_column='idCoordinator', blank=True, null=True)
-    # Field name made lowercase.
-    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
-                                 db_column='idCareer', max_length=255, blank=True, null=True)
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    enrollment = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=13, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name_2 = models.CharField(max_length=255, blank=True, null=True)
+    inst_email = models.CharField(max_length=255, blank=True, null=True)
+    password = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_detail_coordinator_career'
+        db_table = 'evaluations_coordinator'
 
 
-class EvaluationsDetailExamQuestion(models.Model):
+class EvaluationsDtlCoordinatorCareer(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    # Field name made lowercase.
-    idexam = models.ForeignKey(
-        'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
-    # Field name made lowercase.
-    idquestion = models.ForeignKey(
-        'EvaluationsQuestions', on_delete=models.PROTECT, db_column='idQuestion')
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    def __str__(self):
-        return '%s' % (self.idexam)
+    id = models.IntegerField(primary_key=True)
+    fk_coordinator = models.ForeignKey(EvaluationsCoordinator, models.DO_NOTHING, db_column='fk_coordinator')
+    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_detail_exam_question'
-        verbose_name = 'Examen - Preguntas'
-        verbose_name_plural = 'Examenes - Preguntas'
+        db_table = 'evaluations_dtl_coordinator_career'
 
 
-class EvaluationsDetailStudentGroup(models.Model):
+class EvaluationsDtlQuestionExam(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    # Field name made lowercase.
-    idgroup = models.CharField(db_column='idGroup', max_length=10)
-    # Field name made lowercase.
-    idstudent = models.ForeignKey(
-        'EvaluationsStudents', on_delete=models.PROTECT, db_column='idStudent')
-    # Field name made lowercase.
-    idperiod = models.ForeignKey(
-        'EvaluationsPeriods', on_delete=models.PROTECT, db_column='idPeriod')
-    # Field name made lowercase.
-    idsignature = models.ForeignKey(
-        'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
+    id = models.IntegerField(primary_key=True)
+    fk_question = models.ForeignKey('EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
+    fk_exam = models.ForeignKey('EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_detail_student_group'
-        verbose_name = 'Alumno - Grupo'
-        verbose_name_plural = 'Alumnos - Grupos'
+        db_table = 'evaluations_dtl_question_exam'
 
 
-class EvaluationsDetailTeacherCareer(models.Model):
+class EvaluationsDtlTeacherCareer(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    # Field name made lowercase.
-    iddocente = models.ForeignKey(
-        'EvaluationsTeachers', on_delete=models.PROTECT, blank=True, null=True, db_column='idDocente')
-    # Field name made lowercase.
-    idcareer = models.ForeignKey('EvaluationsCareers', on_delete=models.PROTECT,
-                                 db_column='idCareer', max_length=255, blank=True, null=True)
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    def __str__(self):
-        return '%s' % (str(self.iddocente) + " -> " + str(self.idcareer))
+    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    fk_teacher = models.ForeignKey('EvaluationsTeacher', models.DO_NOTHING, db_column='fk_teacher')
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_detail_teacher_career'
-        verbose_name = 'Docente - Carrera'
-        verbose_name_plural = 'Docentes - Carreras'
+        db_table = 'evaluations_dtl_teacher_career'
 
 
-class EvaluationsDetailGroupPeriodSignature(models.Model):
+class EvaluationsExam(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idgroup = models.IntegerField(db_column='idGroup')
-    # Field name made lowercase.
-    idsignature = models.ForeignKey(
-        'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
-    # Field name made lowercase.
-    idteacher = models.ForeignKey(
-        'EvaluationsTeachers', on_delete=models.PROTECT, db_column='idTeacher')
-    # Field name made lowercase.
-    idperiod = models.ForeignKey(
-        'EvaluationsPeriods', on_delete=models.PROTECT, db_column='idPeriod')
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-
-    def __str__(self):
-        return '%s' % (self.id)
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_detail_group_period_signature'
-        verbose_name = 'Grupo'
-        verbose_name_plural = 'Grupos'
-
-
-class EvaluationsDetailStudentSignatureExam(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idsignature = models.ForeignKey(
-        'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
-    # Field name made lowercase.
-    idteacher = models.ForeignKey(
-        'EvaluationsTeachers', on_delete=models.PROTECT, db_column='idTeacher')
-    # Field name made lowercase.
-    idperiod = models.ForeignKey(
-        'EvaluationsPeriods', on_delete=models.PROTECT, db_column='idPeriod')
-    # Field name made lowercase.
-    idgroup = models.IntegerField(db_column='idGroup')
-    # Field name made lowercase.
-    idstudent = models.ForeignKey(
-        'EvaluationsStudents', on_delete=models.PROTECT, db_column='idStudent')
-    # Field name made lowercase.
-    idexam = models.ForeignKey(
-        'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-    EVALUATED_CHOICES = (
-        ('YES', 'Si'),
-        ('NO', 'No'),
-    )
-    evaluated = models.CharField(
-        max_length=3, choices=EVALUATED_CHOICES, default='NO')
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_detail_student_signature_exam'
-        verbose_name = 'Estudiante - Materia - Examen'
-        verbose_name_plural = 'Grupos'
-
-
-class EvaluationsDetailTeacherSignatureExam(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idsignature = models.ForeignKey(
-        'EvaluationsSignatures', on_delete=models.PROTECT, db_column='idSignature')
-    # Field name made lowercase.
-    idteacher = models.ForeignKey(
-        'EvaluationsTeachers', on_delete=models.PROTECT, db_column='idTeacher')
-    # Field name made lowercase.
-    idperiod = models.ForeignKey(
-        'EvaluationsPeriods', on_delete=models.PROTECT, db_column='idPeriod')
-    # Field name made lowercase.
-    idgroup = models.IntegerField(db_column='idGroup')
-    # Field name made lowercase.
-    idexam = models.ForeignKey(
-        'EvaluationsExams', on_delete=models.PROTECT, db_column='idExam')
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-    # Field name made lowercase.
-    idcareer = models.ForeignKey(
-        'EvaluationsCareers', on_delete=models.PROTECT, db_column='idCareer', blank=True, null=True)
-    EVALUATED_CHOICES = (
-        ('YES', 'Si'),
-        ('NO', 'No'),
-    )
-    evaluated = models.CharField(
-        max_length=3, choices=EVALUATED_CHOICES, default='NO')
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_detail_teacher_signature_exam'
-        verbose_name = 'Estudiante - Materia - Examen'
-        verbose_name_plural = 'Grupos'
-
-
-class EvaluationsExams(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    description = models.CharField(max_length=255)
-    # Field name made lowercase.
-    idcareer = models.ForeignKey(
-        'EvaluationsCareers', on_delete=models.PROTECT, db_column='idCareer', blank=True, null=True)
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    TYPE_CHOICES = (
-        ('DOCENTES', 'Docentes'),
-        ('CUATRIMESTRALES', 'Cuatrimestrales'),
-        ('SEMESTRALES', 'Semestrales'),
-        ('TODOS', 'Todos'),
-    )
-    type = models.CharField(
-        max_length=8, choices=TYPE_CHOICES, default='ACTIVO')
-
-    def __str__(self):
-        return '%s' % (self.description)
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_exams'
-        verbose_name = 'Examen'
-        verbose_name_plural = 'Examenes'
-
-
-class EvaluationsQuestions(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    TYPE_CHOICES = (
-        ('DATEPICKER', 'Seleccion de fecha'),
-        ('RADIO', 'Si y No'),
-        ('RANGE', 'Medicion'),
-        ('SELECT', 'Multiple'),
-        ('TEXT', 'Abierta'),
-    )
-
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    description = models.CharField('Question', max_length=255)
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    OPTIONAL_CHOICES = (
-        ('YES', 'Si'),
-        ('NO', 'No'),
-    )
-    optional = models.CharField(
-        max_length=8, choices=OPTIONAL_CHOICES, default='NO')
-
-    def __str__(self):
-        return '%s' % (self.description)
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_questions'
-        verbose_name = 'Pregunta'
-        verbose_name_plural = 'Preguntas'
-
-
-class EvaluationsSignatures(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    name = models.CharField(max_length=255)
-    credits = models.IntegerField()
-
-    TYPE_CHOICES = (
-        ('REGULAR', 'Regular'),
-        ('OPTATIVA', 'Optativa'),
-    )
-    type = models.CharField(max_length=255, choices=TYPE_CHOICES)
-
-    # Field name made lowercase.
-    idcareer = models.ForeignKey(
-        'EvaluationsCareers', on_delete=models.PROTECT, db_column='idCareer')
-
-    STATUS_CHOICES = (
-        ('ACTIVO', 'Activo'),
-        ('INACTIVO', 'Inactivo'),
-    )
-    status = models.CharField(
-        max_length=8, choices=STATUS_CHOICES, default='ACTIVO')
-
-    def __str__(self):
-        return '%s' % (self.name)
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_signatures'
-        verbose_name = 'Materia'
-        verbose_name_plural = 'Materias'
-
-
-class EvaluationsPeriods(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idperiod = models.AutoField(db_column='idPeriod', primary_key=True)
-    period = models.CharField(max_length=15, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=13, blank=True, null=True)
     start = models.DateField(blank=True, null=True)
     end = models.DateField(blank=True, null=True)
-
-    def __str__(self):
-        return '%s' % (self.period)
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_periods'
-        verbose_name = 'Periodo'
-        verbose_name_plural = 'Periodos'
-
-
-class EvaluationsCareers(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    # Field name made lowercase.
-    idcareer = models.AutoField(db_column='idCareer', primary_key=True)
-    # Field name made lowercase.
-    idcareergissa = models.CharField(db_column='idCareerGissa', max_length=20)
-    abbreviation = models.CharField(max_length=20)
-    abbreviation1 = models.CharField(db_column='abbreviation1',max_length=20)
-    description = models.CharField(max_length=100)
+    fk_period = models.ForeignKey('EvaluationsPeriod', models.DO_NOTHING, db_column='fk_period')
     status = models.CharField(max_length=8)
-    # Field name made lowercase.
-    createdon = models.DateTimeField(db_column='createdOn')
-    # Field name made lowercase.
-    updatedon = models.DateTimeField(db_column='updatedOn')
-
-    def __str__(self):
-        return '%s' % (self.description)
 
     class Meta:
         managed = False
-        db_table = 'evaluations_careers'
-        verbose_name = 'Carrera'
-        verbose_name_plural = 'Carreras'
+        db_table = 'evaluations_exam'
 
 
-class Average(models.Model):
+class EvaluationsPeriod(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    avg = models.IntegerField(primary_key=True)
-
-    def __str__(self):
-        return '%s' % (self.avg)
+    period = models.CharField(max_length=255, blank=True, null=True)
+    start = models.DateField(blank=True, null=True)
+    end = models.DateField(blank=True, null=True)
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
+        db_table = 'evaluations_period'
 
 
-class Eb1(models.Model):
+class EvaluationsQuestion(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    signature = models.CharField(max_length=255)
-    name = models.CharField(max_length=182, blank=True, null=True)
-    # Field name made lowercase.
-    q1 = models.IntegerField(db_column='Q1', blank=True, null=True)
-    # Field name made lowercase.
-    q2 = models.IntegerField(db_column='Q2', blank=True, null=True)
-    # Field name made lowercase.
-    q3 = models.IntegerField(db_column='Q3', blank=True, null=True)
-    # Field name made lowercase.
-    q4 = models.IntegerField(db_column='Q4', blank=True, null=True)
-    # Field name made lowercase.
-    q5 = models.TextField(db_column='Q5', blank=True, null=True)
-    # Field name made lowercase.
-    ptotal = models.BigIntegerField(db_column='Ptotal', blank=True, null=True)
-    # Field name made lowercase.
-    idteacher = models.CharField(db_column='idTeacher', max_length=20)
-    # Field name made lowercase.
-    idsignature = models.IntegerField(db_column='idSignature')
-    # Field name made lowercase.
-    idgroup = models.IntegerField(db_column='idGroup')
-    average = models.FloatField(blank=True, null=True)
+    type = models.CharField(max_length=10)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    optional = models.CharField(max_length=3, blank=True, null=True)
+    status = models.CharField(max_length=8)
 
     class Meta:
         managed = False
-        db_table = 'EB1'
+        db_table = 'evaluations_question'
+
+
+class EvaluationsSignature(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    description = models.CharField(max_length=255, blank=True, null=True)
+    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_signature'
+
+
+class EvaluationsSignatureEvaluated(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    evaluated = models.CharField(max_length=3, blank=True, null=True)
+    fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    fk_student_signature = models.ForeignKey('EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_signature_evaluated'
+
+
+class EvaluationsSignatureQuestionResult(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    group = models.CharField(max_length=255)
+    result = models.TextField(blank=True, null=True)
+    fk_question = models.ForeignKey(EvaluationsQuestion, models.DO_NOTHING, db_column='fk_question')
+    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_signature_question_result'
+
+
+class EvaluationsSignatureResult(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    group = models.CharField(max_length=255)
+    average = models.CharField(max_length=255)
+    total_evaluated = models.IntegerField()
+    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    fk_teacher = models.ForeignKey('EvaluationsTeacher', models.DO_NOTHING, db_column='fk_teacher')
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_signature_result'
+
+
+class EvaluationsStudent(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    enrollment = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name_2 = models.CharField(max_length=255, blank=True, null=True)
+    inst_email = models.CharField(max_length=255, blank=True, null=True)
+    password = models.CharField(max_length=255, blank=True, null=True)
+    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_student'
+
+
+class EvaluationsStudentSignature(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    group = models.CharField(max_length=255)
+    fk_student = models.ForeignKey(EvaluationsStudent, models.DO_NOTHING, db_column='fk_student')
+    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_period = models.ForeignKey(EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_student_signature'
+
+
+class EvaluationsTeacher(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    enrollment = models.CharField(max_length=255, blank=True, null=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name_2 = models.CharField(max_length=255, blank=True, null=True)
+    inst_email = models.CharField(max_length=255, blank=True, null=True)
+    password = models.CharField(max_length=255, blank=True, null=True)
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_teacher'
+
+
+class EvaluationsTeacherSignature(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    group = models.CharField(max_length=255)
+    fk_teacher = models.ForeignKey(EvaluationsTeacher, models.DO_NOTHING, db_column='fk_teacher')
+    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_period = models.ForeignKey(EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
+    status = models.CharField(max_length=8)
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_teacher_signature'
