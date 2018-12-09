@@ -4,9 +4,8 @@ from django.views import View
 from django.db.models import Q
 
 from evaluations.models import *
-from .general_functions import *
 
-class LogoutView(View, GeneralFunctions):
+class LogoutView(View, ):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
