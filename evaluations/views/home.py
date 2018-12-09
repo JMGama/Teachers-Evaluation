@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views import View
 from django.db.models import Q
 
-from evaluations.models import EvaluationsStudent, EvaluationsExam, EvaluationsStudentSignature, EvaluationsSignatureEvaluated
+from evaluations.models import EvaluationsStudent
 from .general_functions import get_evaluations, get_evaluated_signatures, get_evaluations_and_evaluated, get_next_evaluation
 
 
@@ -18,7 +18,7 @@ class HomeView(View,):
 
         # Values for the navigation bar
         student = EvaluationsStudent.objects.get(
-            pk__exact=request.session['id_student'])
+            pk__exact=request.session['id_student'], status__exact="ACTIVE")
         evaluations = get_evaluations(student)
         evaluated_signatures = get_evaluated_signatures(
             student, evaluations)
