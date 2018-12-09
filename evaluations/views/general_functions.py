@@ -1,382 +1,69 @@
 from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.db import connection
-from evaluations.models import *
+from evaluations.models import EvaluationsStudent, EvaluationsExam, EvaluationsStudentSignature, EvaluationsSignatureEvaluated
 import datetime
 
 
-class GeneralFunctions(object):
+def get_evaluations(student):
+    """returns a dictionary with the exams and students-signatures that the student have"""
+    student_career_cycle = student.fk_career.type
 
-    @classmethod
-    def get_evaluated_signatures(self, student):
-        """return a list of all the evaluations (groupid) already made by the student"""
-        student_career_cycle = student.idcareer.abbreviation
+    career_exams = EvaluationsExam.objects.filter(
+        status__exact='ACTIVE', type__exact=student_career_cycle)
+    student_signatures = EvaluationsStudentSignature.objects.filter(
+        fk_student__exact=student.id, status="ACTIVE")
 
-        user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO') & Q(type=student_career_cycle))
-        user_groups = EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__exact=student.idperson, status="ACTIVO")
-        evaluated_signatures = EvaluationsDetailStudentSignatureExam.objects.filter(
-            idstudent__exact=student)
+    evaluations = []
+    for exam in career_exams:
+        evaluations_exam = {'exam': exam}
+        groups = []
+        for detail_group in student_signatures:
+            groups.append(detail_group)
+        evaluations_exam['groups'] = groups
+        evaluations.append(evaluations_exam)
+    return evaluations
 
-        exam_group_evaluated = []
-        for exam in user_exams:
-            for group in user_groups:
-                if group.idstudent.idcareer == exam.idcareer or exam.idcareer == None:
-                    for evaluated_signature in evaluated_signatures:
-                        if evaluated_signature.idgroup == group.id and evaluated_signature.idperiod == group.idperiod and evaluated_signature.idexam.id == exam.id:
-                            exam_group_evaluated.append(group.id)
-        return exam_group_evaluated
+def get_evaluated_signatures(student, evaluations):
+    """returns a dictionary with the exams and students-signatures that the student already evaluated"""
+    evaluated = []
+    for exam_dict in evaluations:
+        eval_exam_groups = {'exam': exam_dict['exam']}
 
-    @classmethod
-    def get_evaluations(self, student):
-        """returns a dictionary with the exams and groups(student-signature) that the student have"""
-        student_career_cycle = student.idcareer.abbreviation
+        evaluated_groups_id = EvaluationsSignatureEvaluated.objects.filter(fk_exam__exact=exam_dict['exam'],
+                                                                            fk_student_signature__in=exam_dict['groups'],
+                                                                            status__exact="ACTIVE").values_list('fk_student_signature', flat=True)
 
-        user_exams = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=student.idcareer) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO') & Q(type=student_career_cycle))
-        user_groups = EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__exact=student.idperson, status="ACTIVO")
+        evaluated_groups = []
+        for group in exam_dict['groups']:
+            if group.id in evaluated_groups_id:
+                evaluated_groups.append(group)
+        eval_exam_groups['groups'] = evaluated_groups
 
-        evaluations = []
-        for exam in user_exams:
-            evaluations_exam = {'exam': exam}
-            groups = []
-            for detail_group in user_groups:
-                if detail_group.idstudent.idcareer == exam.idcareer or exam.idcareer == None:
-                    groups.append(detail_group)
-            evaluations_exam['groups'] = groups
-            evaluations.append(evaluations_exam)
-        return evaluations
+        evaluated.append(eval_exam_groups)
+    return evaluated
 
-    @classmethod
-    def get_next_evaluation(self, student, evaluations, evaluated_signatures):
-        """return the exam and group that is the next to evaluate (havent evaluated) for the student"""
+def get_evaluations_and_evaluated(evaluations, evaluated_signatures):
+    """Return a dictionary with the exams, students-signatures and evaluated students-signatures"""
+    result = []
+    for exam_dict in evaluations:
+        exam_data = {'exam': exam_dict['exam'],
+                        'groups': exam_dict['groups']}
+        for exam_eval_dict in evaluated_signatures:
+            if exam_eval_dict['exam'] == exam_dict['exam']:
+                exam_data['evaluated_groups'] = exam_eval_dict['groups']
+        result.append(exam_data)
+    return result
+
+def get_next_evaluation(student, evaluations, evaluated_signatures):
+        """return the exam and student_signature that is the next to evaluate (havent evaluated) for the student"""
         next_evaluation = {}
-        for evaluation in evaluations:
-            for group in evaluation['groups']:
-                if not group.id in evaluated_signatures:
-                    next_evaluation['exam'] = evaluation['exam']
-                    next_evaluation['group'] = group
-                    break
+        for exam_dict in evaluations:
+            for exam_eval_dict in evaluated_signatures:
+                for group in exam_dict['groups']:
+                    if not group in exam_eval_dict['groups']:
+                        next_evaluation['exam'] = exam_dict['exam']
+                        next_evaluation['group'] = group
+                        return next_evaluation
+
         return next_evaluation
-
-    @classmethod
-    def dumps(self, obj):
-        for attr in dir(obj):
-            if hasattr(obj, attr):
-                print("obj.%s = %s" % (attr, getattr(obj, attr)))
-
-    @classmethod
-    def write_to_excel(self, students, career, writer):
-        """creates the CSV with the student data that were past"""
-        writer.writerow([
-            smart_str(u"Matricula"),
-            smart_str(u"Nombre"),
-            smart_str(u"Correo"),
-        ])
-
-        for student in students:
-            writer.writerow([
-                smart_str(student.enrollment),
-                smart_str(str(student.name) + " " +
-                          str(student.lastname) + " " + str(student.lastname2)),
-                smart_str(student.instemail),
-            ])
-
-    @classmethod
-    def get_careers_data(self, coordinator):
-        """Return a dictionary of all the coordinator careers with their evaluations results"""
-        coordinator_careers = EvaluationsDetailCoordinatorCareer.objects.filter(
-            idcoordinator__exact=coordinator.idperson)
-        careers = {}
-        for coord_career in coordinator_careers:
-            career_students = EvaluationsStudents.objects.filter(
-                idcareer=coord_career.idcareer.idcareer)
-
-            careers[coord_career.idcareer] = self.get_evaluated_students(
-                career_students)
-            careers[coord_career.idcareer]['average_data'] = self. get_career_average(
-                careers[coord_career.idcareer]['evaluated'])
-        return careers
-
-    @classmethod
-    def get_evaluated_students(self, career_students):
-        """Return all the students already evaluated and all that haven't evaluate."""
-        students = {}
-        eval_students = []
-        not_eval_students = []
-
-        for student in career_students:
-            verification_student = EvaluationsDetailStudentSignatureExam.objects.filter(
-                idstudent__exact=student.idperson).order_by('idstudent')
-            if verification_student:
-                eval_students.append(student)
-            else:
-                not_eval_students.append(student)
-
-        students['evaluated'] = eval_students
-        students['not_evaluated'] = not_eval_students
-
-        return students
-
-    @classmethod
-    def get_career_average(self, evaluated_students):
-        """return a dictionary with the average of the students evaluated and the total of 'yes' and 'no' in the results"""
-        answers_yes = 0
-        answers_no = 0
-        data = {}
-
-        # Only consider non optional questions for the average
-        questions = EvaluationsDetailExamQuestion.objects.filter()
-        for question in questions:
-            if question.idquestion.optional == 'NO':
-                answers_yes += len(EvaluationsAnswers.objects.filter(
-                    idstudent__in=(student.idperson for student in evaluated_students), iddetailquestion__exact=question.id, answer='YES'))
-                answers_no += len(EvaluationsAnswers.objects.filter(
-                    idstudent__in=(student.idperson for student in evaluated_students), iddetailquestion__exact=question.id, answer='NO'))
-
-        if (answers_yes + answers_no) == 0:
-            data['average'] = 0
-        else:
-            data['average'] = answers_yes / (answers_yes + answers_no) * 100
-
-        data['yes'] = answers_yes
-        data['no'] = answers_no
-        return data
-
-    @classmethod
-    def get_career_data(self, career):
-        """return a dictionary with the students evaluated, not evaluated and the average result of the career"""
-        career_students = EvaluationsStudents.objects.filter(
-            idcareer=career.idcareer)
-        data = {}
-        data['exams'] = EvaluationsExams.objects.filter(
-            Q(idcareer__exact=career) | Q(idcareer__isnull=True) & Q(status__exact='ACTIVO') & Q(type=career.abbreviation))
-        data['students'] = self.get_evaluated_students(
-            career_students)
-        data['average_data'] = self. get_career_average(
-            data['students']['evaluated'])
-        return data
-
-    @classmethod
-    def get_career_teachers_signatures(self, career):
-        """return a dictionary with all the teachers of the career and each signatures that they give"""
-        signatures = self.get_career_signatures(career)
-
-        teachers_id = EvaluationsDetailGroupPeriodSignature.objects.filter(
-            idsignature__in=signatures.values('id')).values('idteacher').distinct()
-        teachers = EvaluationsTeachers.objects.filter(idperson__in=teachers_id)
-
-        data = {}
-        for teacher in teachers:
-            teacher_signatures = []
-
-            details = EvaluationsDetailGroupPeriodSignature.objects.select_related('idsignature').filter(
-                idsignature__in=signatures.values('id'), idteacher__exact=teacher.idperson)
-
-            for detail_signature in details:
-                teacher_signatures.append(detail_signature.idsignature)
-
-            data[teacher] = teacher_signatures
-        return data
-
-    @classmethod
-    def get_career_signatures(self, career):
-        """return all the signatures currently open in the career"""
-        signatures = []
-        students_id = EvaluationsStudents.objects.filter(
-            idcareer=career.idcareer).values('idperson')
-        signatures_id = EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__in=students_id).values('idsignature').distinct()
-        signatures = EvaluationsSignatures.objects.filter(id__in=signatures_id)
-
-        return signatures
-
-    @classmethod
-    def get_teachers_signatures_results(self, career, career_data):
-        teachers_signatures = self.get_career_teachers_signatures(career)
-
-        for exam in career_data['exams']:
-            for teacher, signatures in teachers_signatures.items():
-                signatures_results = {}
-                for signature in signatures:
-                    signatures_results[signature] = self.get_teacher_signature_results(
-                        teacher, signature, exam)
-                teachers_signatures[teacher] = signatures_results
-
-        return teachers_signatures
-
-    # Get teachers evaluations results START ---------
-
-    @classmethod
-    def get_teacher_signature_results(self, teacher, signature, exam):
-        """Return the results of the evaluations to the teacher at the signature of the submitted test"""
-
-        groups = EvaluationsDetailStudentSignatureExam.objects.filter(
-            idsignature__exact=signature, idteacher__exact=teacher.idperson).values('idgroup')
-        questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
-            idexam__exact=exam.id)  # No es necesario repetirlo siempre aqui
-
-        results = {}
-
-        preguntas = {}
-        evaluated = 0
-        counter = 0
-        final_average = 0
-        for question_exam in questions_detail_exam:
-            question = question_exam.idquestion
-
-            if question.optional == 'NO':
-
-                yes_answers = EvaluationsAnswers.objects.filter(
-                    iddetailquestion__exact=question_exam.id, answer='YES', idgroup__in=groups)
-                no_answers = EvaluationsAnswers.objects.filter(
-                    iddetailquestion__exact=question_exam.id, answer='NO', idgroup__in=groups)
-
-                if not yes_answers and not no_answers:
-                    yes_answers = [1]
-                    no_answers = [1]
-
-                average = int(len(yes_answers) /
-                              (len(yes_answers) + len(no_answers)) * 100)
-
-                preguntas[question] = {'yes': len(yes_answers), 'no': len(
-                    no_answers), 'average': average}
-
-                counter += 1
-                final_average += average
-                evaluated = (len(yes_answers) + len(no_answers))
-            else:
-                answers = EvaluationsAnswers.objects.filter(
-                    iddetailquestion__exact=question_exam.id, idgroup__in=groups).exclude(answer__isnull=True)
-                preguntas[question] = {'answers': answers}
-
-        final_average = 0 if counter < 1 else round(
-            (final_average / counter), 2)
-        results['questions'] = preguntas
-        results['evaluated'] = evaluated
-        results['average'] = final_average
-
-        return results
-
-    @classmethod
-    def get_career_teacher_signatures(self, career, teacher):
-        """return a dictionary with all the teachers of the career and each signatures that they give"""
-        signatures = self.get_career_signatures(career)
-
-        data = {}
-        teacher_signatures = []
-
-        details = EvaluationsDetailGroupPeriodSignature.objects.select_related('idsignature').filter(
-            idsignature__in=signatures.values('id'), idteacher__exact=teacher.idperson)
-
-        for detail_signature in details:
-            teacher_signatures.append(detail_signature.idsignature)
-
-        data = teacher_signatures
-        return data
-
-    @classmethod
-    def validate_exam_evaluated(self, teacher_signatures, exam, teacher):
-        evaluations_made = EvaluationsDetailStudentSignatureExam.objects.filter(
-            idexam__exact=exam, idteacher__exact=teacher, idsignature__in=teacher_signatures)
-
-        return True if evaluations_made else False
-
-    @classmethod
-    def validate_signature_evaluated(self, teacher, exam, signature):
-        signature_evaluated = EvaluationsDetailStudentSignatureExam.objects.filter(
-            idexam__exact=exam, idteacher__exact=teacher, idsignature__exact=signature)
-
-        return True if signature_evaluated else False
-
-    @classmethod
-    def get_teacher_signatures_results(self, career, career_data, teacher, **kwargs):
-        teacher_results = {}
-        teacher_signatures = self.get_career_teacher_signatures(
-            career, teacher)
-        exam = kwargs.get('exam', None)
-
-        if exam == None:
-            for exam in career_data['exams']:
-                if self.validate_exam_evaluated(teacher_signatures, exam, teacher):
-                    signatures_results = {}
-                    for signature in teacher_signatures:
-                        if self.validate_signature_evaluated(teacher, exam, signature):
-                            signatures_results[signature] = self.get_teacher_signature_results(
-                                teacher, signature, exam)
-                    teacher_results[exam] = signatures_results
-        else:
-            if self.validate_exam_evaluated(teacher_signatures, exam, teacher):
-                signatures_results = {}
-                for signature in teacher_signatures:
-                    if self.validate_signature_evaluated(teacher, exam, signature):
-                        signatures_results[signature] = self.get_teacher_signature_results(
-                            teacher, signature, exam)
-                teacher_results = signatures_results
-
-        return teacher_results
-
-    # Get teachers evaluations results FINISH ---------
-
-    @classmethod
-    def get_general_data(cls):
-        data = {}
-        with connection.cursor() as cursor:
-            cursor.execute('SELECT COUNT(idPerson) FROM evaluations_students')
-            data['total_students'] = cursor.fetchone()[0]
-
-            cursor.execute(
-                'SELECT COUNT(DISTINCT(idStudent)) FROM evaluations_detail_student_signature_exam')
-            data['students_evaluated'] = cursor.fetchone()[0]
-
-            cursor.execute(
-                'SELECT count(id) FROM evaluations_answers where answer="YES";')
-            data['yes_answers'] = cursor.fetchone()[0]
-
-            cursor.execute(
-                'SELECT count(id) FROM evaluations_answers where answer="NO";')
-            data['no_answers'] = cursor.fetchone()[0]
-
-        data['total_answers'] = data['no_answers'] + data['yes_answers']
-
-        return data
-
-    @classmethod
-    def get_career_teachers(cls, career):
-        teachers_id = EvaluationsDetailTeacherCareer.objects.filter(
-            idcareer__exact=career.idcareer).select_related('iddocente')
-
-        teachers = []
-        for teacher in teachers_id:
-            teachers.append(teacher.iddocente)
-        return teachers
-
-# @classmethod
-    # def get_teacher_signature_results_2(self, teacher, signature, exam):
-    #     results = {}
-    #     questions_detail_exam = EvaluationsDetailExamQuestion.objects.filter(
-    #         idexam__exact=exam.id)
-    #     data = Eb1.objects.get(idteacher=teacher.idperson,
-    #                            idsignature=signature.id)
-    #     preguntas = {}
-
-    #     preguntas[questions_detail_exam[0].idquestion] = {'average': data.q1}
-    #     preguntas[questions_detail_exam[1].idquestion] = {'average': data.q2}
-    #     preguntas[questions_detail_exam[2].idquestion] = {'average': data.q3}
-    #     preguntas[questions_detail_exam[3].idquestion] = {'average': data.q4}
-
-    #     all_answers = []
-    #     answers = data.q5
-    #     if answers:
-    #         all_answers = answers.split(':')
-
-    #     preguntas[questions_detail_exam[4].idquestion] = {
-    #         'answers': all_answers}
-
-    #     results['questions'] = preguntas
-    #     results['evaluated'] = data.ptotal
-    #     results['average'] = data.average
-
-    #     return results
