@@ -74,7 +74,7 @@
               <i><h5>Recuerda que las evaluaciones son anónimas y únicamente tienen la finalidad de dar retroalimentación al docente.</h5></i>
               <br/>
 
-              <a class="waves-effect waves-light btn-large green" href="{% url 'evaluations:evaluation' next_evaluation.exam.id next_evaluation.group.idsignature.id %}">Comenzar</a>
+              <a class="waves-effect waves-light btn-large green" href="{% url 'evaluations:evaluation' next_evaluation.exam.id next_evaluation.group.fk_signature.id %}">Comenzar</a>
             </div>
 
           </div>

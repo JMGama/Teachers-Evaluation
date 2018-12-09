@@ -16,25 +16,25 @@
         <img src="{% static 'evaluations/images/Banner.jpg' %}">
       </div>
       <a href="#user"><img class="circle" src="{% static 'evaluations/images/User.png' %}"></a>
-      <a href="#name"><span class="white-text name">{{ student.name }} {{ student.lastname }} {{ student.lastname2 }}</span></a>
-      <a href="#email"><span class="white-text email">{{ student.instemail }}</span></a>
+      <a href="#name"><span class="white-text name">{{ student.name }} {{ student.last_name }} {{ student.last_name_2 }}</span></a>
+      <a href="#email"><span class="white-text email">{{ student.inst_email }}</span></a>
     </div>
   </li>
 
-  {% for evaluation in evaluations %}
+  {% for exam_dict in result_evaluations %}
   <li>
     <ul class="collapsible collapsible-accordion">
       <li class="active">
-        <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ evaluation.exam.description }}</b></a>
+        <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ exam_dict.exam.description }}</b></a>
         <div class="collapsible-body">
           <ul>
-            {% for group in evaluation.groups%} {% if group.id in evaluated_signatures %}
+            {% for group in exam_dict.groups%} {% if group in exam_dict.evaluated_groups %}
             <li>
-              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' evaluation.exam.id group.idsignature.id %}"><i class="material-icons right icon-green">check</i>{{ group.idsignature.name }}</a>
+              <a class="waves-effect disabled" href="{% url 'evaluations:evaluation' exam_dict.exam.id group.fk_signature.id %}"><i class="material-icons right icon-green">check</i>{{ group.fk_signature.description }}</a>
             </li>
             {% else %}
             <li>
-              <a class="waves-effect" href="{% url 'evaluations:evaluation' evaluation.exam.id group.idsignature.id %}"><i class="material-icons right">bookmark_border</i>{{ group.idsignature.name }}</a>
+              <a class="waves-effect" href="{% url 'evaluations:evaluation' exam_dict.exam.id group.fk_signature.id %}"><i class="material-icons right">bookmark_border</i>{{ group.fk_signature.description }}</a>
             </li>
             {% endif %}{% endfor %}
           </ul>
