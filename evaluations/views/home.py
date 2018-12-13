@@ -1,10 +1,13 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from django.views import View
 from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
 
 from evaluations.models import EvaluationsStudent
-from .general_functions import get_evaluations, get_evaluated_signatures, get_evaluations_and_evaluated, get_next_evaluation
+
+from .general_functions import (get_evaluated_signatures, get_evaluations,
+                                get_evaluations_and_evaluated,
+                                get_next_evaluation)
 
 
 class HomeView(View,):
