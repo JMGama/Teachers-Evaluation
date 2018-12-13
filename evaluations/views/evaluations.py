@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views import View
 from django.db.models import Q
 
-from evaluations.models import EvaluationsStudent, EvaluationsDtlQuestionExam, EvaluationsTeacherSignature
+from evaluations.models import EvaluationsStudent, EvaluationsDtlQuestionExam, EvaluationsTeacherSignature, EvaluationsAnswer, EvaluationsExam, EvaluationsStudentSignature, EvaluationsSignatureEvaluated
 from .general_functions import get_evaluations, get_evaluated_signatures, get_evaluations_and_evaluated
 
 
@@ -14,6 +14,9 @@ class EvaluationView(View,):
     template_login = 'evaluations/login.html'
 
     def get(self, request, exam_id, signature):
+        """Get all the necesary information to show the evaluation form page, for the requested signature and exam"""
+
+        # Verify if the student is correctly logged in
         if not request.session.get('session', False) or not request.session['type'] == 'student':
             return render(request, self.template_login)
 
@@ -30,6 +33,7 @@ class EvaluationView(View,):
         exam_questions = EvaluationsDtlQuestionExam.objects.filter(
             fk_exam__exact=exam_id, status__exact="ACTIVE")
 
+        # Get the group of the student in the signature for the given exam.
         signature_group = None
         for exam in evaluations:
             if str(exam['exam'].id) == str(exam_id):
@@ -37,60 +41,65 @@ class EvaluationView(View,):
                     if str(signature_student.fk_signature.id) == str(signature):
                         signature_group = signature_student.group
 
-        detail_group = EvaluationsTeacherSignature.objects.get(
+        teacher_signature = EvaluationsTeacherSignature.objects.get(
             fk_signature__exact=signature, group__exact=signature_group, status__exact="ACTIVE")
 
+        # Render the evaluation form page passing the evaluation data.
         context = {
             'student': student,
             'exam_questions': exam_questions,
             'result_evaluations': result_evaluations,
-            'detail_group': detail_group,
+            'teacher_signature': teacher_signature,
             'exam_id': exam_id,
             'signature': signature,
         }
-
         return render(request, self.template_evaluation, context)
 
-    def post(self, request, exam_id, signature):
-        pass
-        # # Verify if the user is correctly logged in
-        # if not request.session.get('session', False):
-        #     return render(request, self.template_login)
+    # def post(self, request, exam_id, signature):
+    #     """Submit the answers to the questions and add the info to the signature_evaluated table in the Data Base"""
 
-        # # Values for the navigation bar
-        # student = EvaluationsStudent.objects.get(
-        #     pk__exact=request.session['id_student'])
+    #     # Verify if the student is correctly logged in
+    #     if not request.session.get('session', False) or not request.session['type'] == 'student':
+    #         return render(request, self.template_login)
 
-        # # Get exam questions
-        # exam_questions = exam_questions = EvaluationsDtlQuestionExam.objects.filter(
-        #     fk_exam__exact=exam_id, status__exact="ACTIVE")
+    #     # Load data to be submitted
+    #     exam_questions = EvaluationsDtlQuestionExam.objects.filter(
+    #         fk_exam__exact=exam_id, status__exact="ACTIVE").select_related('fk_question')
+    #     student = EvaluationsStudent.objects.get(
+    #         pk__exact=request.session['id_student'])
+    #     exam = EvaluationsExam.objects.get(id__exact=exam_id)
+    #     student_signature = EvaluationsStudentSignature.objects.get(
+    #         fk_student__exact=student.id, fk_signature__exact=signature)
 
     #     # Submit every exam answer
-    #     num_answers = 0
-    #     for question in exam_questions:
+    #     for question_detail in exam_questions:
+    #         question = question_detail.fk_question
+
+    #         # Verify if the question is optional or not
     #         try:
-    #             # verify if the question is optional or not
-    #             try:
-    #                 submitted_answer = request.POST['answer_' +
-    #                                                 str(question.id)]
-    #             except Exception as e:
-    #                 submitted_answer = request.POST['answer_' +
-    #                                                 str(question.id) + "_optional"]
-
-    #             answer = EvaluationsAnswers(
-    #                 idstudent=student,
-    #                 idgroup=EvaluationsDetailStudentGroup.objects.get(
-    #                     idstudent__exact=student.idperson, idsignature__exact=signature),
-    #                 iddetailquestion=EvaluationsDetailExamQuestion.objects.get(
-    #                     id__exact=question.id),
-    #                 answer=submitted_answer.upper() if submitted_answer != "" else None,
-    #                 idexam=EvaluationsExams.objects.get(id__exact=exam_id),
-    #             )
-    #             answer.save()
-    #             num_answers += 1
+    #             submitted_answer = request.POST['answer_' +
+    #                                             str(question.id)]
     #         except Exception:
-    #             pass
+    #             submitted_answer = request.POST['answer_' +
+    #                                             str(question.id) + "_optional"]
 
+    #         # Creates the data for the answer to be submitted
+    #         answer = EvaluationsAnswer(
+    #             answer=submitted_answer.upper() if submitted_answer != "" else None,
+    #             fk_question=question.fk_question,
+    #             fk_exam=exam,
+    #             fk_student_signature=student_signature)
+    #         answer.save()
+
+    #     # Add the evaluation to the Signature_evaluated table so it appears as an evaluated signatures in the view.
+    #     signature_evaluated = EvaluationsSignatureEvaluated(
+    #         evaluated='YES',
+    #         fk_exam=exam,
+    #         fk_student_signature=student_signature
+    #     )
+    #     signature_evaluated.save()
+
+    #     return self.get(request, exam_id, signature)
     #     # Validate all answers well submitted to the DB.
     #     if num_answers == len(exam_questions):
     #         # Change status to evaluated on the evaluations_detail_student_group table.
