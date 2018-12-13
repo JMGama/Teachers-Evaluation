@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
-from models import EvaluationsStudent
+from evaluations.models import EvaluationsStudent
 
 from .general_functions import (get_evaluated_signatures, get_evaluations,
                                 get_evaluations_and_evaluated,
