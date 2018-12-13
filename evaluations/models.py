@@ -1,10 +1,3 @@
-# This is an auto-generated Django model module.
-# You'll have to do the following manually to clean this up:
-#   * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
-#   * Make sure each ForeignKey has `on_delete` set to the desired behavior.
-#   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
-# Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
 
@@ -16,7 +9,7 @@ class EvaluationsAnswer(models.Model):
     fk_question = models.ForeignKey('EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
     fk_exam = models.ForeignKey('EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
     fk_student_signature = models.ForeignKey('EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -30,7 +23,7 @@ class EvaluationsCareer(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     abbreviation = models.CharField(max_length=255, blank=True, null=True)
     type = models.CharField(max_length=13, blank=True, null=True)
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -48,7 +41,7 @@ class EvaluationsCoordinator(models.Model):
     last_name_2 = models.CharField(max_length=255, blank=True, null=True)
     inst_email = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -62,7 +55,7 @@ class EvaluationsDtlCoordinatorCareer(models.Model):
     id = models.IntegerField(primary_key=True)
     fk_coordinator = models.ForeignKey(EvaluationsCoordinator, models.DO_NOTHING, db_column='fk_coordinator')
     fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -76,7 +69,7 @@ class EvaluationsDtlQuestionExam(models.Model):
     id = models.IntegerField(primary_key=True)
     fk_question = models.ForeignKey('EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
     fk_exam = models.ForeignKey('EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -89,7 +82,7 @@ class EvaluationsDtlTeacherCareer(models.Model):
 
     fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
     fk_teacher = models.ForeignKey('EvaluationsTeacher', models.DO_NOTHING, db_column='fk_teacher')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -105,7 +98,7 @@ class EvaluationsExam(models.Model):
     start = models.DateField(blank=True, null=True)
     end = models.DateField(blank=True, null=True)
     fk_period = models.ForeignKey('EvaluationsPeriod', models.DO_NOTHING, db_column='fk_period')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -119,7 +112,7 @@ class EvaluationsPeriod(models.Model):
     period = models.CharField(max_length=255, blank=True, null=True)
     start = models.DateField(blank=True, null=True)
     end = models.DateField(blank=True, null=True)
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -133,7 +126,7 @@ class EvaluationsQuestion(models.Model):
     type = models.CharField(max_length=10)
     description = models.CharField(max_length=255, blank=True, null=True)
     optional = models.CharField(max_length=3, blank=True, null=True)
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -146,7 +139,7 @@ class EvaluationsSignature(models.Model):
 
     description = models.CharField(max_length=255, blank=True, null=True)
     fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -160,7 +153,7 @@ class EvaluationsSignatureEvaluated(models.Model):
     evaluated = models.CharField(max_length=3, blank=True, null=True)
     fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
     fk_student_signature = models.ForeignKey('EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -176,7 +169,7 @@ class EvaluationsSignatureQuestionResult(models.Model):
     fk_question = models.ForeignKey(EvaluationsQuestion, models.DO_NOTHING, db_column='fk_question')
     fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
     fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -193,7 +186,7 @@ class EvaluationsSignatureResult(models.Model):
     fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
     fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
     fk_teacher = models.ForeignKey('EvaluationsTeacher', models.DO_NOTHING, db_column='fk_teacher')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -211,7 +204,7 @@ class EvaluationsStudent(models.Model):
     inst_email = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
     fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -226,7 +219,7 @@ class EvaluationsStudentSignature(models.Model):
     fk_student = models.ForeignKey(EvaluationsStudent, models.DO_NOTHING, db_column='fk_student')
     fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
     fk_period = models.ForeignKey(EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -243,7 +236,7 @@ class EvaluationsTeacher(models.Model):
     last_name_2 = models.CharField(max_length=255, blank=True, null=True)
     inst_email = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
@@ -258,7 +251,7 @@ class EvaluationsTeacherSignature(models.Model):
     fk_teacher = models.ForeignKey(EvaluationsTeacher, models.DO_NOTHING, db_column='fk_teacher')
     fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
     fk_period = models.ForeignKey(EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
-    status = models.CharField(max_length=8)
+    status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
