@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
-from evaluations.models import (EvaluationsCoordinator, EvaluationsStudent,
-                                EvaluationsTeacher)
+from models import (EvaluationsCoordinator, EvaluationsStudent,
+                    EvaluationsTeacher)
 
 
 class LoginView(View):

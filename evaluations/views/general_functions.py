@@ -1,7 +1,7 @@
 from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.db import connection
-from evaluations.models import EvaluationsStudent, EvaluationsExam, EvaluationsStudentSignature, EvaluationsSignatureEvaluated
+from models import EvaluationsStudent, EvaluationsExam, EvaluationsStudentSignature, EvaluationsSignatureEvaluated
 import datetime
 
 
