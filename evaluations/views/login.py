@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from django.views import View
 from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
 
-from evaluations.models import EvaluationsStudent, EvaluationsCoordinator, EvaluationsTeacher
+from evaluations.models import (EvaluationsCoordinator, EvaluationsStudent,
+                                EvaluationsTeacher)
 
 
 class LoginView(View):
