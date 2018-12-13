@@ -13,10 +13,13 @@ class HomeView(View,):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
+        """Load the information of the student for the evaluations home page"""
+        
+        # Verify if the student is correctly logged in
         if not request.session.get('session', False) or not request.session['type'] == 'student':
             return render(request, self.template_login)
 
-        # Values for the navigation bar
+        # Load the Values for the navigation bar
         student = EvaluationsStudent.objects.get(
             pk__exact=request.session['id_student'], status__exact="ACTIVE")
         evaluations = get_evaluations(student)
@@ -25,8 +28,11 @@ class HomeView(View,):
         result_evaluations = get_evaluations_and_evaluated(
             evaluations, evaluated_signatures)
 
+        # Get the next evaluation to be made for the student
         next_evaluation = get_next_evaluation(
             student, evaluations, evaluated_signatures)
+
+        # If there is not next evaluation, close the session ant return to the login page
         if not next_evaluation:
             try:
                 request.session.flush()
@@ -38,6 +44,7 @@ class HomeView(View,):
             }
             return render(request, self.template_login, context)
 
+        # Render the home page.
         context = {
             'student': student,
             'next_evaluation': next_evaluation,
