@@ -12,7 +12,7 @@ class LoginView(View):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
-        """ Check if the user ir already logged in, if it is redirect to the landing page, otherway redirect to login page"""
+        """ Check if the user ir already logged in, if it is redirect to the landing page, otherway redirect to login page."""
         try:
             # If the user is already logged in redirect them to the corresponding landing page.
             if request.session['session']:
@@ -29,18 +29,19 @@ class LoginView(View):
         return render(request, self.template_login)
 
     def post(self, request):
-        """Verify if the login data is correct, and redirect to their corresponding landing page"""
+        """Verify if the login data is correct, and redirect to their corresponding landing page."""
+
+        # Try to load student.
         try:
-            # Try to load student
             if self.load_student(request, request.POST['id_matricula'], request.POST['password']):
                 return redirect('home/')
         except Exception:
-            # Try to load coordinator
+            # Try to load coordinator.
             try:
                 if self.load_coordinator(request, request.POST['id_matricula'], request.POST['password']):
                     return redirect('monitoring/')
             except Exception:
-                # Try to load teacher
+                # Try to load teacher.
                 try:
                     if self.load_teacher(request, request.POST['id_matricula'], request.POST['password']):
                         return redirect('teacher/home')
@@ -50,11 +51,11 @@ class LoginView(View):
         return render(request, self.template_login, {'second_time': True, 'validate': 'invalid'})
 
     def load_student(self, request, matricula, password):
-        """load the student, create the session variables and return false if the data was incorrect"""
+        """load the student, create the session variables and return false if the data was incorrect."""
         student = EvaluationsStudent.objects.get(
             enrollment__exact=matricula)
 
-        # If the matricula and password was correct, create session variables
+        # If the matricula and password was correct, create session variables.
         if student.password == password:
             request.session['id_student'] = student.id
             request.session['session'] = True
@@ -64,11 +65,11 @@ class LoginView(View):
             return False
 
     def load_coordinator(self, request, matricula, password):
-        """load the coordinator, create the session variables and return false if the data was incorrect"""
+        """load the coordinator, create the session variables and return false if the data was incorrect."""
         coordinator = EvaluationsCoordinator.objects.get(
             enrollment__exact=matricula)
 
-        # If the matricula and password was correct, create session variables
+        # If the matricula and password was correct, create session variables.
         if coordinator.password == password:
             request.session['id_coordinator'] = coordinator.id
             request.session['session'] = True
@@ -78,10 +79,10 @@ class LoginView(View):
             return False
 
     def load_teacher(self, request, matricula, password):
-        """load the teacher, create the session variables and return false if the data was incorrect"""
+        """load the teacher, create the session variables and return false if the data was incorrect."""
         teacher = EvaluationsTeacher.objects.get(enrollment__exact=matricula)
 
-        # If the matricula and password was correct, create session variables
+        # If the matricula and password was correct, create session variables.
         if teacher.password == password:
             request.session['id_teacher'] = teacher.id
             request.session['session'] = True

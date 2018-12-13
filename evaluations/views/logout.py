@@ -10,7 +10,7 @@ class LogoutView(View, ):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
-        """Flush the session and redirects to the login page"""
+        """Flush the session and redirects to the login page."""
         try:
             request.session.flush()
         except KeyError:
