@@ -62,7 +62,7 @@ def get_next_evaluation(student, evaluations, evaluated_signatures):
             for exam_eval_dict in evaluated_signatures:
                 for group in exam_dict['groups']:
                     if not group in exam_eval_dict['groups']:
-                        next_evaluation['exam'] = exam_dict['exam']
+                        next_evaluation['exam'] = exam_eval_dict['exam']
                         next_evaluation['group'] = group
                         return next_evaluation
 
