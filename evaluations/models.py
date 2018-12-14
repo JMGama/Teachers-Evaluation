@@ -166,6 +166,7 @@ class EvaluationsSignatureQuestionResult(models.Model):
 
     group = models.CharField(max_length=255)
     result = models.TextField(blank=True, null=True)
+    total_evaluated = models.IntegerField()
     fk_question = models.ForeignKey(EvaluationsQuestion, models.DO_NOTHING, db_column='fk_question')
     fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
     fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
@@ -185,7 +186,6 @@ class EvaluationsSignatureResult(models.Model):
     total_evaluated = models.IntegerField()
     fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
     fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
-    fk_teacher = models.ForeignKey('EvaluationsTeacher', models.DO_NOTHING, db_column='fk_teacher')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
