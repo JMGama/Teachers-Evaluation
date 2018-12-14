@@ -52,9 +52,9 @@
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  Docente: <b>{{ detail_group.fk_teacher.name.upper }} {{ detail_group.fk_teacher.lastname.upper }} {{ detail_group.fk_teacher.lastname2.upper }}</b>
+                  Docente: <b>{{ teacher_signature.fk_teacher.name.upper }} {{ teacher_signature.fk_teacher.lastname.upper }} {{ teacher_signature.fk_teacher.lastname2.upper }}</b>
                   <br>
-                  Materia: <b>{{ detail_group.fk_signature.description.upper }}</b>
+                  Materia: <b>{{ teacher_signature.fk_signature.description.upper }}</b>
                   <br>
                   Carrera: <b>{{ student.fk_career.description.upper }}</b>
                 </span>
@@ -74,13 +74,13 @@
                 {% if question.fk_question.type.lower == 'radio' %}
                 <div class="col m2 s2">
                   <label>
-                    <input class="with-gap" name="answer_{{ question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" value="yes" type="radio" />
+                    <input class="with-gap" name="answer_{{ question.fk_question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" value="yes" type="radio" />
                     <span>Si</span>
                   </label>
                 </div>
                 <div class="col m2 s2">
                   <label>
-                    <input class="with-gap" name="answer_{{ question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" value="no" type="radio" />
+                    <input class="with-gap" name="answer_{{ question.fk_question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" value="no" type="radio" />
                     <span>No</span>
                   </label>
                 </div>
@@ -88,7 +88,7 @@
                 <br><br>
                 <div class="input-field col m11 s11">
                   <i class="material-icons prefix">mode_edit</i>
-                  <textarea id="textarea" name="answer_{{ question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" class="materialize-textarea" data-length="255" maxlength="255"></textarea>
+                  <textarea id="textarea" name="answer_{{ question.fk_question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" class="materialize-textarea" data-length="255" maxlength="255"></textarea>
                   <label for="textarea">Respuesta</label>
                 </div>
                 {% endif %}
