@@ -7,11 +7,14 @@ from django.views import View
 
 from evaluations.models import (EvaluationsAnswer, EvaluationsDtlQuestionExam,
                                 EvaluationsExam, EvaluationsSignatureEvaluated,
-                                EvaluationsSignatureQuestionResult, EvaluationsStudent,
-                                EvaluationsStudentSignature, EvaluationsTeacherSignature)
+                                EvaluationsSignatureQuestionResult,
+                                EvaluationsSignatureResult, EvaluationsStudent,
+                                EvaluationsStudentSignature,
+                                EvaluationsTeacherSignature)
 
 from .general_functions import (get_evaluated_signatures, get_evaluations,
-                                get_evaluations_and_evaluated)
+                                get_evaluations_and_evaluated,
+                                get_next_evaluation)
 
 
 class EvaluationView(View,):
@@ -80,6 +83,10 @@ class EvaluationView(View,):
         student_signature = EvaluationsStudentSignature.objects.get(
             fk_student__exact=student.id, fk_signature__exact=signature, status__exact="ACTIVE")
 
+        # The final average and total no optional questions for the Signature_Result.
+        signature_average_result = 0
+        questions_no_optional = 0
+
         # Submit every exam answer and create or update the Signature_Question_Result info.
         for question_detail in exam_questions:
             question = question_detail.fk_question
@@ -134,6 +141,10 @@ class EvaluationView(View,):
                         total_evaluated += 1
                         result = ((total_yes)*100)/(total_evaluated)
 
+                    # Add the actual question average and increment total of no optional questions to the signature_average.
+                    signature_average_result += result
+                    questions_no_optional += 1
+
                 # If the answer is optional will be comments.
                 else:
                     # If the comment is empty leave it that way, else append a pipe at the end to separate from other comments.
@@ -158,6 +169,10 @@ class EvaluationView(View,):
                     else:
                         result = 0
 
+                    # Add the actual question average and increment total of no optional questions to the signature_average.
+                    signature_average_result += result
+                    questions_no_optional += 1
+
                 # If the answer is optional will be comments.
                 else:
                     # If the comment is empty leave it that way, else append a pipe at the end to separate from other comments.
@@ -174,11 +189,38 @@ class EvaluationView(View,):
                 )
                 signature_question_result.save()
 
-        # Load the ignature_Result to be updated if the question is already in the database. 
+        # Load the Signature_Result to be updated if the question is already in the database.
         try:
-            pass
+            signature_result = EvaluationsSignatureResult.objects.get(
+                group=student_signature.group,
+                fk_signature=student_signature.fk_signature.id,
+                fk_exam=exam,
+                status='ACTIVE'
+            )
+
+            # Get the average for the signature result.
+            average = (signature_average_result/questions_no_optional)
+
+            # Asign the new values to the Signature_Result and submit it to the database.
+            signature_result.average = average
+            signature_result.total_evaluated += 1
+            signature_result.save()
+
+        # If the signature isn't in the Signature_Result table, creates it and submit to the database.
         except ObjectDoesNotExist:
-            pass
+
+            # Get the average for the signature result.
+            average = (signature_average_result/questions_no_optional)
+
+            # Creates the Signature_Result with the asigned values and creates in on the database.
+            signature_result = EvaluationsSignatureResult(
+                group=student_signature.group,
+                average=average,
+                total_evaluated=1,
+                fk_signature=student_signature.fk_signature,
+                fk_exam=exam
+            )
+            signature_result.save()
 
         # Add the evaluation info to the Signature_evaluated table in the database so it appears as evaluated.
         signature_evaluated = EvaluationsSignatureEvaluated(
@@ -188,4 +230,23 @@ class EvaluationView(View,):
         )
         signature_evaluated.save()
 
-        return self.get(request, exam_id, signature)
+        # Load the Values fto redirect for the next evaluation.
+        student = EvaluationsStudent.objects.get(
+            pk__exact=request.session['id_student'], status__exact="ACTIVE")
+        evaluations = get_evaluations(student)
+        evaluated_signatures = get_evaluated_signatures(
+            student, evaluations)
+        next_evaluation = get_next_evaluation(
+            student, evaluations, evaluated_signatures)
+
+        # If there is not next evaluation, close the session ant return to the login page.
+        if not next_evaluation:
+            request.session.flush()
+            context = {
+                'student': student,
+                'complete': 'YES',
+            }
+            return render(request, self.template_login, context)
+
+        # Redirects to the get function with the next exam and signature to be done.
+        return self.get(request, next_evaluation['exam'].id, next_evaluation['group'].fk_signature.id)
