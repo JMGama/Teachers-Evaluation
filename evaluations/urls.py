@@ -20,7 +20,7 @@ urlpatterns = [
 #     path('career_results/<slug:career_id>/<slug:teacher_id>/',
 #          views.TeacherResultsView.as_view(), name='teacher_results'),
 
-#     path('monitoring/', views.MonitoringView.as_view(), name='monitoring'),
+    path('monitoring/', views.MonitoringView.as_view(), name='monitoring'),
 #     path('monitoring/admin_reports/<slug:career_type>',
 #          views.AdminReportsView.as_view(), name='admin_reports'),
 #     path('monitoring/delete_student',
