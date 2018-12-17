@@ -16,6 +16,7 @@ class MonitoringView(View):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
+        """Get the information to show the monitoring page, with the general results"""
 
         # Verify if the coordinator is correctly logged in.
         if not request.session.get('session', False) or not request.session['type'] == 'coordinator':
