@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
 
 
-class LogoutView(View, ):
+class LogoutView(View):
     template_login = 'evaluations/login.html'
 
     def get(self, request):

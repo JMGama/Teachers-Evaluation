@@ -17,7 +17,7 @@ from .general_functions import (get_evaluated_signatures, get_evaluations,
                                 get_next_evaluation)
 
 
-class EvaluationView(View,):
+class EvaluationView(View):
 
     template_evaluation = 'evaluations/evaluation_form.html'
     template_home = 'evaluations/home.html'

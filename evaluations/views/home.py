@@ -10,7 +10,7 @@ from .general_functions import (get_evaluated_signatures, get_evaluations,
                                 get_next_evaluation)
 
 
-class HomeView(View,):
+class HomeView(View):
 
     template_home = 'evaluations/home.html'
     template_login = 'evaluations/login.html'
