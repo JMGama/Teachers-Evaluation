@@ -16,25 +16,25 @@
         <img src="{% static 'evaluations/images/Banner.jpg' %}">
       </div>
       <a href="#user"><img class="circle" src="{% static 'evaluations/images/User.png' %}"></a>
-      <a href="#name"><span class="white-text name">{{ coordinator.name }} {{ coordinator.lastname }} {{ coordinator.lastname2 }}</span></a>
-      <a href="#email"><span class="white-text email">{{ coordinator.instemail }}</span></a>
+      <a href="#name"><span class="white-text name">{{ coordinator.name }} {{ coordinator.last_name }} {{ coordinator.last_name_2 }}</span></a>
+      <a href="#email"><span class="white-text email">{{ coordinator.inst_email }}</span></a>
     </div>
   </li>
       <li >
         <a class="waves-effect" href="{% url 'evaluations:monitoring' %}"><i class="material-icons right icon-black">bookmark_border</i><b>RESULTADOS GENERALES</b></a>
       </li>
-      {% regroup careers|dictsort:"abbreviation" by abbreviation as career_list %}
-  {% for abbreviation in career_list %}
+      {% regroup careers|dictsort:"type" by type as career_list %}
+  {% for type in career_list %}
     <li>
       <ul class="collapsible collapsible-accordion">
         <li>
-          <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ abbreviation.grouper }}</b></a>
+          <a class="collapsible-header waves-effect"><i class="material-icons right">assignment</i><b>{{ type.grouper }}</b></a>
           <div class="collapsible-body">
             <ul>
-              {% for career in abbreviation.list %}
+              {% for career in type.list %}
                 <li>
                   <a class="tooltipped waves-effect"
-                  href="{% url 'evaluations:career_results' career.idcareer %}"
+                  href="{% url 'evaluations:career_results' career.id %}"
                   data-position="rigth" data-tooltip="{{ career.description }}"><i class="material-icons right">short_text</i><b>{{ career.description }}</b></a>
                 </li>
               {% endfor %}
