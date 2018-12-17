@@ -28,7 +28,7 @@ class MonitoringView(View):
             fk_coordinator__exact=coordinator.id).values('fk_career')
         careers = EvaluationsCareer.objects.filter(pk__in=careers_id)
 
-        # Get the general result for all the evaluations.
+        # Get the general result for all the evaluations (total evaluated and average).
         general_data = self.get_general_results()
 
         # Render the home view for the coordintators.
