@@ -40,7 +40,7 @@ class MonitoringView(View):
         }
 
         # If the  coordinator is admin, set it true in the context to show admin things (reports, actions, etc).
-        if coordinator.type == 'ADMINS':
+        if coordinator.type == 'ADMIN':
             context['admin_user'] = True
 
         return render(request, self.template_monitoring, context)
