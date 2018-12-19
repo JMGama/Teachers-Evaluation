@@ -5,6 +5,7 @@ from evaluations.models import EvaluationsStudent, EvaluationsExam, EvaluationsS
 import datetime
 
 
+# Functions to load the evaluations of the stundet
 def get_evaluations(student):
     """returns a dictionary with the exams and students-signatures that the student have"""
     student_career_cycle = student.fk_career.type
