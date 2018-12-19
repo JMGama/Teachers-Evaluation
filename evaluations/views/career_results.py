@@ -41,7 +41,6 @@ class CareerResultsView(View):
         teachers_detail = EvaluationsDtlTeacherCareer.objects.filter(
             fk_career__exact=career.id, status="ACTIVE").select_related('fk_teacher')
         teachers = [teahcer_dtl.fk_teacher for teahcer_dtl in teachers_detail]
-        print(teachers)
 
         context = {
             'teachers': teachers,
