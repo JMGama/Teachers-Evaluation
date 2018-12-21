@@ -1,30 +1,37 @@
-from django.views import View
+from django.db import transaction
 from django.shortcuts import render
+from django.views import View
 
-from .general_functions import *
+from evaluations.models import (EvaluationsCareer, EvaluationsCoordinator,
+                                EvaluationsDtlCoordinatorCareer,
+                                EvaluationsStudent)
 
 
-class DeleteStudentView(View, GeneralFunctions):
+class DeleteStudentView(View):
 
     template_delete_student = 'evaluations/delete_student.html'
     template_login = 'evaluations/login.html'
 
     def get(self, request):
+        # Verify if the coordinator is correctly logged in.
         if not request.session.get('session', False) or not request.session['type'] == 'coordinator':
             return render(request, self.template_login)
 
-        # Values for the view
-        coordinator = EvaluationsCoordinators.objects.get(
-            idperson__exact=request.session['id_coordinator'])
-        careers_id = EvaluationsDetailCoordinatorCareer.objects.filter(
-            idcoordinator__exact=coordinator.idperson).values('idcareer')
-        careers = EvaluationsCareers.objects.filter(idcareer__in=careers_id)
+        # Values for the view and the monitoring navigation bar.
+        coordinator = EvaluationsCoordinator.objects.get(
+            pk__exact=request.session['id_coordinator'])
+        careers_id = EvaluationsDtlCoordinatorCareer.objects.filter(
+            fk_coordinator__exact=coordinator.id).values('fk_career')
+        careers = EvaluationsCareer.objects.filter(pk__in=careers_id)
 
-        # Validates if the user is admin
-        if coordinator.type != 'ADMINISTRATIVO':
+        # Validates if the user is admin.
+        if coordinator.type != 'ADMIN':
             return render(request, self.template_login)
 
-        students = EvaluationsStudents.objects.all()
+        # Get all the students
+        students = EvaluationsStudent.objects.filter(status="ACTIVE")
+
+        # Render the students view with the list of all the students.
         context = {
             'students': students,
             'coordinator': coordinator,
@@ -34,48 +41,59 @@ class DeleteStudentView(View, GeneralFunctions):
         return render(request, self.template_delete_student, context)
 
     def post(self, request):
+        # Verify if the coordinator is correctly logged in.
         if not request.session.get('session', False) or not request.session['type'] == 'coordinator':
             return render(request, self.template_login)
 
-        # Values for the view
-        coordinator = EvaluationsCoordinators.objects.get(
-            idperson__exact=request.session['id_coordinator'])
-        careers_id = EvaluationsDetailCoordinatorCareer.objects.filter(
-            idcoordinator__exact=coordinator.idperson).values('idcareer')
-        careers = EvaluationsCareers.objects.filter(idcareer__in=careers_id)
+        # Values for the view and the monitoring navigation bar.
+        coordinator = EvaluationsCoordinator.objects.get(
+            pk__exact=request.session['id_coordinator'])
+        careers_id = EvaluationsDtlCoordinatorCareer.objects.filter(
+            fk_coordinator__exact=coordinator.id).values('fk_career')
+        careers = EvaluationsCareer.objects.filter(pk__in=careers_id)
 
-        # Validates if the user is admin
-        if coordinator.type != 'ADMINISTRATIVO':
+        # Validates if the user is admin.
+        if coordinator.type != 'ADMIN':
             return render(request, self.template_login)
 
-        # Check for the selected students
+        # Check for the selected students.
         students_to_delete = request.POST.getlist('students')
 
-        # Deleted students dialogue information
-        dialogue = ["warning","red","Ocurrió un error al procesar la petición."]
-        students_deleted = EvaluationsStudents.objects.filter(
-            idperson__in=students_to_delete)
-        if not students_deleted:
-            dialogue = ["clear","red","<b>Debes seleccionar al menos un alumno para ser eliminado.</b>"]
+        # If they didnt selected any student, return an error message.
+        dialogue = []
+        if not students_to_delete:
+            dialogue = [
+                "clear", "red", "<b>Debes seleccionar al menos un alumno para ser eliminado.</b>"]
+
         else:
-            dialogue[0] = "check"
-            dialogue[1] = "green"
-            dialogue[2] = "<b>Los siguientes alumnos fueron eliminados correctamente:</b> <br><br>"
-            for student in students_deleted:
-                dialogue[2] = dialogue[2] + student.enrollment + " - " + student.name + \
-                    " " + student.lastname + " " + student.lastname2 + " - " + student.idcareer.description + "<br>"
+            try:
 
-        # Delete all the information about the student(s)
-        EvaluationsAnswers.objects.filter(
-            idstudent__in=students_to_delete).delete()
-        EvaluationsDetailStudentSignatureExam.objects.filter(
-            idstudent__in=students_to_delete).delete()
-        EvaluationsDetailStudentGroup.objects.filter(
-            idstudent__in=students_to_delete).delete()
-        EvaluationsStudents.objects.filter(
-            idperson__in=students_to_delete).delete()
+                # Begin a transaction.
+                with transaction.atomic():
+                    students = EvaluationsStudent.objects.filter(
+                        pk__in=students_to_delete)
 
-        students = EvaluationsStudents.objects.all()
+                    # Set the students as inactive and their asignation signatures in the Student-Signature table.
+                    EvaluationsStudent.objects.filter(
+                        pk__in=students_to_delete).update(status="INACTIVE")
+
+                # Return a dialog with the students that where eliminated.
+                dialogue.append("check")
+                dialogue.append("green")
+                dialogue.append(
+                    "<b>Los siguientes alumnos fueron eliminados correctamente:</b> <br><br>")
+                for student in students:
+                    dialogue[2] = dialogue[2] + student.enrollment + " - " + student.name + \
+                        " " + student.last_name + " " + student.last_name_2 + \
+                        " - " + student.fk_career.description + "<br>"
+
+            except Exception as e:
+
+                # Return a message with the error in case something whent wrong.
+                dialogue = ["warning", "red",
+                            "Ocurrió un error al procesar la petición. Error: " + str(e)]
+
+        students = EvaluationsStudent.objects.filter(status="ACTIVE")
         context = {
             'dialogue': dialogue,
             'students': students,
