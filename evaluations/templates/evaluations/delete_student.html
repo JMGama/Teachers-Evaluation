@@ -79,19 +79,27 @@
 
 
               <div>
-                <form action="{% url 'evaluations:delete_student' %}" method="POST">
-                  {% csrf_token %}
-                  <div class="input-field col m5 s10">
-                    <button class="btn-small waves-effect waves-light red darken-1" type="submit" name="action">Borrar
-                      Alumno(s)
-                      <i class="material-icons right">delete</i>
-                    </button>
+                <div class="row">
+                  <div class="col s10 yellow lighten-2 offset-s1">
+                    <p>El borrado de los alumnos no altera los resultados de las evaluaciones ya realizadas.</p>
                   </div>
+                </div>
 
-                  <div class="input-field col m5 offset-m1 s10 offset-s1">
-                    <i class="material-icons prefix">search</i>
-                    <input type="text" id="studentFilter" onkeyup="filterStudent()">
-                    <label for="studentFilter">Matricula del Alumno</label>
+                <form action="{% url 'evaluations:delete_student' %}" method="POST">
+                  <div class="row">
+                    {% csrf_token %}
+                    <div class="input-field col m5 s10">
+                      <button class="btn-small waves-effect waves-light red darken-1" type="submit" name="action">Borrar
+                        Alumno(s)
+                        <i class="material-icons right">delete</i>
+                      </button>
+                    </div>
+
+                    <div class="input-field col m5 offset-m1 s10 offset-s1">
+                      <i class="material-icons prefix">search</i>
+                      <input type="text" id="studentFilter" onkeyup="filterStudent()">
+                      <label for="studentFilter">Matricula del Alumno</label>
+                    </div>
                   </div>
 
                   <div class="row">
@@ -110,12 +118,12 @@
                           {% for student in students %}
                           <tr style="border-top:1px solid #1e2e5042;">
                             <td>{{ student.enrollment }}</td>
-                            <td>{{ student.name }} {{ student.lastname }} {{ student.lastname2 }}</td>
-                            <td>{{ student.idcareer }}</td>
-                            <td>{{ student.value }}</td>
+                            <td>{{ student.name }} {{ student.last_name }} {{ student.last_name_2 }}</td>
+                            <td>{{ student.fk_career.description }}</td>
+                            <td>{{ student.password }}</td>
                             <td class="right-align">
                               <label>
-                                <input type="checkbox" name="students" value="{{student.idperson}}" />
+                                <input type="checkbox" name="students" value="{{student.id}}" />
                                 <span></span>
                               </label>
                             </td>
