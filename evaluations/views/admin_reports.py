@@ -14,16 +14,21 @@ from evaluations.models import (EvaluationsCareer, EvaluationsDtlQuestionExam,
 class AdminReportsView(View):
 
     def get(self, request, career_type):
+        """Creates the CSV with all the results of the teachers for each exam and signatures that are active"""
+
+        # Create the response that will be a download of the CSV with the information.
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=Resultados_Generales.csv'
         writer = csv.writer(response, csv.excel)
         response.write(u'\ufeff'.encode('utf8'))
 
-        # FIX THE EXAMS FILTER!
+        # Get all the active exams to get their results.
         exams = EvaluationsExam.objects.filter(
             type=career_type.upper(), status="ACTIVE")
         exams_resuts = []
         for exam in exams:
+
+            # For each exam get the results of the teachers in the careers.
             results = self.get_career_teachers_results(
                 career_type.upper(), exam)
             exams_resuts.append({
@@ -31,13 +36,17 @@ class AdminReportsView(View):
                 'results': results
             })
 
+        # Wtire all the results in the CVS.
         self.write_exam_results(exams_resuts, writer)
         return response
 
     def write_exam_results(self, exams_resutls, writer):
         """Write all the exam results information to the CSV (writer received)"""
 
+        # Get the results for each exam.
         for exam in exams_resutls:
+
+            # Add the titles to the CSV.
             writer.writerow([smart_str(u""+exam['exam'])])
             exam_obj = EvaluationsExam.objects.get(
                 description__exact=exam['exam'], status="ACTIVE")
@@ -51,13 +60,19 @@ class AdminReportsView(View):
                 'TOTAL ALUMNOS EVALUADOS',
                 'PROMEDIO'
             ]
+
+            # Get the questions for the exam, to add them to the titles in the CVS.
             for question in questions:
                 titles.append('P' + str(question.id))
             writer.writerow([smart_str(u""+title) for title in titles])
 
+            # Get the results for each career in the exam.
             for career in exam['results']:
+
+                # Get the results for the signature/teacher.
                 for signature in career['signatures_results']:
 
+                    # This is the things that will be writed in the same line of the CVS.
                     to_write = [
                         smart_str(u""+career['career']),
                         smart_str(u""+signature['signature']),
@@ -67,11 +82,13 @@ class AdminReportsView(View):
                         smart_str(u""+signature['average'])
                     ]
 
+                    # Get the results for each question on the exam in the actual career.
                     for question in signature['questions']:
                         for _, question_result in question.items():
                             to_write.append(
                                 smart_str(u""+str(question_result)))
 
+                    # Write the information of the signature in the CVS.
                     writer.writerow(to_write)
         return True
 
@@ -127,6 +144,7 @@ class AdminReportsView(View):
                     signature_data['questions'] = [
                         {question_res.fk_question.id: question_res.result}for question_res in signature_questions_results]
                     career_resutls['signatures_results'].append(signature_data)
+
             # Add the career results to the final dictionary.
             results.append(career_resutls)
 
