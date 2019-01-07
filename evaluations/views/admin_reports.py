@@ -4,40 +4,76 @@ from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.views import View
 
-from evaluations.models import (EvaluationsCareer, EvaluationsSignature,
+from evaluations.models import (EvaluationsCareer, EvaluationsDtlQuestionExam,
+                                EvaluationsExam, EvaluationsSignature,
                                 EvaluationsSignatureQuestionResult,
                                 EvaluationsSignatureResult, EvaluationsTeacher,
-                                EvaluationsTeacherSignature, EvaluationsExam)
+                                EvaluationsTeacherSignature)
 
 
 class AdminReportsView(View):
 
     def get(self, request, career_type):
-        response = self.general_results(request, career_type)
-
-        #response = self.general_report(request)
-        return response
-
-    def general_results(self, request, career_type):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=Resultados_Generales.csv'
         writer = csv.writer(response, csv.excel)
         response.write(u'\ufeff'.encode('utf8'))
 
         # FIX THE EXAMS FILTER!
-        if career_type.upper() == 'CUATRIMESTRAL':
-            exam = EvaluationsExam.objects.get(
-                type="CUATRIMESTRAL", status="ACTIVE")
-            results = self.get_career_teachers_results("CUATRIMESTRAL", exam)
-        else:
-            results = self.get_career_teachers_results("SEMESTRAL")
+        exams = EvaluationsExam.objects.filter(
+            type=career_type.upper(), status="ACTIVE")
+        exams_resuts = []
+        for exam in exams:
+            results = self.get_career_teachers_results(
+                career_type.upper(), exam)
+            exams_resuts.append({
+                'exam': exam.description,
+                'results': results
+            })
 
-        titles = ['CARRERA', 'MATERIA', 'DOCENTE', 'TOTAL ALUMNOS EVALUADOS']
-
-        writer.writerow([smart_str(u""+title) for title in titles])
-
-        writer.writerow([])
+        self.write_exam_results(exams_resuts, writer)
         return response
+
+    def write_exam_results(self, exams_resutls, writer):
+        """Write all the exam results information to the CSV (writer received)"""
+
+        for exam in exams_resutls:
+            writer.writerow([smart_str(u""+exam['exam'])])
+            exam_obj = EvaluationsExam.objects.get(
+                description__exact=exam['exam'], status="ACTIVE")
+            questions = EvaluationsDtlQuestionExam.objects.filter(
+                fk_exam__exact=exam_obj.id, status="ACTIVE")
+            titles = [
+                'CARRERA',
+                'MATERIA',
+                'DOCENTE',
+                'GRUPO',
+                'TOTAL ALUMNOS EVALUADOS',
+                'PROMEDIO'
+            ]
+            for question in questions:
+                titles.append('P' + str(question.id))
+            writer.writerow([smart_str(u""+title) for title in titles])
+
+            for career in exam['results']:
+                for signature in career['signatures_results']:
+
+                    to_write = [
+                        smart_str(u""+career['career']),
+                        smart_str(u""+signature['signature']),
+                        smart_str(u""+signature['teacher']),
+                        smart_str(u""+signature['group']),
+                        smart_str(u""+str(signature['total_evaluated'])),
+                        smart_str(u""+signature['average'])
+                    ]
+
+                    for question in signature['questions']:
+                        for _, question_result in question.items():
+                            to_write.append(
+                                smart_str(u""+str(question_result)))
+
+                    writer.writerow(to_write)
+        return True
 
     def get_career_teachers_results(self, careers_type, exam):
         results = []
@@ -91,8 +127,7 @@ class AdminReportsView(View):
                     signature_data['questions'] = [
                         {question_res.fk_question.id: question_res.result}for question_res in signature_questions_results]
                     career_resutls['signatures_results'].append(signature_data)
-            # Add the career results to the final dictionary.        
+            # Add the career results to the final dictionary.
             results.append(career_resutls)
-        
-        print(results)
+
         return results
