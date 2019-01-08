@@ -166,7 +166,7 @@ class TeacherResultsView(View):
                         (sum(question_result)/len(question_result)))
                     data[question] = average
                 else:
-                    # Add all the comments of the signature in the result data.
+                    # Add all the comments of the signature in the result data. Split the comments and add them to a list, only the ones that are not empty.
                     data['comments'] = list(filter(None, question_result[0].split('|')))
 
         return data
