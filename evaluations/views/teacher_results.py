@@ -167,6 +167,6 @@ class TeacherResultsView(View):
                     data[question] = average
                 else:
                     # Add all the comments of the signature in the result data.
-                    data['comments'] = question_result
+                    data['comments'] = list(filter(None, question_result[0].split('|')))
 
         return data
