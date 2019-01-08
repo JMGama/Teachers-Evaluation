@@ -201,7 +201,7 @@
 
                   
                   <div class="row center-align">
-                    <form action="{#{% url 'evaluations:teachers_reports' 'teacher_report' %}#}" method="get" target="_blank">
+                    <form action="{% url 'evaluations:teachers_reports' 'teacher_report' %}" method="get" target="_blank">
                       <input type="hidden" name="teacher_id" value="{{ teacher.id }}"/>
                       <input type="hidden" name="career_id" value="{{ career.id }}"/>
                       
