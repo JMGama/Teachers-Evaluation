@@ -1,14 +1,17 @@
 import csv
 
 from django.shortcuts import HttpResponse, redirect, render
+from django.utils.encoding import smart_str
 from django.views import View
 from easy_pdf.rendering import render_to_pdf_response
 
 from evaluations.models import (EvaluationsCareer, EvaluationsCoordinator,
                                 EvaluationsDtlCoordinatorCareer,
-                                EvaluationsExam, EvaluationsTeacher,
-                                EvaluationsTeacherSignature,
-                                EvaluationsSignatureResult, EvaluationsSignatureQuestionResult, EvaluationsSignature)
+                                EvaluationsDtlQuestionExam, EvaluationsExam,
+                                EvaluationsSignature,
+                                EvaluationsSignatureQuestionResult,
+                                EvaluationsSignatureResult, EvaluationsTeacher,
+                                EvaluationsTeacherSignature)
 
 
 class TeachersReportsView(View):
@@ -86,7 +89,7 @@ class TeachersReportsView(View):
         data = self.get_career_results(career)
 
         # Generates the CSV with the results of the career,then return as downloadable file.
-        response = self.teacher_results_excel(request, data)
+        response = self.get_teacher_results_excel(data)
         return response
 
     def get_career_results(self, career):
@@ -141,11 +144,11 @@ class TeachersReportsView(View):
                         fk_signature__exact=signature_dtl.fk_signature.id,
                         fk_period__exact=exam.fk_period
                     ).fk_teacher
-                    
+
                     # Add the signature results.
                     signature_results = {
                         'signature': signature_dtl.fk_signature.description,
-                        'teacher': teacher.name +' '+ teacher.last_name +' '+ teacher.last_name_2,
+                        'teacher': teacher.name + ' ' + teacher.last_name + ' ' + teacher.last_name_2,
                         'group': signature_dtl.group,
                         'average': signature_dtl.average,
                         'total_evaluated': signature_dtl.total_evaluated,
@@ -235,32 +238,61 @@ class TeachersReportsView(View):
 
         return data
 
-    def teacher_results_excel(self, request, results):
+    def get_teacher_results_excel(self, data):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=Resultados_Docentes.csv'
         writer = csv.writer(response, csv.excel)
         response.write(u'\ufeff'.encode('utf8'))
 
-        titles = ['CARRERA', 'MATERIA', 'DOCENTE', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6',
-                  'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'TOTAL ALUMNOS EVALUADOS']
+        # Get the results for each exam.
+        for exam in data:
 
-        writer.writerow([smart_str(u""+title) for title in titles])
-        for career, teachers in results.items():
-            for teacher, signatures in teachers.items():
-                for singature, items in signatures.items():
-                    teacher_data = [career.description, singature.name,
-                                    teacher.name+" "+teacher.lastname+" "+teacher.lastname2]
-                    for question, data in items['questions'].items():
-                        if 'average'in data:
-                            teacher_data.append(str(data['average']) + "%")
-                        else:
-                            comments = ''
-                            for answer in data['answers']:
-                                if len(answer.answer) > 2:
-                                    comments += answer.answer + " | "
-                            comments.replace('\n', '').replace('\r', '')
-                            teacher_data.append(comments)
-                    teacher_data.append(items['evaluated'])
-                    writer.writerow(teacher_data)
-            writer.writerow([])
+            # Add the titles to the CSV.
+            writer.writerow([smart_str(u""+exam['exam'])])
+            exam_obj = EvaluationsExam.objects.get(
+                description__exact=exam['exam'], status="ACTIVE")
+            questions = EvaluationsDtlQuestionExam.objects.filter(
+                fk_exam__exact=exam_obj.id, status="ACTIVE")
+            titles = [
+                'CARRERA',
+                'MATERIA',
+                'DOCENTE',
+                'GRUPO',
+                'TOTAL ALUMNOS EVALUADOS',
+                'PROMEDIO'
+            ]
+
+            # Get the questions for the exam, to add them to the titles in the CVS.
+            for question in questions:
+                titles.append('P' + str(question.id))
+            writer.writerow([smart_str(u""+title) for title in titles])
+
+            # Get the results for the signature/teacher.
+            for signature in exam['signatures_results']:
+
+                # This is the things that will be writed in the same line of the CVS.
+                to_write = [
+                    smart_str(u""+exam['career']),
+                    smart_str(u""+signature['signature']),
+                    smart_str(u""+signature['teacher']),
+                    smart_str(u""+signature['group']),
+                    smart_str(u""+str(signature['total_evaluated'])),
+                    smart_str(u""+signature['average']),
+                ]
+
+                # Get the results for each question on the exam in the actual career.
+                for question in signature['questions']:
+                    to_write.append(
+                        smart_str(u""+str(question[1])))
+
+                # Get the comments and add the to the write dict.
+                comments = ''
+                for comment in signature['comments']:
+                    if len(comment) > 3:
+                        comments += comment + '|'
+                to_write.append(smart_str(u""+comments))
+
+                # Write the information of the signature in the CVS.
+                writer.writerow(to_write)
+
         return response
