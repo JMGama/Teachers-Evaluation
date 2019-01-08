@@ -12,8 +12,8 @@ urlpatterns = [
          views.EvaluationView.as_view(), name='evaluation'),
 #     path('teacher/evaluation/<slug:exam_id>/<slug:signature_dtl_id>/',
 #          views.TeacherEvaluationView.as_view(), name='teacher_evaluation'),
-#     path('reports/teacher/<slug:report_type>/',
-#          views.TeachersReportsView.as_view(), name='teachers_reports'),
+    path('reports/teacher/<slug:report_type>/',
+         views.TeachersReportsView.as_view(), name='teachers_reports'),
 
     path('career_results/<slug:career_id>/',
          views.CareerResultsView.as_view(), name='career_results'),
