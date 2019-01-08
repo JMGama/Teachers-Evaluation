@@ -8,7 +8,7 @@ from evaluations.models import (EvaluationsCareer, EvaluationsCoordinator,
                                 EvaluationsDtlCoordinatorCareer,
                                 EvaluationsExam, EvaluationsTeacher,
                                 EvaluationsTeacherSignature,
-                                EvaluationsSignatureResult, EvaluationsSignatureQuestionResult)
+                                EvaluationsSignatureResult, EvaluationsSignatureQuestionResult, EvaluationsSignature)
 
 
 class TeachersReportsView(View):
@@ -24,6 +24,7 @@ class TeachersReportsView(View):
         template = ''
         context = {}
 
+        # Depending the option given return de requested reports.
         if report_type == 'teacher_report':
             template, context = self.teacher_report(request)
         elif report_type == 'career_teachers_report':
@@ -31,6 +32,7 @@ class TeachersReportsView(View):
         elif report_type == 'career_teachers_excel':
             return self.career_teachers_excel(request)
 
+        # If there is a great request render the PDF's, otheway redirect to the reports view.
         if template and context:
             return render_to_pdf_response(request, template, context)
 
@@ -39,16 +41,18 @@ class TeachersReportsView(View):
     def teacher_report(self, request):
         template = 'evaluations/teachers_report.html'
 
-        career_id = request.GET.get('career_id', '')
+        # Get the teacher and the career to get his results.
         teacher_id = request.GET.get('teacher_id', '')
+        career_id = request.GET.get('career_id', '')
+        career = EvaluationsCareer.objects.get(
+            pk__exact=career_id, status="ACTIVE")
+        teacher = EvaluationsTeacher.objects.get(
+            pk__exact=teacher_id, status="ACTIVE")
 
-        career = EvaluationsCareer.objects.get(pk__exact=career_id)
-        teacher = EvaluationsTeacher.objects.get(pk__exact=teacher_id)
-
+        # Get the results of the teacher for each exam in the given career.
         data = self.get_teacher_career_results(teacher, career)
 
-        # print(data)
-
+        # Send the results to the template to render the PDF's.
         context = {
             'data': data,
         }
@@ -57,34 +61,108 @@ class TeachersReportsView(View):
     def career_teachers_report(self, request):
         template = 'evaluations/teachers_report.html'
 
+        # Get the career to be processed their results.
         career_id = request.GET.get('career_id', '')
-        data = {}
+        career = EvaluationsCareer.objects.get(pk__exact=career_id)
 
-        career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
-        career_teachers = self.get_career_teachers(career)
-        career_data = self.get_career_data(career)
+        # Get the results for each esignature of the carrer en each exam.
+        data = self.get_career_results(career)
 
-        for teacher in career_teachers:
-            data[teacher] = self.get_teacher_signatures_results(
-                career, career_data, teacher, exam=career_data['exams'][0])
-
+        # Send the results to the template to render the PDF's.
         context = {
-            'data': data,
-            'exam': career_data['exams'][0],
+            'data': data
         }
-
         return template, context
 
     def career_teachers_excel(self, request):
+        """Render a PDF with the career signatures results with their teachers, 
+        this is the deliverable document for the teacher"""
+
+        # Get the career to be processed their results.
         career_id = request.GET.get('career_id', '')
-        career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
-        results = self.get_teachers_results(career)
-        response = self.teacher_results_excel(request, results)
+        career = EvaluationsCareer.objects.get(pk__exact=career_id)
+
+        # Get the results for each esignature of the carrer en each exam.
+        data = self.get_career_results(career)
+
+        # Generates the CSV with the results of the career,then return as downloadable file.
+        response = self.teacher_results_excel(request, data)
         return response
 
+    def get_career_results(self, career):
+        data = []
 
+        # Get the active exams for the career.
+        exams = EvaluationsExam.objects.filter(
+            type__exact=career.type, status="ACTIVE")
 
+        # Get the signatures of the career.
+        signatures = EvaluationsSignature.objects.filter(
+            fk_career__exact=career.id, status="ACTIVE")
 
+        # Get the results for each signature in each exam:
+        for exam in exams:
+            signatures_resutls = []
+            for signature in signatures:
+
+                # Get the results of the signature.
+                # If the signature have multiple results, it mean there are different groups in the signature.
+                signature_results_dtl = EvaluationsSignatureResult.objects.filter(
+                    fk_signature=signature.id,
+                    status="ACTIVE"
+                )
+
+                # Get the results for each signature group.
+                for signature_dtl in signature_results_dtl:
+
+                    # Get the signature questions results.
+                    questions_results = EvaluationsSignatureQuestionResult.objects.filter(
+                        group=signature_dtl.group,
+                        fk_signature=signature_dtl.fk_signature.id,
+                        fk_exam=exam.id,
+                        fk_question__optional='NO',
+                        status="ACTIVE"
+                    ).values_list('fk_question__description', 'result')
+
+                    # Get the comments of the signature/group.
+                    comments_result = EvaluationsSignatureQuestionResult.objects.get(
+                        group=signature_dtl.group,
+                        fk_signature=signature_dtl.fk_signature.id,
+                        fk_exam=exam.id,
+                        fk_question__optional='YES',
+                        status="ACTIVE"
+                    ).result
+
+                    # Split the comments and add them to a list, only the ones that are not empty.
+                    comments = list(filter(None, comments_result.split('|')))
+
+                    # Get the teacher that gives the signature to that group.
+                    teacher = EvaluationsTeacherSignature.objects.get(
+                        fk_signature__exact=signature_dtl.fk_signature.id,
+                        fk_period__exact=exam.fk_period
+                    ).fk_teacher
+                    
+                    # Add the signature results.
+                    signature_results = {
+                        'signature': signature_dtl.fk_signature.description,
+                        'teacher': teacher.name +' '+ teacher.last_name +' '+ teacher.last_name_2,
+                        'group': signature_dtl.group,
+                        'average': signature_dtl.average,
+                        'total_evaluated': signature_dtl.total_evaluated,
+                        'questions': questions_results,
+                        'comments': comments
+                    }
+                    signatures_resutls.append(signature_results)
+
+            # Add the exam results to the return data.
+            data.append({
+                'exam': exam.description,
+                'career': career.description,
+                'period': exam.fk_period.period,
+                'signatures_results': signatures_resutls
+            })
+
+        return data
 
     def get_teacher_career_results(self, teacher, career):
         """Get the signatures results of the teacher in the given career for all the active exams."""
@@ -112,7 +190,7 @@ class TeachersReportsView(View):
                     status="ACTIVE"
                 )
 
-                # Get the results  for each question in the exam for the signature.
+                # Get the results for each question in the exam for the signature.
                 questions_results = EvaluationsSignatureQuestionResult.objects.filter(
                     group=signature_dtl.group,
                     fk_signature=signature_dtl.fk_signature.id,
@@ -121,7 +199,7 @@ class TeachersReportsView(View):
                     status="ACTIVE"
                 ).values_list('fk_question__description', 'result')
 
-                # Get the comments of the ecaluation.
+                # Get the comments of the signature/group.
                 comments_result = EvaluationsSignatureQuestionResult.objects.get(
                     group=signature_dtl.group,
                     fk_signature=signature_dtl.fk_signature.id,
@@ -129,7 +207,7 @@ class TeachersReportsView(View):
                     fk_question__optional='YES',
                     status="ACTIVE"
                 ).result
-                
+
                 # Split the comments and add them to a list, only the ones that are not empty.
                 comments = list(filter(None, comments_result.split('|')))
 
@@ -144,7 +222,7 @@ class TeachersReportsView(View):
                     'questions': questions_results
                 })
 
-            # Add the results to the exam dictionary.    
+            # Add the results to the exam dictionary.
             exam_results = {
                 'exam': exam.description,
                 'career': career.description,
@@ -156,24 +234,6 @@ class TeachersReportsView(View):
             data.append(exam_results)
 
         return data
-
-
-
-
-
-    def get_teachers_results(self, career):
-        results = {}
-
-        data = {}
-        career_teachers = self.get_career_teachers(career)
-        career_data = self.get_career_data(career)
-
-        for teacher in career_teachers:
-            data[teacher] = self.get_teacher_signatures_results(
-                career, career_data, teacher, exam=career_data['exams'][0])
-        results[career] = data
-
-        return results
 
     def teacher_results_excel(self, request, results):
         response = HttpResponse(content_type='text/csv')
