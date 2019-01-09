@@ -8,5 +8,6 @@ from .teacher_results import *
 from .delete_student import * 
 from .admin_reports import *
 from .teachers_reports import *
+from .teacher_home import *
 
 from .general_functions import *

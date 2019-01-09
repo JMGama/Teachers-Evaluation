@@ -6,7 +6,7 @@ urlpatterns = [
     path('', views.LoginView.as_view(), name='login'),
     path('home/', views.HomeView.as_view(), name='home'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-#     path('teacher/home', views.TeacherHomeView.as_view(), name='teacher_home'),
+    path('teacher/home', views.TeacherHomeView.as_view(), name='teacher_home'),
 
     path('evaluation/<slug:exam_id>/<slug:signature>/',
          views.EvaluationView.as_view(), name='evaluation'),
