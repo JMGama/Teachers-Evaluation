@@ -305,7 +305,6 @@ class EvaluationsTeacherSignatureQuestionResult(models.Model):
 
     group = models.CharField(max_length=255)
     result = models.TextField(blank=True, null=True)
-    total_evaluated = models.IntegerField()
     fk_question = models.ForeignKey(
         EvaluationsQuestion, models.DO_NOTHING, db_column='fk_question')
     fk_teacher = models.ForeignKey(
@@ -319,23 +318,3 @@ class EvaluationsTeacherSignatureQuestionResult(models.Model):
     class Meta:
         managed = False
         db_table = 'evaluations_teacher_signature_question_result'
-
-
-class EvaluationsTeacherSignatureResult(models.Model):
-    # add it always at the top of each model
-    objects = models.Manager()
-
-    group = models.CharField(max_length=255)
-    average = models.CharField(max_length=255)
-    total_evaluated = models.IntegerField()
-    fk_teacher = models.ForeignKey(
-        EvaluationsTeacher, models.DO_NOTHING, db_column='fk_teacher')
-    fk_signature = models.ForeignKey(
-        EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
-    fk_exam = models.ForeignKey(
-        EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
-    status = models.CharField(max_length=8, default='ACTIVE')
-
-    class Meta:
-        managed = False
-        db_table = 'evaluations_teacher_signature_result'
