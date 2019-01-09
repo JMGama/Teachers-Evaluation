@@ -6,9 +6,12 @@ class EvaluationsAnswer(models.Model):
     objects = models.Manager()
 
     answer = models.CharField(max_length=255, blank=True, null=True)
-    fk_question = models.ForeignKey('EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
-    fk_exam = models.ForeignKey('EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
-    fk_student_signature = models.ForeignKey('EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
+    fk_question = models.ForeignKey(
+        'EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
+    fk_exam = models.ForeignKey(
+        'EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
+    fk_student_signature = models.ForeignKey(
+        'EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -53,8 +56,10 @@ class EvaluationsDtlCoordinatorCareer(models.Model):
     objects = models.Manager()
 
     id = models.IntegerField(primary_key=True)
-    fk_coordinator = models.ForeignKey(EvaluationsCoordinator, models.DO_NOTHING, db_column='fk_coordinator')
-    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    fk_coordinator = models.ForeignKey(
+        EvaluationsCoordinator, models.DO_NOTHING, db_column='fk_coordinator')
+    fk_career = models.ForeignKey(
+        EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -67,8 +72,10 @@ class EvaluationsDtlQuestionExam(models.Model):
     objects = models.Manager()
 
     id = models.IntegerField(primary_key=True)
-    fk_question = models.ForeignKey('EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
-    fk_exam = models.ForeignKey('EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
+    fk_question = models.ForeignKey(
+        'EvaluationsQuestion', models.DO_NOTHING, db_column='fk_question')
+    fk_exam = models.ForeignKey(
+        'EvaluationsExam', models.DO_NOTHING, db_column='fk_exam')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -80,8 +87,10 @@ class EvaluationsDtlTeacherCareer(models.Model):
     # add it always at the top of each model
     objects = models.Manager()
 
-    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
-    fk_teacher = models.ForeignKey('EvaluationsTeacher', models.DO_NOTHING, db_column='fk_teacher')
+    fk_career = models.ForeignKey(
+        EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    fk_teacher = models.ForeignKey(
+        'EvaluationsTeacher', models.DO_NOTHING, db_column='fk_teacher')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -97,7 +106,8 @@ class EvaluationsExam(models.Model):
     type = models.CharField(max_length=13, blank=True, null=True)
     start = models.DateField(blank=True, null=True)
     end = models.DateField(blank=True, null=True)
-    fk_period = models.ForeignKey('EvaluationsPeriod', models.DO_NOTHING, db_column='fk_period')
+    fk_period = models.ForeignKey(
+        'EvaluationsPeriod', models.DO_NOTHING, db_column='fk_period')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -138,7 +148,8 @@ class EvaluationsSignature(models.Model):
     objects = models.Manager()
 
     description = models.CharField(max_length=255, blank=True, null=True)
-    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    fk_career = models.ForeignKey(
+        EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -151,8 +162,10 @@ class EvaluationsSignatureEvaluated(models.Model):
     objects = models.Manager()
 
     evaluated = models.CharField(max_length=3, blank=True, null=True)
-    fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
-    fk_student_signature = models.ForeignKey('EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
+    fk_exam = models.ForeignKey(
+        EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    fk_student_signature = models.ForeignKey(
+        'EvaluationsStudentSignature', models.DO_NOTHING, db_column='fk_student_signature')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -167,9 +180,12 @@ class EvaluationsSignatureQuestionResult(models.Model):
     group = models.CharField(max_length=255)
     result = models.TextField(blank=True, null=True)
     total_evaluated = models.IntegerField()
-    fk_question = models.ForeignKey(EvaluationsQuestion, models.DO_NOTHING, db_column='fk_question')
-    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
-    fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    fk_question = models.ForeignKey(
+        EvaluationsQuestion, models.DO_NOTHING, db_column='fk_question')
+    fk_signature = models.ForeignKey(
+        EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_exam = models.ForeignKey(
+        EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -184,8 +200,10 @@ class EvaluationsSignatureResult(models.Model):
     group = models.CharField(max_length=255)
     average = models.CharField(max_length=255)
     total_evaluated = models.IntegerField()
-    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
-    fk_exam = models.ForeignKey(EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    fk_signature = models.ForeignKey(
+        EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_exam = models.ForeignKey(
+        EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -203,7 +221,8 @@ class EvaluationsStudent(models.Model):
     last_name_2 = models.CharField(max_length=255, blank=True, null=True)
     inst_email = models.CharField(max_length=255, blank=True, null=True)
     password = models.CharField(max_length=255, blank=True, null=True)
-    fk_career = models.ForeignKey(EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
+    fk_career = models.ForeignKey(
+        EvaluationsCareer, models.DO_NOTHING, db_column='fk_career')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -216,9 +235,12 @@ class EvaluationsStudentSignature(models.Model):
     objects = models.Manager()
 
     group = models.CharField(max_length=255)
-    fk_student = models.ForeignKey(EvaluationsStudent, models.DO_NOTHING, db_column='fk_student')
-    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
-    fk_period = models.ForeignKey(EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
+    fk_student = models.ForeignKey(
+        EvaluationsStudent, models.DO_NOTHING, db_column='fk_student')
+    fk_signature = models.ForeignKey(
+        EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_period = models.ForeignKey(
+        EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
@@ -248,11 +270,72 @@ class EvaluationsTeacherSignature(models.Model):
     objects = models.Manager()
 
     group = models.CharField(max_length=255)
-    fk_teacher = models.ForeignKey(EvaluationsTeacher, models.DO_NOTHING, db_column='fk_teacher')
-    fk_signature = models.ForeignKey(EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
-    fk_period = models.ForeignKey(EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
+    fk_teacher = models.ForeignKey(
+        EvaluationsTeacher, models.DO_NOTHING, db_column='fk_teacher')
+    fk_signature = models.ForeignKey(
+        EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_period = models.ForeignKey(
+        EvaluationsPeriod, models.DO_NOTHING, db_column='fk_period')
     status = models.CharField(max_length=8, default='ACTIVE')
 
     class Meta:
         managed = False
         db_table = 'evaluations_teacher_signature'
+
+
+class EvaluationsTeacherSignatureEvaluated(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    evaluated = models.CharField(max_length=3, blank=True, null=True)
+    fk_exam = models.ForeignKey(
+        EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    fk_teacher_signature = models.ForeignKey(
+        'EvaluationsTeacherSignature', models.DO_NOTHING, db_column='fk_teacher_signature')
+    status = models.CharField(max_length=8, default='ACTIVE')
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_teacher_signature_evaluated'
+
+
+class EvaluationsTeacherSignatureQuestionResult(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    group = models.CharField(max_length=255)
+    result = models.TextField(blank=True, null=True)
+    total_evaluated = models.IntegerField()
+    fk_question = models.ForeignKey(
+        EvaluationsQuestion, models.DO_NOTHING, db_column='fk_question')
+    fk_teacher = models.ForeignKey(
+        EvaluationsTeacher, models.DO_NOTHING, db_column='fk_teacher')
+    fk_signature = models.ForeignKey(
+        EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_exam = models.ForeignKey(
+        EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    status = models.CharField(max_length=8, default='ACTIVE')
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_teacher_signature_question_result'
+
+
+class EvaluationsTeacherSignatureResult(models.Model):
+    # add it always at the top of each model
+    objects = models.Manager()
+
+    group = models.CharField(max_length=255)
+    average = models.CharField(max_length=255)
+    total_evaluated = models.IntegerField()
+    fk_teacher = models.ForeignKey(
+        EvaluationsTeacher, models.DO_NOTHING, db_column='fk_teacher')
+    fk_signature = models.ForeignKey(
+        EvaluationsSignature, models.DO_NOTHING, db_column='fk_signature')
+    fk_exam = models.ForeignKey(
+        EvaluationsExam, models.DO_NOTHING, db_column='fk_exam')
+    status = models.CharField(max_length=8, default='ACTIVE')
+
+    class Meta:
+        managed = False
+        db_table = 'evaluations_teacher_signature_result'
