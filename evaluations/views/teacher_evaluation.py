@@ -3,10 +3,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
 
-from .general_functions import *
+from evaluations.models import (EvaluationsExam, EvaluationsTeacher,
+                                EvaluationsTeacherSignature,
+                                EvaluationsTeacherSignatureEvaluated, EvaluationsDtlQuestionExam, EvaluationsTeacherSignatureQuestionResult)
 
 
-class TeacherEvaluationView(View, GeneralFunctions):
+class TeacherEvaluationView(View):
     template_evaluation = 'evaluations/teacher_evaluation_form.html'
     template_home = 'evaluations/teacher_home.html'
     template_login = 'evaluations/login.html'
@@ -14,30 +16,37 @@ class TeacherEvaluationView(View, GeneralFunctions):
     def get(self, request, exam_id, signature_dtl_id):
         """ Get the necesary values to show the formulary for the evaluation"""
 
-        # Verify if the user is correctly logged in
+        # Verify if the user loggedin is a teacher, if it isn't return him to the login page.
         if not request.session.get('session', False) or not request.session['type'] == 'teacher':
             return render(request, self.template_login)
 
-        # Values for the navigation bar
-        teacher = EvaluationsTeachers.objects.get(
-            idperson__exact=request.session['id_teacher'])
-        teacher_exams = EvaluationsExams.objects.filter(
-            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
-        signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
-            idteacher__exact=teacher.idperson)
-        evaluated_signatures = self.get_teacher_eval_signatures(
-            teacher, signatures_detail, teacher_exams)
+        # Get the information for the teacher that is going to make the evaluation.
+        teacher = EvaluationsTeacher.objects.get(
+            pk__exact=request.session['id_teacher'], status='ACTIVE')
+        teacher_exams = EvaluationsExam.objects.filter(
+            type__exact='DOCENTE', status='ACTIVE')
+
+        # Get the signatures information to be evaluated for each exam.
+        signatures_detail = []
+        for exam in teacher_exams:
+            signatures_dtl = EvaluationsTeacherSignature.objects.filter(
+                fk_teacher__exact=teacher.id, fk_period__exact=exam.fk_period, status='ACTIVE')
+            signatures_detail.append(
+                {'exam': exam, 'signatures_dtl': signatures_dtl})
+
+        # Get the evaluations already made.
+        evaluated_signatures = self.get_teacher_signatures_evaluated(
+            teacher, teacher_exams)
 
         # Values for the view
-        exam_questions = EvaluationsDetailExamQuestion.objects.filter(
-            idexam__exact=exam_id)
-        signature_detail = EvaluationsDetailGroupPeriodSignature.objects.get(
-            pk__exact=signature_dtl_id)
+        exam_questions = EvaluationsDtlQuestionExam.objects.filter(
+            fk_exam__exact=exam_id, status='ACTIVE')
+        signature_detail = EvaluationsTeacherSignature.objects.get(
+            pk__exact=signature_dtl_id, status='ACTIVE')
 
         context = {
             'teacher': teacher,
-            'teacher_exams': teacher_exams,
-            'signatures_detail': signatures_detail,
+            'exams_signatures': signatures_detail,
             'evaluated_signatures': evaluated_signatures,
             'signature_detail': signature_detail,
             'exam_questions': exam_questions
@@ -48,31 +57,41 @@ class TeacherEvaluationView(View, GeneralFunctions):
     def post(self, request, exam_id, signature_dtl_id):
         """Make the full process to upload the answers of the evaluation that was finish"""
 
-        # Verify if the user is correctly logged in
+        # Verify if the user loggedin is a teacher, if it isn't return him to the login page.
         if not request.session.get('session', False) or not request.session['type'] == 'teacher':
             return render(request, self.template_login)
 
-        teacher = EvaluationsTeachers.objects.get(
-            idperson__exact=request.session['id_teacher'])
-        # Get exam questions
-        exam_questions = EvaluationsDetailExamQuestion.objects.filter(
-            idexam__exact=exam_id)
+        # Get the information for the teacher that is going to submit the evaluation.
+        teacher = EvaluationsTeacher.objects.get(
+            pk__exact=request.session['id_teacher'], status='ACTIVE')
 
-        # Submit anwsers for the evaluation
-        self.submit_answers(request, teacher, exam_id,
-                            signature_dtl_id, exam_questions)
-        # Submit evaluation done
-        self.finish_evaluation(request, teacher, exam_id, signature_dtl_id)
+        # Get the exam and signature detail evaluated.
+        exam = EvaluationsExam.objects.get(pk__exact=exam_id, status='ACTIVE')
+        signature_dtl = EvaluationsTeacherSignature.objects.get(
+            pk__exact=signature_dtl_id, status='ACTIVE')
 
-        # Values for the navigation bar
-        teacher_exams = EvaluationsExams.objects.filter(
-            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
-        signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
-            idteacher__exact=teacher.idperson)
-        evaluated_signatures = self.get_teacher_eval_signatures(
-            teacher, signatures_detail, teacher_exams)
+        # Submit the results of the evaluation to the Database.
+        self.submit_results(request, exam, signature_dtl, teacher)
+
+        # Get the exams for the teacher.
+        teacher_exams = EvaluationsExam.objects.filter(
+            type__exact='DOCENTE', status='ACTIVE')
+
+        # Get the signatures information to be evaluated for each exam.
+        signatures_detail = []
+        for exam in teacher_exams:
+            signatures_dtl = EvaluationsTeacherSignature.objects.filter(
+                fk_teacher__exact=teacher.id, fk_period__exact=exam.fk_period, status='ACTIVE')
+            signatures_detail.append(
+                {'exam': exam, 'signatures_dtl': signatures_dtl})
+
+        # Get the evaluations already made.
+        evaluated_signatures = self.get_teacher_signatures_evaluated(
+            teacher, teacher_exams)
+
+        # Return the next evaluation to be made for the teacher in the exams.
         next_evaluation = self.get_teacher_next_eval_signature(
-            signatures_detail, evaluated_signatures, teacher_exams)
+            signatures_detail, evaluated_signatures)
 
         # Exit if there is no more evaluations
         if not next_evaluation:
@@ -89,70 +108,71 @@ class TeacherEvaluationView(View, GeneralFunctions):
         return self.get(request, next_evaluation['exam'].id, next_evaluation['signature_dtl'].id)
 
     @transaction.atomic
-    def submit_answers(self, request, teacher, exam_id, signature_dtl_id, exam_questions):
-        """Creates a transaction to upload all the answers, if there is an error in one answers 
-        it rise an exception and make a rollback in all the answers"""
-        num_answers = 0
+    def submit_results(self, request, exam, signature_dtl, teacher):
+        """Submit to the database the results of the valuation made by the teacher"""
+
+        # Get the exam questions.
+        exam_questions = EvaluationsDtlQuestionExam.objects.filter(
+            fk_exam__exact=exam.id, status='ACTIVE')
+
+        # Submit tto the database the result of each question in the evaluation.
         for question_dtl in exam_questions:
+
             # Verify if the question is optional or not
             try:
                 submitted_answer = request.POST['answer_' +
-                                                str(question_dtl.idquestion.id)]
+                                                str(question_dtl.fk_question.id)]
             except Exception:
                 submitted_answer = request.POST['answer_' +
-                                                str(question_dtl.idquestion.id) + "_optional"]
-            answer = EvaluationsTeachersAnswers(
-                idteacher=teacher,
-                idteachersignaturedetail=EvaluationsDetailGroupPeriodSignature.objects.get(
-                    pk__exact=signature_dtl_id),
-                idquestion=question_dtl.idquestion,
-                answer=submitted_answer.upper() if submitted_answer != "" else None,
-                idexam=EvaluationsExams.objects.get(pk__exact=exam_id)
+                                                str(question_dtl.fk_question.id) + "_optional"]
+
+            # Fill the question result with the evaluation information and the result subbmited of that question, then save to DB.
+            question_result = EvaluationsTeacherSignatureQuestionResult(
+                group=signature_dtl.group,
+                result=submitted_answer,
+                fk_question=question_dtl.fk_question,
+                fk_teacher=teacher,
+                fk_signature=signature_dtl.fk_signature,
+                fk_exam=exam
             )
-            answer.save()
-            num_answers += 1
+            question_result.save()
 
-        if num_answers != len(exam_questions):
-            raise Exception('Error uploading all questions')
-
-    def finish_evaluation(self, request, teacher, exam_id, signature_dtl_id):
-        """saves the record in the Database, which says that the evaluation has completed successfully"""
-        signature_dtl = EvaluationsDetailGroupPeriodSignature.objects.get(
-            pk__exact=signature_dtl_id)
-
-        evaluated_signature = EvaluationsDetailTeacherSignatureExam(
-            idsignature=signature_dtl.idsignature,
-            idteacher=teacher,
-            idperiod=signature_dtl.idperiod,
-            idgroup=signature_dtl.idgroup,
-            idexam=EvaluationsExams.objects.get(pk__exact=exam_id),
-            idcareer=signature_dtl.idsignature.idcareer,
+        # Add the signature to the evaluated table in the database.
+        signature_evaluated = EvaluationsTeacherSignatureEvaluated(
             evaluated='YES',
-            status='ACTIVO'
+            fk_exam=exam,
+            fk_teacher_signature=signature_dtl
         )
-        evaluated_signature.save()
+        signature_evaluated.save()
 
-    def get_teacher_eval_signatures(self, teacher, signatures_detail, teacher_exams):
-        """return a list of all the evaluations (groupid) already made by the teacher"""
+    def get_teacher_signatures_evaluated(self, teacher, exams):
+        """Return the exam an the signatures already evaluated for that exam"""
+        data = []
 
-        eval_exam_signatures = {}
-        for exam in teacher_exams:
-            eval_signatures = []
-            for signature_dtl in signatures_detail:
-                evaluated = EvaluationsDetailTeacherSignatureExam.objects.filter(
-                    idexam__exact=exam, idgroup__exact=signature_dtl.idgroup, idsignature__exact=signature_dtl.idsignature)
-                if evaluated:
-                    eval_signatures.append(signature_dtl)
-            eval_exam_signatures[exam] = eval_signatures
-        return eval_exam_signatures
+        # Get the signatures evaluated for each exam.
+        for exam in exams:
+            teacher_signatures = []
+            signatures_evaluated = EvaluationsTeacherSignatureEvaluated.objects.filter(
+                fk_exam__exact=exam.id, fk_teacher_signature__fk_teacher=teacher.id, status='ACTIVE')
 
-    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures, teacher_exams):
+            for teacher_signature in signatures_evaluated:
+                teacher_signatures.append(
+                    teacher_signature.fk_teacher_signature)
+
+            data.append({'exam': exam,
+                         'signatures_evaluated': teacher_signatures})
+        return data
+
+    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures):
         """return the exam and group that is the next to evaluate (havent evaluated) for the teacher"""
 
         next_evaluation = {}
-        for exam in teacher_exams:
-            for signature_dtl in signatures:
-                if signature_dtl not in evaluated_signatures[exam]:
-                    next_evaluation['exam'] = exam
-                    next_evaluation['signature_dtl'] = signature_dtl
-                    return next_evaluation
+
+        for exam_signatures in signatures:
+            for exam_signatures_eval in evaluated_signatures:
+                if exam_signatures['exam'] == exam_signatures_eval['exam']:
+                    for signature in exam_signatures['signatures_dtl']:
+                        if not signature in exam_signatures_eval['signatures_evaluated']:
+                            return {'exam': exam_signatures['exam'], 'signature_dtl': signature}
+
+        return next_evaluation

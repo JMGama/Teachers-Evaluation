@@ -119,8 +119,8 @@
 {% endblock %}
 
 {% block content %}
-{% for teacher, signatures in data.items %}
-    {% for signature, options in signatures.items %}
+{% for exam_info in data %}
+    {% for signature_res in exam_info.signatures_results %}
 
     <img style="width:190px; height:50px;" src="{% static 'evaluations/images/Logo.jpg' %}" alt="logo">
 
@@ -142,11 +142,17 @@
              <span style='font-size:10.0pt;
              line-height:107%;
              font-family:Gotham Rounded Book"'>
-             INFORME DE {{exam.description|upper|html_decode|safe}}</span></p>
-
+             INFORME DE {{exam_info.exam|upper|html_decode|safe}}</span></p>
+        <p class=MsoNormal>
+                <span style='font-size:10.0pt;
+                line-height:107%;
+                font-family:Gotham Rounded Book"'>
+            PERIODO {{exam_info.period|upper|html_decode|safe}}
+            </span>
+        </p>
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
            line-height:107%;font-family:"Gotham Rounded Book"'></span><span
-           style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ teacher.name|html_decode|safe }} {{ teacher.lastname|html_decode|safe }} {{ teacher.lastname2|html_decode|safe }}
+           style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature_res.teacher|html_decode|safe }}
          </span><span style='font-size:10.0pt;line-height:107%;
          font-family:"Gotham Rounded Book"'>:</span>
         </p>
@@ -154,7 +160,7 @@
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>Anexo los resultados de la
                    opini&oacuten de su grupo de la materia </span><span
-                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature.name|html_decode|safe }}</span><span style='font-size:10.0pt;
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature_res.signature|html_decode|safe }}</span><span style='font-size:10.0pt;
                    line-height:107%;font-family:"Gotham Rounded Book"'> a su digno cargo, con la
                    intenci&oacuten de que considere los mismos para hacer las modificaciones que
                    encuentre pertinentes; y al mismo tiempo nos permita reconocer su importante
@@ -168,28 +174,27 @@
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>No. Estudiantes encuestados:
                </span><span
-                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ options.evaluated|safe }}</span><span
+                   style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>{{ signature_res.total_evaluated|safe }}</span><span
                    style='font-size:10.0pt;line-height:107%;font-family:"Gotham Rounded Book"'>                                                                 </span></p>
 
            <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
                   style='margin-left:-1.0cm;border-collapse:collapse;border:none'>
-{% for question, results in options.questions.items %}
-  {% if question.optional == 'NO' %}
-               <tr>
-                   <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
-                       <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
-                          0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
-                          -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ forloop.counter }}.<span
-                                   style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.description|html_decode|safe }}</span></p>
-                   </td>
-                   <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 25.4pt'>
-                       <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
-                          justify;line-height:normal'><span
-                               style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ results.average|safe }}%</span></p>
-                   </td>
-               </tr>
-  {% else %}
+{% for question in signature_res.questions %}
+            <tr>
+                <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
+                    <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+                        0cm;margin-left:25.1pt;margin-bottom:.0001pt;text-align:justify;text-indent:
+                        -18.0pt;line-height:normal'><span style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ forloop.counter }}.<span
+                                style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
+                            style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.0|html_decode|safe }}</span></p>
+                </td>
+                <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 25.4pt'>
+                    <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
+                        justify;line-height:normal'><span
+                            style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.1|safe }}%</span></p>
+                </td>
+            </tr>
+{% endfor %}
               <tr></tr>
               <tr>
                 <td width=548 valign=top style='width:410.85pt;padding:0cm 5.4pt 0cm 5.4pt'>
@@ -202,7 +207,7 @@
                   <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 25.4pt'>
                       <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
                          justify;line-height:normal'><span
-                              style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ options.average|safe }}%</span></p>
+                              style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ signature_res.average|safe|floatformat }}%</span></p>
                   </td>
               </tr>
 
@@ -213,17 +218,11 @@
 
               <p class=MsoNormal style='text-align:justify;line-height:normal'><span
                       style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>Comentarios:</span></p>
-    {% for answer in results.answers%}
-      {% with i=forloop.counter %}
-        {% if i == 4 %}
-          <div class="saltopagina"></div>
-        {% endif %}
+    {% for comment in signature_res.comments%}
                  <p class=MsoNormal style='text-align:justify;line-height:normal'><span
-                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ answer.answer|html_decode|safe }}.</span></p>
-      {% endwith %}
+                         style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ comment|html_decode|safe }}.</span></p>
     {% endfor %}
-  {% endif %}
-{% endfor %}
+
            <p class=MsoNormal style='text-align:justify'><span style='font-size:10.0pt;
                                                                line-height:107%;font-family:"Gotham Rounded Book"'>&nbsp;</span></p>
 

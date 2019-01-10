@@ -96,20 +96,23 @@
                 <hr style="width: 12rem !important"/>
               <div class="row">
                 <div class="col s12 m12 l12">
+                  {% for exam in career_data%}
+                  <h5 class="center">{{exam.exam.description}}</h5>
                   <div class="row">
                     <div class="col s12 m6 l6">
                       <div class="sample-chart-wrapper">
-                        <canvas id="myChart" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                        <canvas id="myChart{{exam.exam.id}}" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                       </div>
                       <p class="header center">Evaluaciones Realizadas</p>
                     </div>
                     <div class="col s12 m6 l6">
                       <div class="sample-chart-wrapper">
-                        <canvas id="myChartAverage" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                        <canvas id="myChartAverage{{exam.exam.id}}" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                       </div>
                       <p class="header center">Promedio General</p>
                     </div>
                   </div>
+                  {% endfor %}
                 </div>
               </div>
             </div>
@@ -139,7 +142,7 @@
                     {% for teacher in teachers %}
                       <tr style="border-top:1px solid #1e2e5042;">
                         <td>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</td>
-                        <td><a href="{% url 'evaluations:teacher_results' career_id=career.idcareer teacher_id=teacher.idperson|default:'1' %}" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>
+                        <td><a href="{% url 'evaluations:teacher_results' career_id=career.id teacher_id=teacher.id|default:'1' %}" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>
                       </tr>
                     {% endfor %}
                     </tbody>
@@ -166,7 +169,7 @@
 
                   <div class="row center-align">
                     <form action="{% url 'evaluations:teachers_reports' 'career_teachers_report' %}" method="get" target="_blank">
-                      <input type="hidden" name="career_id" value="{{ career.idcareer }}"/>
+                      <input type="hidden" name="career_id" value="{{ career.id }}"/>
 
                       <button type="submit" class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Entregable con resultados de cada docente por materia en la carrera."><i class="material-icons right">get_app</i>Entregable Docentes</button>
                     </form>
@@ -194,7 +197,7 @@
 
                   <div class="row center-align">
                     <form action="{% url 'evaluations:teachers_reports' 'career_teachers_excel' %}" method="get" target="_blank">
-                      <input type="hidden" name="career_id" value="{{ career.idcareer }}"/>
+                      <input type="hidden" name="career_id" value="{{ career.id }}"/>
 
                       <button type="submit" class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Excel con los resultados de cada docente por materia en la carrera."><i class="material-icons right">get_app</i>Resultados Docentes</button>
                     </form>
@@ -273,7 +276,7 @@
     var action = $('#download').find('input[name="action"]').val();
     $.ajax({
       type:"POST",
-      url:"{% url 'evaluations:career_results' career.idcareer%}",
+      url:"{% url 'evaluations:career_results' career.id %}",
       data: {
             'action': action,
             'csrfmiddlewaretoken': csrftoken,
@@ -354,51 +357,15 @@
 </script>
 
 <script type="text/javascript ">
-    var ctx = document.getElementById("myChart").getContext('2d');
-    var evaluated = {{career_data.students.evaluated|length}};
-    var not_evaluated = {{career_data.students.not_evaluated|length}};
+  {% for exam in career_data%}
+    var ctx = document.getElementById("myChart{{exam.exam.id}}").getContext('2d');
+    var evaluated = {{exam.students.evaluated}};
+    var not_evaluated = {{exam.students.not_evaluated}};
     var percentage = (evaluated / (not_evaluated + evaluated) * 100).toFixed(0) + "%";
     var data = {
       labels: ["Realizadas ", "Faltantes "],
       datasets: [{
-        data: [{{career_data.students.evaluated|length}},{{career_data.students.not_evaluated|length}}],
-        backgroundColor: [
-          '#21da7d',
-          '#f7464a',
-        ],
-        borderColor: [
-          'rgb(255, 255, 255)',
-          'rgb(255, 255, 255)',
-        ],
-        borderWidth: 3
-      }]
-    }
-    var options = {
-      legend: {
-        display: false
-      },
-      elements: {
-				center: {
-					text: percentage, // Porcentaje de alumnos
-          color: 'black', // Default is #000000
-          fontStyle: 'Arial', // Default is Arial
-          sidePadding: 20 // Defualt is 20 (as a percentage)
-				}
-			}
-    }
-    var myDoughnutChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: data,
-      options: options
-    });
-</script>
-
-<script type="text/javascript ">
-    var ctx = document.getElementById("myChartAverage").getContext('2d');
-    var data = {
-      labels: ["Si ", "No "],
-      datasets: [{
-        data: [{{career_data.average_data.yes}}, {{career_data.average_data.no}}],
+        data: [{{exam.students.evaluated}},{{exam.students.not_evaluated}}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -416,18 +383,58 @@
       },
       elements: {
         center: {
-          text: {{career_data.average_data.average}}.toFixed(0) + "%", // Porcentaje de alumnos
+          text: percentage, // Porcentaje de alumnos
           color: 'black', // Default is #000000
           fontStyle: 'Arial', // Default is Arial
           sidePadding: 20 // Defualt is 20 (as a percentage)
         }
       }
     }
-    var myDoughnutChart = new Chart(ctx, {
+    var myDoughnutChart{{exam.exam.id}} = new Chart(ctx, {
       type: 'doughnut',
       data: data,
       options: options
     });
+  {% endfor%}
+</script>
+
+<script type="text/javascript ">
+  {% for exam in career_data%}
+    var ctx = document.getElementById("myChartAverage{{exam.exam.id}}").getContext('2d');
+    var data = {
+      labels: ["Si ", "No "],
+      datasets: [{
+        data: [{{exam.average}}, 100-{{exam.average}}],
+        backgroundColor: [
+          '#21da7d',
+          '#f7464a',
+        ],
+        borderColor: [
+          'rgb(255, 255, 255)',
+          'rgb(255, 255, 255)',
+        ],
+        borderWidth: 3
+      }]
+    }
+    var options = {
+      legend: {
+        display: false
+      },
+      elements: {
+        center: {
+          text: {{exam.average}} + "%", // Porcentaje de alumnos
+          color: 'black', // Default is #000000
+          fontStyle: 'Arial', // Default is Arial
+          sidePadding: 20 // Defualt is 20 (as a percentage)
+        }
+      }
+    }
+    var myDoughnutChart{{exam.exam.id}} = new Chart(ctx, {
+      type: 'doughnut',
+      data: data,
+      options: options
+    });
+  {% endfor %}
 </script>
 
 </html>

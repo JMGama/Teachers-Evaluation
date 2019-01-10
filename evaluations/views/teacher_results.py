@@ -1,108 +1,172 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from django.views import View
-from django.db.models import Q
-
-from evaluations.models import *
-from .general_functions import *
-
 import csv
+
 import xlsxwriter
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
+
+from evaluations.models import (EvaluationsCareer, EvaluationsCoordinator,
+                                EvaluationsDtlCoordinatorCareer,
+                                EvaluationsDtlQuestionExam, EvaluationsExam,
+                                EvaluationsSignatureQuestionResult,
+                                EvaluationsSignatureResult, EvaluationsTeacher,
+                                EvaluationsTeacherSignature)
 
 
-class TeacherResultsView(View, GeneralFunctions):
+class TeacherResultsView(View):
 
     template_teacher_results = 'evaluations/teacher_results.html'
     template_monitoring = 'evaluations/career_monitoring.html'
     template_login = 'evaluations/login.html'
 
     def get(self, request, career_id, teacher_id):
+
+        # Verify if the coordinator is correctly logged in.
         if not request.session.get('session', False) or not request.session['type'] == 'coordinator':
             return render(request, self.template_login)
 
-        # Values for the view
-        coordinator = EvaluationsCoordinators.objects.get(
-            idperson__exact=request.session['id_coordinator'])
-        careers_id = EvaluationsDetailCoordinatorCareer.objects.filter(
-            idcoordinator__exact=coordinator.idperson).values('idcareer')
-        careers = EvaluationsCareers.objects.filter(idcareer__in=careers_id)
+        # Values for the view and the monitoring navigation bar.
+        coordinator = EvaluationsCoordinator.objects.get(
+            pk__exact=request.session['id_coordinator'])
+        careers_id = EvaluationsDtlCoordinatorCareer.objects.filter(
+            fk_coordinator__exact=coordinator.id).values('fk_career')
+        careers = EvaluationsCareer.objects.filter(pk__in=careers_id)
 
-        career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
-        career_data = self.get_career_data(career)
-        teacher = EvaluationsTeachers.objects.get(idperson__exact=teacher_id)
+        career = EvaluationsCareer.objects.get(
+            pk__exact=career_id, status="ACTIVE")
 
-        teacher_results = self.get_teacher_signatures_results(
-            career, career_data, teacher)
-        exams_averages, final_average = self.get_teacher_exams_averages(
-            teacher_results)
-        teacher_signatures = self.get_career_teacher_signatures(career, teacher)
+        # Get the teacher.
+        teacher = EvaluationsTeacher.objects.get(pk__exact=teacher_id)
 
-        exam_questions, questions_results, comments = self.get_exam_questions_results(
-            teacher_results)
+        # Get the teacher signatures in the career.
+        signatures = [signature_dtl.fk_signature for signature_dtl in EvaluationsTeacherSignature.objects.filter(
+            fk_teacher=teacher.id,
+            fk_signature__fk_career__exact=career.id,
+            status="ACTIVE"
+        ).select_related('fk_signature')]
 
+        # Get the teacher results average of each exam.
+        teacher_results = self.get_teacher_average_results(career, teacher)
+
+        # Calculate the general average of the teacher from all the exams.
+        general_average = []
+        for exam in teacher_results:
+            general_average.append(exam['average'])
+        general_average = round(
+            sum(general_average)/len(general_average) if len(general_average) > 0 else 0)
+
+        # Render the teacher results view with all the things to show.
         context = {
-            'final_average': final_average,
-            'exams_averages': exams_averages,
-            'teacher_results': teacher_results,
+            'results': teacher_results,
+            'general_average': general_average,
+            'signatures': signatures,
             'teacher': teacher,
             'coordinator': coordinator,
             'careers': careers,
-            'career': career,
-            'career_data': career_data,
-            'teacher_signatures': teacher_signatures,
-            'exam_questions': exam_questions,
-            'questions_results': questions_results,
-            'comments': comments
+            'career': career
         }
 
         return render(request, self.template_teacher_results, context)
 
-    def get_teacher_exams_averages(self, teacher_results):
-        exams_averages = {}
-        final_average = []
-        for exam, signatures in teacher_results.items():
-            averages = []
-            for results in signatures.values():
-                averages.append(results['average'])
-            evaluation_average = round(sum(averages)/len(averages), 2)
-            exams_averages[exam] = {
-                'averages': averages, 'evaluation_average': evaluation_average}
-            final_average.append(evaluation_average)
+    def get_teacher_average_results(self, career, teacher):
+        """Returns a list with the average result of the signature, the questions results and comments in each exam of the career"""
+        data = []
 
-        final_average = 0 if len(final_average)<1 else round(sum(final_average)/len(final_average), 2)
-        return exams_averages, final_average
+        # Get all the exams for the career.
+        exams = EvaluationsExam.objects.filter(
+            type__exact=career.type, status__exact='ACTIVE')
 
-    def get_exam_questions_results(self, teacher_results):
-        """Return a dict with the result of the question of each exam,
-         a list with the questions and a list with all the comments of that career"""
+        # Get a list with all the teacher-signature detail of the teacher in that career.
+        signatures_dtl = EvaluationsTeacherSignature.objects.filter(
+            fk_teacher=teacher.id,
+            fk_signature__fk_career__exact=career.id,
+            status="ACTIVE"
+        ).select_related('fk_signature')
 
-        questions_results = {}
-        exam_questions = {}
-        comments = []
+        # Results for each exam of the career.
+        for exam in exams:
 
-        for exam, signatures in teacher_results.items():
-            questions_info = {}
-            for options in signatures.values():
-                questions_description = []
+            # Get the average of all the signatures.
+            average = self.get_signatures_average(signatures_dtl, exam)
 
-                for question, items in options['questions'].items():
-                    # Add the questions, comments and questions results.
-                    questions_description.append(question)
-                    if 'average' in items:
-                        if question in questions_info:
-                            # Sum the averages of the question of all signatures
-                            questions_info[question] += items['average']
-                        else:
-                            questions_info[question] = items['average']
-                    else:
-                        for comment in items['answers']:
-                            comments.append(comment.answer)
-                questions_results[exam] = questions_info
+            # If the average is false (dosn't have evaluations) continue to the next exam.
+            if not average:
+                break
 
-            exam_questions[exam] = questions_description
-            # Make the final average for each question
-            for question, val in questions_results[exam].items():
-                questions_results[exam][question] = val / \
-                    len(teacher_results[exam])
+            # Get the averages of all the questions in the exam, for all the signatures.
+            questions = self.get_signatures_questions_averages(
+                signatures_dtl, exam)
 
-        return exam_questions, questions_results, comments
+            # Add the result of the exam to the return data.
+            exam_results = {
+                'exam': exam,
+                'average': average,
+                'questions': questions
+            }
+            data.append(exam_results)
+
+        return data
+
+    def get_signatures_average(self, signatures_dtl, exam):
+        """Return the final average of the result signatures in the exam"""
+        averages = []
+        for dtl_signature in signatures_dtl:
+            try:
+                # Get the average of the signature.
+                signature_average = EvaluationsSignatureResult.objects.get(
+                    group__exact=dtl_signature.group,
+                    fk_signature__exact=dtl_signature.fk_signature.id,
+                    fk_exam__exact=exam.id,
+                    status="ACTIVE"
+                ).average
+                averages.append(float(signature_average))
+            except ObjectDoesNotExist:
+                pass
+
+        # Calculate the general average for the teacher.
+        average = False
+        if len(averages) > 0:
+            average = round((sum(averages)/len(averages)))
+        return average
+
+    def get_signatures_questions_averages(self, signatures_dtl, exam):
+        """Return a dictionary with the questions as the key and the average or comments as value. This will return a empty dict if there isn't any result for the exam"""
+
+        # Get all the questions for the exam.
+        questions = [question.fk_question for question in EvaluationsDtlQuestionExam.objects.filter(
+            fk_exam=exam.id, status="ACTIVE").select_related('fk_question')]
+
+        # Get the average for each question on each signature.
+        data = {}
+        for question in questions:
+
+            # Get the average or comments of the question for each signature.
+            question_result = []
+            for dtl_signature in signatures_dtl:
+                try:
+                    result = EvaluationsSignatureQuestionResult.objects.get(
+                        group__exact=dtl_signature.group,
+                        fk_question__exact=question.id,
+                        fk_signature__exact=dtl_signature.fk_signature.id,
+                        fk_exam__exact=exam.id,
+                    ).result
+                    question_result.append(result)
+
+                except ObjectDoesNotExist:
+                    pass
+
+            # If the question is optional calculate the final average in other case return all the comments.
+            if len(question_result) > 0:
+                if question.optional != "YES":
+                    # Calculate the final average for the question with all the signature-question results and asign it to the result dict.
+                    question_result = list(map(float, question_result))
+                    average = round(
+                        (sum(question_result)/len(question_result)))
+                    data[question] = average
+                else:
+                    # Add all the comments of the signature in the result data. Split the comments and add them to a list, only the ones that are not empty.
+                    data['comments'] = list(filter(None, question_result[0].split('|')))
+
+        return data

@@ -52,11 +52,11 @@
             <div class="row valign-wrapper">
               <div class="col s8 m10">
                 <span class="card-title">
-                  Materia: <b>{{ signature_detail.idsignature.name.upper }}</b>
+                  Materia: <b>{{ signature_detail.fk_signature.description.upper }}</b>
                   <br>
-                  Carrera: <b>{{ signature_detail.idsignature.idcareer.description.upper }}</b>
+                  Carrera: <b>{{ signature_detail.fk_signature.fk_career.description.upper }}</b>
                   <br>
-                  Grupo: <b>{{ signature_detail.idgroup }}</b>
+                  Grupo: <b>{{ signature_detail.group }}</b>
                 </span>
                 <hr/>
               </div>
@@ -69,26 +69,26 @@
               <br> {% for question in exam_questions %}
               <div class="row">
                 <div class="col m8 s6">
-                  <p>{{ question.idquestion.description }}{% if question.idquestion.optional == 'YES' %} <b><i>(opcional)</i></b>{% else %} <b><i>*</b></i>{% endif %}</p>
+                  <p>{{ question.fk_question.description }}{% if question.fk_question.optional == 'YES' %} <b><i>(opcional)</i></b>{% else %} <b><i>*</b></i>{% endif %}</p>
                 </div>
-                {% if question.idquestion.type.lower == 'radio' %}
-                <div class="col m2 s2">{% if question.idquestion.optional == 'YES' %}(opcional){% endif %}
+                {% if question.fk_question.type.lower == 'radio' %}
+                <div class="col m2 s2">{% if question.fk_question.optional == 'YES' %}(opcional){% endif %}
                   <label>
-                    <input class="with-gap" name="answer_{{ question.idquestion.id }}{% if question.idquestion.optional == 'YES' %}_optional{% endif %}" value="yes" type="radio" />
+                    <input class="with-gap" name="answer_{{ question.fk_question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" value="yes" type="radio" />
                     <span>Si</span>
                   </label>
                 </div>
                 <div class="col m2 s2">
                   <label>
-                    <input class="with-gap" name="answer_{{ question.idquestion.id }}{% if question.idquestion.optional == 'YES' %}_optional{% endif %}" value="no" type="radio" />
+                    <input class="with-gap" name="answer_{{ question.fk_question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" value="no" type="radio" />
                     <span>No</span>
                   </label>
                 </div>
-                {% elif question.idquestion.type.lower == 'text' %}
+                {% elif question.fk_question.type.lower == 'text' %}
                 <br><br>
                 <div class="input-field col m11 s11">
                   <i class="material-icons prefix">mode_edit</i>
-                  <textarea id="textarea" name="answer_{{ question.idquestion.id }}{% if question.idquestion.optional == 'YES' %}_optional{% endif %}" class="materialize-textarea" data-length="255" maxlength="255"></textarea>
+                  <textarea id="textarea" name="answer_{{ question.fk_question.id }}{% if question.fk_question.optional == 'YES' %}_optional{% endif %}" class="materialize-textarea" data-length="255" maxlength="255"></textarea>
                   <label for="textarea">Respuesta</label>
                 </div>
                 {% endif %}

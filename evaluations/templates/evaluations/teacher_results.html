@@ -20,7 +20,7 @@
   <!-- Import Chart.js for graphics -->
   <script type="text/javascript" src="{% static 'chart.js/dist/Chart.js' %}"></script>
 
-  <title>DOCENTE {{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</title>
+  <title>DOCENTE {{ teacher.name }} {{ teacher.last_name }} {{ teacher.last_name_2 }}</title>
 
 </head>
 
@@ -80,7 +80,7 @@
             
             <div class="row valign-wrapper">
               <div class="col s1">
-                <a class="btn-floating btn-small waves-effect waves-light z-depth-3 red lighten-1" href="{% url 'evaluations:career_results' career_id=career.idcareer %}?active=docentes"><i class="material-icons">keyboard_arrow_left</i></a>
+                <a class="btn-floating btn-small waves-effect waves-light z-depth-3 red lighten-1" href="{% url 'evaluations:career_results' career_id=career.id %}?active=docentes"><i class="material-icons">keyboard_arrow_left</i></a>
               </div>
               <div class="col s11" >
                 <ul class="tabs" style="overflow-x: hidden">
@@ -93,7 +93,7 @@
             
             <div id="resultados" >
               <span class="card-title center">
-                <b>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</b>
+                <b>{{ teacher.name }} {{ teacher.last_name }} {{ teacher.last_name_2 }}</b>
               </span>
               <hr style="width: 12rem !important"/>
 
@@ -119,12 +119,14 @@
               <div class="row" id="questions_results">
                 <div class="col s12 m12 l12">
                   <div class=" row">
-                    <div class="col s12 m12 l12">
+                    {% for exam in results %}
+                    <div class="col s12 m16 l16">
                       <div class="sample-chart-wrapper">
-                        <canvas id="myChartQuestions" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
+                        <canvas id="myChartQuestions{{exam.exam.id}}" width="262" height="130" style="width: 241px; height: 120px;"></canvas>
                       </div>
                       <p class="header center">Resultados por pregunta</p>
                     </div>
+                    {% endfor %}
                   </div> 
                 </div>
               </div>
@@ -143,11 +145,14 @@
 
               <div class="row" id="comments">
                 <h4 class="header center">Comentarios</h4>
-                <ul class="collection">
-                {% for comment in comments %}
-                  <li class="collection-item"><p>{{comment}}</p></li>
+                {% for exam in results %}
+                  <h6>{{ exam.exam.description }}</h6>
+                  <ul class="collection">
+                    {% for comment in exam.questions.comments %}
+                      <li class="collection-item"><p>{{comment}}</p></li>
+                    {% endfor %}
+                  </ul>
                 {% endfor %}
-                </ul>
               </div>
 
             </div>
@@ -164,14 +169,12 @@
                     <thead>
                       <tr>
                           <th>Materia</th>
-                          <th>Alumnos</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {% for signature in teacher_signatures %}
+                      {% for signature in signatures %}
                         <tr style="border-top:1px solid #1e2e5042;">
-                          <td>{{ signature.name.upper }}</td>
-                          <td>{{ results.evaluated }}</td>
+                          <td>{{ signature.description.upper }}</td>
                         </tr>
                       {% endfor %}
                     </tbody>
@@ -199,8 +202,8 @@
                   
                   <div class="row center-align">
                     <form action="{% url 'evaluations:teachers_reports' 'teacher_report' %}" method="get" target="_blank">
-                      <input type="hidden" name="teacher_id" value="{{ teacher.idperson }}"/>
-                      <input type="hidden" name="career_id" value="{{ career.idcareer }}"/>
+                      <input type="hidden" name="teacher_id" value="{{ teacher.id }}"/>
+                      <input type="hidden" name="career_id" value="{{ career.id }}"/>
                       
                       <button type="submit" class="btn-small waves-effect center red lighten-1 tooltipped hoverable" data-position="bottom" data-tooltip="Resultados del docente en la carrera" href=""><i class="material-icons right">get_app</i>Reporte Docente</button>
                     </form>
@@ -242,7 +245,7 @@
     var action = $('#download').find('input[name="action"]').val();
     $.ajax({
       type:"POST",
-      url:"{% url 'evaluations:career_results' career.idcareer %}",
+      url:"{% url 'evaluations:career_results' career.id %}",
       data: {
             'action': action,
             'csrfmiddlewaretoken': csrftoken,
@@ -307,12 +310,13 @@
 
 <script type="text/javascript ">
   // Ceneral average of the teacher with donut graph
+
     var ctx = document.getElementById("myChart").getContext('2d');
-    var percentage = Math.round({{ final_average }}) + "%";
+    var percentage = {{general_average}} + "%";
     var data = {
       labels: ["Realizadas ", "Faltantes "],
       datasets: [{
-        data: [{{ final_average }}, 100-{{ final_average }}],
+        data: [{{ general_average }}, 100-{{ general_average }}],
         backgroundColor: [
           '#21da7d',
           '#f7464a',
@@ -362,12 +366,12 @@
       return "rgb(" + r + "," + g + ",100)";
     };
 
-    {% for exam, options in exams_averages.items %}
-      colors.push(dynamicColors({{options.evaluation_average}}))
+    {% for exam in results %}
+      colors.push(dynamicColors({{exam.average}}))
     {% endfor %}
 
     var averageData = {
-      data: [{% for exam, options in exams_averages.items %}{{options.evaluation_average}}, {% endfor %}],
+      data: [{% for exam in results %}{{exam.average}}, {% endfor %}],
       backgroundColor: colors,
     }
     var options = {
@@ -386,7 +390,7 @@
     var myBarChart = new Chart(ctxBar, {
       type: 'bar',
       data: {
-        labels:[{% for exam in exams_averages%}'{{exam.description|slice:":14"}}', {% endfor %}],
+        labels:[{% for exam in results %}'{{exam.exam.description|slice:":14"}}', {% endfor %}],
         datasets: [averageData]
       },
       options: options
@@ -394,8 +398,9 @@
 </script>
 
 <script type="text/javascript ">
+  {% for exam in results %}
   // Average of each question with a bar graph
-    var ctxBar = document.getElementById("myChartQuestions").getContext('2d');
+    var ctxBar = document.getElementById("myChartQuestions{{exam.exam.id}}").getContext('2d');
     var colors = [];
 
     var dynamicColors = (average) =>{
@@ -404,14 +409,20 @@
       return "rgb(" + r + "," + g + ",100)";
     };
 
-    {% for questions in questions_results.values %}
-      {% for question, average in questions.items %}
+    {% for question, average in exam.questions.items %}
+      {% if question != "comments" %}
         colors.push(dynamicColors({{average}}))
-      {% endfor %}
+      {% endif %}
     {% endfor %}
 
     var averageData = {
-      data: [{% for questions in questions_results.values %}{% for question, averages in questions.items %}{{averages}}, {% endfor %}{% endfor %}],
+      data: [
+      {% for question, average in exam.questions.items %}
+        {% if question != "comments" %}
+          {{average}},
+        {% endif %}
+      {% endfor %}
+      ],
       backgroundColor: colors,
     }
     var options = {
@@ -437,11 +448,17 @@
     var myBarChart = new Chart(ctxBar, {
       type: 'bar',
       data: {
-        labels:[{% for questions in questions_results.values %}{% for question, averages in questions.items %}'P {{question.id}}', {% endfor %}{% endfor %}],
+        labels:[
+        {% for question, average in exam.questions.items %}
+          {% if question != "comments" %}
+            'P {{question.id}}',
+          {% endif %}
+        {% endfor %}],
         datasets: [averageData]
       },
       options: options
     });
+    {% endfor %}
 </script>
 
 </html>
