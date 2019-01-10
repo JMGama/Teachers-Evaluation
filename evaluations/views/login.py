@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from django.views import View
 from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
 
-from evaluations.models import *
+from evaluations.models import (EvaluationsCoordinator, EvaluationsStudent,
+                    EvaluationsTeacher)
 
 
 class LoginView(View):
@@ -11,7 +12,9 @@ class LoginView(View):
     template_login = 'evaluations/login.html'
 
     def get(self, request):
+        """ Check if the user ir already logged in, if it is redirect to the landing page, otherway redirect to login page."""
         try:
+            # If the user is already logged in redirect them to the corresponding landing page.
             if request.session['session']:
                 if request.session['type'] == 'student':
                     return redirect('home/')
@@ -22,20 +25,23 @@ class LoginView(View):
 
         except KeyError:
             pass
+        # If the user didn't logged in before, redirect to de login page.
         return render(request, self.template_login)
 
     def post(self, request):
-        # Try to load student
+        """Verify if the login data is correct, and redirect to their corresponding landing page."""
+
+        # Try to load student.
         try:
             if self.load_student(request, request.POST['id_matricula'], request.POST['password']):
                 return redirect('home/')
         except Exception:
-            # Try to load coordinator
+            # Try to load coordinator.
             try:
                 if self.load_coordinator(request, request.POST['id_matricula'], request.POST['password']):
                     return redirect('monitoring/')
             except Exception:
-                # Try to load teacher
+                # Try to load teacher.
                 try:
                     if self.load_teacher(request, request.POST['id_matricula'], request.POST['password']):
                         return redirect('teacher/home')
@@ -45,10 +51,13 @@ class LoginView(View):
         return render(request, self.template_login, {'second_time': True, 'validate': 'invalid'})
 
     def load_student(self, request, matricula, password):
-        student = EvaluationsStudents.objects.get(
+        """load the student, create the session variables and return false if the data was incorrect."""
+        student = EvaluationsStudent.objects.get(
             enrollment__exact=matricula)
-        if student.value == password:
-            request.session['id_student'] = student.idperson
+
+        # If the matricula and password was correct, create session variables.
+        if student.password == password:
+            request.session['id_student'] = student.id
             request.session['session'] = True
             request.session['type'] = 'student'
             return True
@@ -56,10 +65,13 @@ class LoginView(View):
             return False
 
     def load_coordinator(self, request, matricula, password):
-        coordinator = EvaluationsCoordinators.objects.get(
+        """load the coordinator, create the session variables and return false if the data was incorrect."""
+        coordinator = EvaluationsCoordinator.objects.get(
             enrollment__exact=matricula)
-        if coordinator.value == password:
-            request.session['id_coordinator'] = coordinator.idperson
+
+        # If the matricula and password was correct, create session variables.
+        if coordinator.password == password:
+            request.session['id_coordinator'] = coordinator.id
             request.session['session'] = True
             request.session['type'] = 'coordinator'
             return True
@@ -67,9 +79,12 @@ class LoginView(View):
             return False
 
     def load_teacher(self, request, matricula, password):
-        teacher = EvaluationsTeachers.objects.get(enrollment__exact=matricula)
-        if teacher.value == password:
-            request.session['id_teacher'] = teacher.idperson
+        """load the teacher, create the session variables and return false if the data was incorrect."""
+        teacher = EvaluationsTeacher.objects.get(enrollment__exact=matricula)
+
+        # If the matricula and password was correct, create session variables.
+        if teacher.password == password:
+            request.session['id_teacher'] = teacher.id
             request.session['session'] = True
             request.session['type'] = 'teacher'
             return True

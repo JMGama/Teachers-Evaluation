@@ -1,29 +1,44 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views import View
-from django.http import HttpResponse
 
-from .general_functions import *
+from evaluations.models import (EvaluationsExam, EvaluationsTeacher,
+                                EvaluationsTeacherSignature,
+                                EvaluationsTeacherSignatureEvaluated)
 
 
-class TeacherHomeView(View, GeneralFunctions):
+class TeacherHomeView(View):
 
     template_teacher_evaluation = 'evaluations/teacher_home.html'
     template_login = 'evaluations/login.html'
 
     def get(self, request):
+
+        # Verify if the user loggedin is a teacher, if it isn't return him to the login page.
         if not request.session.get('session', False) or not request.session['type'] == 'teacher':
             return render(request, self.template_login)
 
-        teacher = EvaluationsTeachers.objects.get(
-            idperson__exact=request.session['id_teacher'])
-        teacher_exams = EvaluationsExams.objects.filter(
-            Q(type='DOCENTES') & Q(status__exact='ACTIVO'))
-        signatures_detail = EvaluationsDetailGroupPeriodSignature.objects.filter(
-            idteacher__exact=teacher.idperson)
-        evaluated_signatures = self.get_teacher_eval_signatures(
-            teacher, signatures_detail, teacher_exams)
+        # Get the information for the teacher that is going to make the evaluation.
+        teacher = EvaluationsTeacher.objects.get(
+            pk__exact=request.session['id_teacher'], status='ACTIVE')
+        teacher_exams = EvaluationsExam.objects.filter(
+            type__exact='DOCENTE', status='ACTIVE')
+
+        # Get the signatures information to be evaluated for each exam.
+        signatures_detail = []
+        for exam in teacher_exams:
+            signatures_dtl = EvaluationsTeacherSignature.objects.filter(
+                fk_teacher__exact=teacher.id, fk_period__exact=exam.fk_period, status='ACTIVE')
+            signatures_detail.append(
+                {'exam': exam, 'signatures_dtl': signatures_dtl})
+
+        # Get the evaluations already made.
+        evaluated_signatures = self.get_teacher_signatures_evaluated(
+            teacher, teacher_exams)
+
+        # Return the next evaluation to be made for the teacher in the exams.
         next_evaluation = self.get_teacher_next_eval_signature(
-            signatures_detail, evaluated_signatures, teacher_exams)
+            signatures_detail, evaluated_signatures)
 
         if not next_evaluation:
             try:
@@ -38,34 +53,39 @@ class TeacherHomeView(View, GeneralFunctions):
 
         context = {
             'teacher': teacher,
-            'teacher_exams': teacher_exams,
+            'exams_signatures': signatures_detail,
             'next_evaluation': next_evaluation,
-            'signatures_detail': signatures_detail,
             'evaluated_signatures': evaluated_signatures,
         }
         return render(request, self.template_teacher_evaluation, context)
 
-    def get_teacher_eval_signatures(self, teacher, signatures_detail, teacher_exams):
-        """return a list of all the evaluations (groupid) already made by the teacher"""
+    def get_teacher_signatures_evaluated(self, teacher, exams):
+        """Return the exam an the signatures already evaluated for that exam"""
+        data = []
 
-        eval_exam_signatures = {}
-        for exam in teacher_exams:
-            eval_signatures = []
-            for signature_dtl in signatures_detail:
-                evaluated = EvaluationsDetailTeacherSignatureExam.objects.filter(
-                    idexam__exact=exam, idgroup__exact=signature_dtl.idgroup, idsignature__exact=signature_dtl.idsignature)
-                if evaluated:
-                    eval_signatures.append(signature_dtl)
-            eval_exam_signatures[exam] = eval_signatures
-        return eval_exam_signatures
+        # Get the signatures evaluated for each exam.
+        for exam in exams:
+            teacher_signatures = []
+            signatures_evaluated = EvaluationsTeacherSignatureEvaluated.objects.filter(
+                fk_exam__exact=exam.id, fk_teacher_signature__fk_teacher=teacher.id, status='ACTIVE')
 
-    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures, teacher_exams):
+            for teacher_signature in signatures_evaluated:
+                teacher_signatures.append(teacher_signature.fk_teacher_signature)
+
+            data.append({'exam': exam,
+                         'signatures_evaluated': teacher_signatures})
+        return data
+
+    def get_teacher_next_eval_signature(self, signatures, evaluated_signatures):
         """return the exam and group that is the next to evaluate (havent evaluated) for the teacher"""
 
         next_evaluation = {}
-        for exam in teacher_exams:
-            for signature_dtl in signatures:
-                if signature_dtl not in evaluated_signatures[exam]:
-                    next_evaluation['exam'] = exam
-                    next_evaluation['signature_dtl'] = signature_dtl
-                    return next_evaluation
+
+        for exam_signatures in signatures:
+            for exam_signatures_eval in evaluated_signatures:
+                if exam_signatures['exam'] == exam_signatures_eval['exam']:
+                    for signature in exam_signatures['signatures_dtl']:
+                        if not signature in exam_signatures_eval['signatures_evaluated']:
+                            return {'exam': exam_signatures['exam'], 'signature_dtl': signature}
+
+        return next_evaluation

@@ -1,148 +1,151 @@
-from django.views import View
-from django.http import HttpResponse
-from django.utils.encoding import smart_str
-from evaluations.models import EvaluationsDetailCoordinatorCareer, EvaluationsCareers
-from .general_functions import GeneralFunctions
-
 import csv
 
+from django.http import HttpResponse
+from django.utils.encoding import smart_str
+from django.views import View
 
-class AdminReportsView(View, GeneralFunctions):
+from evaluations.models import (EvaluationsCareer, EvaluationsDtlQuestionExam,
+                                EvaluationsExam, EvaluationsSignature,
+                                EvaluationsSignatureQuestionResult,
+                                EvaluationsSignatureResult, EvaluationsTeacher,
+                                EvaluationsTeacherSignature)
+
+
+class AdminReportsView(View):
 
     def get(self, request, career_type):
-        response = self.general_results(request, career_type)
+        """Creates the CSV with all the results of the teachers for each exam and signatures that are active"""
 
-        #response = self.general_report(request)
-        return response
-
-    def general_results(self, request,career_type):
+        # Create the response that will be a download of the CSV with the information.
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=Resultados_Generales.csv'
         writer = csv.writer(response, csv.excel)
         response.write(u'\ufeff'.encode('utf8'))
 
-        if career_type.upper() == 'CUATRIMESTRAL':
-            results = self.get_teachers_results("CUATRIMESTRAL")
-        else:
-            results = self.get_teachers_results("SEMESTRAL")
+        # Get all the active exams to get their results.
+        exams = EvaluationsExam.objects.filter(
+            type=career_type.upper(), status="ACTIVE")
+        exams_resuts = []
+        for exam in exams:
 
-        titles = ['CARRERA', 'MATERIA', 'DOCENTE', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6',
-                  'P7', 'P8', 'P9', 'P10', 'P11', 'P12', 'TOTAL ALUMNOS EVALUADOS']
+            # For each exam get the results of the teachers in the careers.
+            results = self.get_career_teachers_results(
+                career_type.upper(), exam)
+            exams_resuts.append({
+                'exam': exam.description,
+                'results': results
+            })
 
-        writer.writerow([smart_str(u""+title) for title in titles])
-        for career, teachers in results.items():
-            for teacher, signatures in teachers.items():
-                for singature, items in signatures.items():
-                    teacher_data = [career.description, singature.name,
-                                    teacher.name+" "+teacher.lastname+" "+teacher.lastname2]
-                    for question, data in items['questions'].items():
-                        if 'average'in data:
-                            teacher_data.append(str(data['average']) + "%")
-                        else:
-                            comments = ''
-                            for answer in data['answers']:
-                                if len(answer.answer) > 2:
-                                    comments += answer.answer + " | "
-                            comments.replace('\n', '').replace('\r', '')
-                            teacher_data.append(comments)
-                    teacher_data.append(items['evaluated'])
-                    writer.writerow(teacher_data)
-            writer.writerow([])
+        # Wtire all the results in the CVS.
+        self.write_exam_results(exams_resuts, writer)
         return response
 
-    def get_teachers_results(self, careers_type):
-        results = {}
-        careers = EvaluationsCareers.objects.filter(
-            abbreviation__exact=careers_type)
+    def write_exam_results(self, exams_resutls, writer):
+        """Write all the exam results information to the CSV (writer received)"""
 
+        # Get the results for each exam.
+        for exam in exams_resutls:
+
+            # Add the titles to the CSV.
+            writer.writerow([smart_str(u""+exam['exam'])])
+            exam_obj = EvaluationsExam.objects.get(
+                description__exact=exam['exam'], status="ACTIVE")
+            questions = EvaluationsDtlQuestionExam.objects.filter(
+                fk_exam__exact=exam_obj.id, status="ACTIVE")
+            titles = [
+                'CARRERA',
+                'MATERIA',
+                'DOCENTE',
+                'GRUPO',
+                'TOTAL ALUMNOS EVALUADOS',
+                'PROMEDIO'
+            ]
+
+            # Get the questions for the exam, to add them to the titles in the CVS.
+            for question in questions:
+                titles.append('P' + str(question.id))
+            writer.writerow([smart_str(u""+title) for title in titles])
+
+            # Get the results for each career in the exam.
+            for career in exam['results']:
+
+                # Get the results for the signature/teacher.
+                for signature in career['signatures_results']:
+
+                    # This is the things that will be writed in the same line of the CVS.
+                    to_write = [
+                        smart_str(u""+career['career']),
+                        smart_str(u""+signature['signature']),
+                        smart_str(u""+signature['teacher']),
+                        smart_str(u""+signature['group']),
+                        smart_str(u""+str(signature['total_evaluated'])),
+                        smart_str(u""+signature['average'])
+                    ]
+
+                    # Get the results for each question on the exam in the actual career.
+                    for question in signature['questions']:
+                        for _, question_result in question.items():
+                            to_write.append(
+                                smart_str(u""+str(question_result)))
+
+                    # Write the information of the signature in the CVS.
+                    writer.writerow(to_write)
+        return True
+
+    def get_career_teachers_results(self, careers_type, exam):
+        results = []
+
+        # Get all the careers of that type (semestral or cuatrimestral).
+        careers = EvaluationsCareer.objects.filter(
+            type__exact=careers_type, status="ACTIVE")
+
+        # Get the results for the signatures in each of the careers.
         for career in careers:
-            data = {}
-            career_teachers = self.get_career_teachers(career)
-            career_data = self.get_career_data(career)
+            career_resutls = {
+                'career': career.description,
+                'signatures_results': []
+            }
+            # Get all the sinatures for that career.
+            career_signatures = EvaluationsSignature.objects.filter(
+                fk_career__exact=career.id, status="ACTIVE")
 
-            for teacher in career_teachers:
-                data[teacher] = self.get_teacher_signatures_results(
-                    career, career_data, teacher, exam=career_data['exams'][0])
-            results[career] = data
+            # Get the results for each signature in the career.
+            for signature in career_signatures:
+                signature_data = {}
+
+                # Get the signature result(s).
+                signature_results = EvaluationsSignatureResult.objects.filter(
+                    fk_signature__exact=signature.id, fk_exam__exact=exam.id, status="ACTIVE")
+
+                # Get the teacher(s) for the signature results, (multiple teachers in case the signature is given by different teacher in different gruops).
+                for signature_result in signature_results:
+                    teacher = EvaluationsTeacherSignature.objects.get(
+                        fk_signature__exact=signature_result.fk_signature,
+                        group__exact=signature_result.group,
+                        fk_period__exact=exam.fk_period,
+                        status="ACTIVE",
+                    ).fk_teacher
+
+                    # Get the questions reuslts.
+                    signature_questions_results = EvaluationsSignatureQuestionResult.objects.filter(
+                        fk_signature__exact=signature.id,
+                        fk_exam__exact=exam,
+                        group__exact=signature_result.group,
+                        status="ACTIVE"
+                    ).select_related('fk_question')
+
+                    # Add the results to the signature data dictionary.
+                    signature_data['signature'] = signature.description
+                    signature_data['teacher'] = teacher.name + ' ' + \
+                        teacher.last_name + ' ' + teacher.last_name_2
+                    signature_data['group'] = signature_result.group
+                    signature_data['average'] = signature_result.average
+                    signature_data['total_evaluated'] = signature_result.total_evaluated
+                    signature_data['questions'] = [
+                        {question_res.fk_question.id: question_res.result}for question_res in signature_questions_results]
+                    career_resutls['signatures_results'].append(signature_data)
+
+            # Add the career results to the final dictionary.
+            results.append(career_resutls)
 
         return results
-
-    def general_report(self, request):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=Resultados_Generales.csv'
-        writer = csv.writer(response, csv.excel)
-        response.write(u'\ufeff'.encode('utf8'))
-
-        general_data = self.get_general_data()
-
-        titles = ['Total de alumnos', 'Alumnos evaluados',
-                  'Respuestas SI', 'Respuestas NO', 'Total de respuestas']
-        data_matrix = [general_data[key] for key in general_data]
-
-        writer.writerow(
-            ['', '', 'RESULTADOS GENERALES DE LA EVALUACION DOCENTE'])
-        self.write_to_csv(
-            writer, titles, data_matrix)
-        writer.writerow([])  # write empty row
-        writer.writerow([])  # write empty row
-
-        careers_results = self.get_all_career_results(request)
-        titles = ['Carrera', 'Alumnos no evaluados', 'Alumnos evaluados', 'Rrespuestas SI',
-                  'Respuestas NO', 'Promedio alumnos', 'Promedio evaluaciones']
-
-        writer.writerow(
-            ['', '', 'RESULTADOS POR CARRERA DE LA EVALUACION DOCENTE'])
-        self.write_to_csv(
-            writer, titles, careers_results)
-
-        return response
-
-    def get_all_career_results(self, request):
-        """
-        Return all the final results from the career
-        (career name, evaluated, not evaluated, yes and no answers, 
-        average evaluated, average answers
-        """
-
-        careers_id = EvaluationsDetailCoordinatorCareer.objects.filter(
-            idcoordinator__exact=request.session['id_coordinator']).values_list('idcareer', flat=True)
-        all_careers_results = []
-
-        for career_id in careers_id:
-            career_results = []
-
-            career = EvaluationsCareers.objects.get(idcareer__exact=career_id)
-            career_data = self.get_career_data(career)
-
-            career_results.append(career.description)
-            career_results.append(
-                len(career_data['students']['not_evaluated']))
-            career_results.append(len(career_data['students']['evaluated']))
-            career_results.append(career_data['average_data']['yes'])
-            career_results.append(career_data['average_data']['no'])
-            career_results.append(
-                career_results[2] / (career_results[1] + career_results[2]) * 100)
-            career_results.append(career_data['average_data']['average'])
-
-            all_careers_results.append(career_results)
-
-        return all_careers_results
-
-    def write_to_csv(self, writer, titles, data):
-        """
-        Writes into the CSV with the data that were past:
-        titles: the titles of the rows that are going to be
-        data_matrix: a matrix(list of lists) or a list with the information 
-        that is going to be in each row, with the same order that the titles
-        """
-        writer.writerow([smart_str(u""+title) for title in titles])
-
-        for values in data:
-            if type(values) == (list or tuple):
-                data_row = []
-                for value in values:
-                    data_row.append(smart_str(value))
-                writer.writerow(data_row)
-            else:
-                writer.writerow(data)
-                break
