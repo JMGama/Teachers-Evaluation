@@ -9,5 +9,6 @@ from .delete_student import *
 from .admin_reports import *
 from .teachers_reports import *
 from .teacher_home import *
+from .teacher_evaluation import *
 
 from .general_functions import *

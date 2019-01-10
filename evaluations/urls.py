@@ -10,8 +10,8 @@ urlpatterns = [
 
     path('evaluation/<slug:exam_id>/<slug:signature>/',
          views.EvaluationView.as_view(), name='evaluation'),
-#     path('teacher/evaluation/<slug:exam_id>/<slug:signature_dtl_id>/',
-#          views.TeacherEvaluationView.as_view(), name='teacher_evaluation'),
+    path('teacher/evaluation/<slug:exam_id>/<slug:signature_dtl_id>/',
+         views.TeacherEvaluationView.as_view(), name='teacher_evaluation'),
     path('reports/teacher/<slug:report_type>/',
          views.TeachersReportsView.as_view(), name='teachers_reports'),
 
