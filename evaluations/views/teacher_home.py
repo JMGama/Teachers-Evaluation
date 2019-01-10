@@ -28,7 +28,7 @@ class TeacherHomeView(View):
         signatures_detail = []
         for exam in teacher_exams:
             signatures_dtl = EvaluationsTeacherSignature.objects.filter(
-                fk_teacher__exact=teacher.id, fk_period__exact=exam.fk_period)
+                fk_teacher__exact=teacher.id, fk_period__exact=exam.fk_period, status='ACTIVE')
             signatures_detail.append(
                 {'exam': exam, 'signatures_dtl': signatures_dtl})
 
@@ -65,11 +65,15 @@ class TeacherHomeView(View):
 
         # Get the signatures evaluated for each exam.
         for exam in exams:
+            teacher_signatures = []
             signatures_evaluated = EvaluationsTeacherSignatureEvaluated.objects.filter(
-                fk_exam__exact=exam.id, status='ACTIVO')
-            data.append({'exam': exam,
-                         'signatures_evaluated': signatures_evaluated})
+                fk_exam__exact=exam.id, fk_teacher_signature__fk_teacher=teacher.id, status='ACTIVE')
 
+            for teacher_signature in signatures_evaluated:
+                teacher_signatures.append(teacher_signature.fk_teacher_signature)
+
+            data.append({'exam': exam,
+                         'signatures_evaluated': teacher_signatures})
         return data
 
     def get_teacher_next_eval_signature(self, signatures, evaluated_signatures):
