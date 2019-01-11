@@ -32,7 +32,7 @@ class AdminReportsView(View):
             results = self.get_career_teachers_results(
                 career_type.upper(), exam)
             exams_resuts.append({
-                'exam': exam.description,
+                'exam': exam,
                 'results': results
             })
 
@@ -47,11 +47,9 @@ class AdminReportsView(View):
         for exam in exams_resutls:
 
             # Add the titles to the CSV.
-            writer.writerow([smart_str(u""+exam['exam'])])
-            exam_obj = EvaluationsExam.objects.get(
-                description__exact=exam['exam'], status="ACTIVE")
+            writer.writerow([smart_str(u""+exam['exam'].description)])
             questions = EvaluationsDtlQuestionExam.objects.filter(
-                fk_exam__exact=exam_obj.id, status="ACTIVE")
+                fk_exam__exact=exam['exam'].id, status="ACTIVE")
             titles = [
                 'CARRERA',
                 'MATERIA',
