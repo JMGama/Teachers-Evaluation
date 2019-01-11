@@ -159,7 +159,7 @@ class TeachersReportsView(View):
 
             # Add the exam results to the return data.
             data.append({
-                'exam': exam.description,
+                'exam': exam,
                 'career': career.description,
                 'period': exam.fk_period.period,
                 'signatures_results': signatures_resutls
@@ -248,11 +248,9 @@ class TeachersReportsView(View):
         for exam in data:
 
             # Add the titles to the CSV.
-            writer.writerow([smart_str(u""+exam['exam'])])
-            exam_obj = EvaluationsExam.objects.get(
-                description__exact=exam['exam'], status="ACTIVE")
+            writer.writerow([smart_str(u""+exam['exam'].description)])
             questions = EvaluationsDtlQuestionExam.objects.filter(
-                fk_exam__exact=exam_obj.id, status="ACTIVE")
+                fk_exam__exact=exam['exam'].id, status="ACTIVE")
             titles = [
                 'CARRERA',
                 'MATERIA',
