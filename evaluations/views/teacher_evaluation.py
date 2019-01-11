@@ -43,13 +43,15 @@ class TeacherEvaluationView(View):
             fk_exam__exact=exam_id, status='ACTIVE')
         signature_detail = EvaluationsTeacherSignature.objects.get(
             pk__exact=signature_dtl_id, status='ACTIVE')
-
+        
         context = {
             'teacher': teacher,
             'exams_signatures': signatures_detail,
             'evaluated_signatures': evaluated_signatures,
             'signature_detail': signature_detail,
-            'exam_questions': exam_questions
+            'exam_questions': exam_questions,
+            'exam_id':exam_id,
+            'signature_dtl_id':signature_dtl_id
         }
 
         return render(request, self.template_evaluation, context)
@@ -104,7 +106,7 @@ class TeacherEvaluationView(View):
                 'complete': 'YES',
             }
             return render(request, self.template_login, context)
-
+        print('salida post:',next_evaluation['signature_dtl'].id)
         return self.get(request, next_evaluation['exam'].id, next_evaluation['signature_dtl'].id)
 
     @transaction.atomic
@@ -156,11 +158,10 @@ class TeacherEvaluationView(View):
                 fk_exam__exact=exam.id, fk_teacher_signature__fk_teacher=teacher.id, status='ACTIVE')
 
             for teacher_signature in signatures_evaluated:
-                teacher_signatures.append(
-                    teacher_signature.fk_teacher_signature)
+                teacher_signatures.append(teacher_signature.fk_teacher_signature)
 
             data.append({'exam': exam,
-                         'signatures_evaluated': teacher_signatures})
+                            'signatures_evaluated': teacher_signatures})
         return data
 
     def get_teacher_next_eval_signature(self, signatures, evaluated_signatures):

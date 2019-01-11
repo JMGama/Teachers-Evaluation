@@ -64,7 +64,7 @@
                 <img class="circle responsive-img" src="{% static 'evaluations/images/User.png' %}">
               </div>
             </div>
-            <form id="questions_form" action="" method="post" onsubmit="return validateForm()">
+            <form id="questions_form" action="{% url 'evaluations:teacher_evaluation' exam_id signature_dtl_id %}" method="post" onsubmit="return validateForm()">
               {% csrf_token %}
               <br> {% for question in exam_questions %}
               <div class="row">
