@@ -141,6 +141,7 @@ class TeachersReportsView(View):
 
                     # Get the teacher that gives the signature to that group.
                     teacher = EvaluationsTeacherSignature.objects.get(
+                        group=signature_dtl.group,
                         fk_signature__exact=signature_dtl.fk_signature.id,
                         fk_period__exact=exam.fk_period
                     ).fk_teacher
@@ -159,7 +160,7 @@ class TeachersReportsView(View):
 
             # Add the exam results to the return data.
             data.append({
-                'exam': exam.description,
+                'exam': exam,
                 'career': career.description,
                 'period': exam.fk_period.period,
                 'signatures_results': signatures_resutls
@@ -184,46 +185,50 @@ class TeachersReportsView(View):
 
             signatures_results = []
             for signature_dtl in signatures_dtl:
+                
+                # If it raise an exception, it means that the signature isn't evaluated yet or other error.
+                try:
+                    # Get the results of the signature.
+                    signature_results = EvaluationsSignatureResult.objects.get(
+                        group=signature_dtl.group,
+                        fk_signature=signature_dtl.fk_signature.id,
+                        fk_exam=exam.id,
+                        status="ACTIVE"
+                    )
 
-                # Get the results of the signature.
-                signature_results = EvaluationsSignatureResult.objects.get(
-                    group=signature_dtl.group,
-                    fk_signature=signature_dtl.fk_signature.id,
-                    fk_exam=exam.id,
-                    status="ACTIVE"
-                )
+                    # Get the results for each question in the exam for the signature.
+                    questions_results = EvaluationsSignatureQuestionResult.objects.filter(
+                        group=signature_dtl.group,
+                        fk_signature=signature_dtl.fk_signature.id,
+                        fk_exam=exam.id,
+                        fk_question__optional='NO',
+                        status="ACTIVE"
+                    ).values_list('fk_question__description', 'result')
 
-                # Get the results for each question in the exam for the signature.
-                questions_results = EvaluationsSignatureQuestionResult.objects.filter(
-                    group=signature_dtl.group,
-                    fk_signature=signature_dtl.fk_signature.id,
-                    fk_exam=exam.id,
-                    fk_question__optional='NO',
-                    status="ACTIVE"
-                ).values_list('fk_question__description', 'result')
+                    # Get the comments of the signature/group.
+                    comments_result = EvaluationsSignatureQuestionResult.objects.get(
+                        group=signature_dtl.group,
+                        fk_signature=signature_dtl.fk_signature.id,
+                        fk_exam=exam.id,
+                        fk_question__optional='YES',
+                        status="ACTIVE"
+                    ).result
 
-                # Get the comments of the signature/group.
-                comments_result = EvaluationsSignatureQuestionResult.objects.get(
-                    group=signature_dtl.group,
-                    fk_signature=signature_dtl.fk_signature.id,
-                    fk_exam=exam.id,
-                    fk_question__optional='YES',
-                    status="ACTIVE"
-                ).result
+                    # Split the comments and add them to a list, only the ones that are not empty.
+                    comments = list(filter(None, comments_result.split('|')))
 
-                # Split the comments and add them to a list, only the ones that are not empty.
-                comments = list(filter(None, comments_result.split('|')))
-
-                # Crate a dictionary with the results of the signature and the questions.
-                signatures_results.append({
-                    'teacher': teacher.name + ' ' + teacher.last_name + ' ' + teacher.last_name_2,
-                    'signature': signature_dtl.fk_signature.description,
-                    'group': signature_dtl.group,
-                    'average': signature_results.average,
-                    'comments': comments,
-                    'total_evaluated': signature_results.total_evaluated,
-                    'questions': questions_results
-                })
+                    # Crate a dictionary with the results of the signature and the questions.
+                    signatures_results.append({
+                        'teacher': teacher.name + ' ' + teacher.last_name + ' ' + teacher.last_name_2,
+                        'signature': signature_dtl.fk_signature.description,
+                        'group': signature_dtl.group,
+                        'average': signature_results.average,
+                        'comments': comments,
+                        'total_evaluated': signature_results.total_evaluated,
+                        'questions': questions_results
+                    })
+                except Exception:
+                    pass
 
             # Add the results to the exam dictionary.
             exam_results = {
@@ -248,11 +253,9 @@ class TeachersReportsView(View):
         for exam in data:
 
             # Add the titles to the CSV.
-            writer.writerow([smart_str(u""+exam['exam'])])
-            exam_obj = EvaluationsExam.objects.get(
-                description__exact=exam['exam'], status="ACTIVE")
+            writer.writerow([smart_str(u""+exam['exam'].description)])
             questions = EvaluationsDtlQuestionExam.objects.filter(
-                fk_exam__exact=exam_obj.id, status="ACTIVE")
+                fk_exam__exact=exam['exam'].id, status="ACTIVE")
             titles = [
                 'CARRERA',
                 'MATERIA',
