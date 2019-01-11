@@ -141,7 +141,7 @@
                     <tbody id="teachersTable">
                     {% for teacher in teachers %}
                       <tr style="border-top:1px solid #1e2e5042;">
-                        <td>{{ teacher.name }} {{ teacher.lastname }} {{ teacher.lastname2 }}</td>
+                        <td>{{ teacher.name }} {{ teacher.last_name }} {{ teacher.last_name_2 }}</td>
                         <td><a href="{% url 'evaluations:teacher_results' career_id=career.id teacher_id=teacher.id|default:'1' %}" class="secondary-content tooltipped" data-tooltip="Resultados {{ teacher.name }}"><i class="material-icons">insert_chart</i></a></td>
                       </tr>
                     {% endfor %}
