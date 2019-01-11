@@ -142,7 +142,7 @@
              <span style='font-size:10.0pt;
              line-height:107%;
              font-family:Gotham Rounded Book"'>
-             INFORME DE {{exam_info.exam|upper|html_decode|safe}}</span></p>
+             INFORME DE {{exam_info.exam.description|upper|html_decode|safe}}</span></p>
         <p class=MsoNormal>
                 <span style='font-size:10.0pt;
                 line-height:107%;
@@ -191,7 +191,7 @@
                 <td width=76 valign=top style='width:2.0cm;padding:0cm 5.4pt 0cm 25.4pt'>
                     <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;text-align:
                         justify;line-height:normal'><span
-                            style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.1|safe }}%</span></p>
+                            style='font-size:10.0pt;font-family:"Gotham Rounded Book"'>{{ question.1|safe|floatformat }}%</span></p>
                 </td>
             </tr>
 {% endfor %}
