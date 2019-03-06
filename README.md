@@ -27,6 +27,10 @@ System for the students to make evaluations about the teachers and compare with 
 
 ### Notes
 
+#### install details windows
+
+install visual studio to get c++ libraries
+
 #### Make sure you call 'bower install' before 'collectatic'
 
 FIRTS -> `$ python manage.py bower install` THEN -> ``$ python manage.py collectstatic`
